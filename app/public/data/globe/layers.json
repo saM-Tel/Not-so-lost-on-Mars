@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T09:25:45Z",
+  "builtUtc": "2026-11-14T20:59:12Z",
   "layers": [
     {
       "id": "image-viking",
@@ -35,6 +35,12 @@
         "tileSizePx": 256,
         "count": 1365,
         "bytes": 13389507
+      },
+      "overview": {
+        "path": "tiles/image-viking/overview-z3.jpg",
+        "zoom": 3,
+        "sizePx": 2048,
+        "bytes": 797633
       }
     }
   ]

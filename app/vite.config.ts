@@ -16,6 +16,8 @@ const PRECACHE_PUBLIC = [
   'data/sites.json',
   'data/space-weather.json',
   'data/globe/layers.json',
+  // The whole globe as one picture, drawn before any tile (src/map/mapView.ts).
+  'data/globe/tiles/image-viking/overview-z3.jpg',
   'data/approach/layers.json',
 ];
 /** Whole-planet image tiles up to this zoom are kept at install too: 21 small files. */

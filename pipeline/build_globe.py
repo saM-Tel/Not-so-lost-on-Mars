@@ -29,6 +29,8 @@ WORK = REPO / "data" / "work" / "globe"
 SITES = REPO / "sites"
 
 LAYER_ID = "image-viking"
+# Zoom of the one-picture overview: 2048 pixels square, about 0.8 MB, enough for the whole globe on screen.
+OVERVIEW_ZOOM = 3
 TREK_LAYER = "Mars_Viking_MDIM21_ClrMosaic_global_232m"
 # Mars Trek tiles are evenly spaced in degrees, not Web Mercator. Row comes before column,
 # and zoom z has 2**z rows and 2**(z + 1) columns (docs/DATA_CATALOG.md, "Mars Trek map tiles").
@@ -123,7 +125,9 @@ def build(zoom_max: int) -> None:
     print(f"  source mosaic: {source.shape[1]} x {source.shape[0]} pixels, longitude -180 to 180 east, latitude 90 to -90")
     top = tiles.equirectangular_to_mercator(source, zoom_max)
 
-    temporary = OUT.with_name(OUT.name + ".tmp")
+    # Assembled outside app/public, then moved in: a running dev server watches every folder made under app/public,
+    # and on Windows that makes the final move fail with "Access is denied" after the old folder is gone (14 Nov).
+    temporary = REPO / "data" / "work" / "globe-build.tmp"
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
@@ -131,6 +135,18 @@ def build(zoom_max: int) -> None:
     record = layer_record(zoom_max)
     record["tiles"]["count"] = count
     record["tiles"]["bytes"] = tile_bytes
+    # The whole planet at OVERVIEW_ZOOM as one picture, which the app loads first and keeps under the tiles, so the globe
+    # shows whole from the start instead of filling in tile by tile (asked for by the team owner on 14 Nov).
+    level = top
+    for _ in range(zoom_max - OVERVIEW_ZOOM):
+        level = tiles.halve(level)
+    overview = temporary / "tiles" / LAYER_ID / f"overview-z{OVERVIEW_ZOOM}.jpg"
+    Image.fromarray(level).save(overview, format="JPEG", quality=82, optimize=True)
+    record["overview"] = {
+        "path": f"tiles/{LAYER_ID}/{overview.name}", "zoom": OVERVIEW_ZOOM, "sizePx": int(level.shape[0]),
+        "bytes": overview.stat().st_size,
+    }
+    tile_bytes += overview.stat().st_size
     json_bytes = records.write_layers(temporary, [record])
 
     if OUT.exists():

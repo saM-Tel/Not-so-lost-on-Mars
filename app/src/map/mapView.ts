@@ -18,6 +18,10 @@ setWorkerUrl(new URL(workerUrl, document.baseURI).href);
 
 /** Colour of the empty space around the globe. Also set on the page in style.css. */
 const SPACE_COLOUR = '#07080c';
+/** The one-picture globe drawn under the tiles. */
+const OVERVIEW_ID = 'globe-overview';
+/** Northern edge of the Web Mercator square, degrees: atan(sinh(pi)). The overview covers it from edge to edge. */
+const MERCATOR_MAX_LAT_DEG = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
 
 export interface GlobeMapOptions {
   container: HTMLElement;
@@ -57,6 +61,12 @@ export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
   const { container, image, folderUrl, center } = options;
   if (!image.tiles) throw new Error(`Layer '${image.id}' has no tiles to draw.`);
 
+  // The whole planet as one picture, when the pipeline wrote one: it loads in a single request at the start and stays
+  // under the tiles, so the globe shows whole at once instead of filling in tile by tile, and never shows gaps while
+  // finer tiles load. Tiles are drawn only from the zoom where they hold more detail than it (256-pixel tiles at
+  // zoom z serve the map at zoom z - 1).
+  const overview = image.overview;
+  const tilesFromZoom = overview ? overview.zoom : 0;
   const style: StyleSpecification = {
     version: 8,
     projection: { type: 'globe' },
@@ -72,10 +82,20 @@ export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
         maxzoom: image.tiles.maxZoom,
         attribution: `${image.title}: ${image.credit}`,
       },
+      ...(overview ? {
+        [OVERVIEW_ID]: {
+          type: 'image' as const,
+          url: folderUrl + overview.path,
+          coordinates: [
+            [-180, MERCATOR_MAX_LAT_DEG], [180, MERCATOR_MAX_LAT_DEG], [180, -MERCATOR_MAX_LAT_DEG], [-180, -MERCATOR_MAX_LAT_DEG],
+          ] as [[number, number], [number, number], [number, number], [number, number]],
+        },
+      } : {}),
     },
     layers: [
       { id: 'space', type: 'background', paint: { 'background-color': SPACE_COLOUR } },
-      { id: image.id, type: 'raster', source: image.id },
+      ...(overview ? [{ id: OVERVIEW_ID, type: 'raster' as const, source: OVERVIEW_ID, paint: { 'raster-fade-duration': 0 } }] : []),
+      { id: image.id, type: 'raster', source: image.id, minzoom: tilesFromZoom },
     ],
   };
 

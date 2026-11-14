@@ -60,6 +60,11 @@ export interface LayerRecord {
   legend?:
     | { kind: 'swatches'; items: { colour: string; label: string; shape?: 'line' | 'dot' | 'area' }[] }
     | { kind: 'ramp'; colours: string[]; labels: string[]; note?: string };
+  /**
+   * Globe image only (added 14 Nov): the whole planet at one zoom as a single Web Mercator picture, covering longitude
+   * -180 to 180 and the Web Mercator latitudes, so the globe can show whole before any tile arrives.
+   */
+  overview?: { path: string; zoom: number; sizePx: number; bytes: number };
   /** Approach imagery only: the site the ring surrounds, and which ring it is. */
   siteId?: string;
   ring?: 'wide' | 'mid' | 'near';
