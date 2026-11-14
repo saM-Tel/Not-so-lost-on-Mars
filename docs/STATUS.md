@@ -12,6 +12,22 @@ Last updated: Sat 14 Nov 16:55, at handover from the team owner to Joseph. Every
 | B: app | Joseph, from the owner's handover at 16:55 | Next: try every panel in the browser, then fix review items R1 to R20 in order | Sat 16:55 |
 | C: story and submission | Team owner and Joseph | Backup video by 23:00; README and project page | Sat 16:55 |
 
+## Evening work plan: team owner with Claude Code, from Sat 14 Nov 20:20
+
+Agreed by the team owner at 20:20. Work in this order; update the status here as each item is done. Joseph: these touch `app/src/main.ts`, `app/src/map/`, `app/src/ui/routePanel.ts`, `app/src/ui/timeSlider.ts`, `app/src/style.css` and the Bright Angel build, so check here before editing those files tonight.
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | Black band and jumping labels when zooming in by hand at zoom 12 | done, c9e2a69; fixed in the browser (owner, 20:50) | Cause: MapLibre's globe blends into the flat map between zoom 11 and 12 (`projection_factory.ts`), and the site's 3D terrain was already on. Terrain now on only from zoom 12.2; a hand zoom opens the site where the camera is, without the app's own flight |
+| 2 | R9, R10: layer order and sun shading; the Sun slider and switch show no visible change | done, c9e2a69; Sun fixed in the browser (owner, 20:50) | `map/slots.ts`; shading on true Mars slopes with a method that uses the Sun's height (REVIEW_QUEUE Done) |
+| 3 | R11, R12: approach ring order and first zoom | done, c9e2a69 | Not checked by eye |
+| 4 | R20: approach rings only for the site in focus; no name tidying while markers are hidden | done, c9e2a69 | |
+| 5 | Geology layer at Bright Angel (F2) | done, 12b95da | 75 polygons in 10 units, 1.2 MB, labelled with the map's symbols. `build_geology.py` fixed (layer name, cut to the 12 km square); pytest 49 pass |
+| 5a | The site and the globe image load slowly since tonight's changes (owner, 20:50) | in progress | Suspect: the 1.2 MB geology file is fetched and indexed by MapLibre's workers as the site opens, though the layer starts hidden, holding up the image tiles. Fix: fetch it when first switched on, as R18 did for slope |
+| 5b | Level 2 sites (Ares Vallis and others): a vertical height glitch (owner, 20:50) | not started | Suspect REVIEW_QUEUE item 1: these sites have no terrain round their 2 km box, so the box's edges stand up as walls |
+| 6 | F17 interface upgrade | not started | Scope and checks in SPEC.md |
+| 7 | F18 orbiters overhead | not started | Stretch; dropped at the Sunday 12:00 freeze if not working |
+
 ## Public link
 
 https://sam-tel.github.io/Not-so-lost-on-Mars/ since Sat 14 Nov 12:42. Bright Angel: https://sam-tel.github.io/Not-so-lost-on-Mars/#site=bright-angel . Every push to main that passes the app check republishes it.
@@ -36,8 +52,10 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F11 Time of day | A, B | in progress | Coded, not tried: Mars24 season, local solar time and Sun (tested against the Mars24 worked example), start-time slider, sunrise and sunset, whether the walk ends in daylight, computed sun shading; typical weather by Mars month at Gale only (Curiosity REMS). No weather at Jezero: the MEDA archive is not on the server. No dust devils |
 | F12 Thermal and mineral layers | A | in progress | Night infrared (THEMIS, USGS 2018) as a layer at Bright Angel: coded, to be built. Minerals not started: CRISM files unprocessed (REVIEW_QUEUE 10) |
 | F13 Tablet and helmet display | B, C | in progress | Tried briefly by the owner: janky and often empty. Fixed since: the helmet option shows only when its rover photo loads; the map resizes on a view change. Still open: R6 and R13 to R15 in REVIEW_QUEUE |
+| F17 Interface upgrade | B, C | not started | Added by the team owner, 14 Nov 19:04: the interfaces are a bit rough. Scope and checks in SPEC.md. Comes after the must-haves unless the owner moves it earlier |
+| F18 Orbiters overhead | A, B | not started | Added by the team owner, 14 Nov 19:10 (stretch). Orbiters around the globe; gaps in relay link and in orbital imaging along a walk. Source checked 14 Nov: JPL Horizons gives each orbiter's position in the sky from a site, but the browser cannot call it, so the pipeline must save it. Spec in SPEC.md |
 | F15 More sites | A | in progress | Seven landing sites built as level 2 from their HiRISE terrain strips, warped from their own projections (2.6 to 6.3 MB each). Gale not built: image dates of its mosaics not found (REVIEW_QUEUE 8) |
-| F16 Extras | any | in progress | Coded, not tried: live link to Earth from NASA DSN Now; route export as GeoJSON with its Mars frame; rover drop-off (move home). Not started: two walkers, rover models in 3D, orbiter passes overhead (REVIEW_QUEUE item 10) |
+| F16 Extras | any | in progress | Coded, not tried: live link to Earth from NASA DSN Now; route export as GeoJSON with its Mars frame; rover drop-off (move home). Not started: two walkers, rover models in 3D, orbiter passes overhead (now F18) |
 
 ## Sites
 

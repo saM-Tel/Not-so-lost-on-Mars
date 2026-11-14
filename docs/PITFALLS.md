@@ -56,6 +56,7 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Assuming every terrain file uses the Jezero grid | The single-strip HiRISE models each have their own projection: a different latitude of true scale, sometimes a local radius, and polar stereographic for Phoenix. Read it from the file |
 | A landing position copied from an old source | Older figures use other reference frames and often do not say which latitude type. NASA's catalogue figure for Pathfinder is about 20 km from the terrain model labelled as its site. Quote such a position as text with its source; do not plot it |
 | Rover positions assumed to match the image exactly | They are localised against the same base map but can differ by metres. State it |
+| JPL Horizons takes a Mars site's longitude west-positive. Its `GEODETIC` latitude is measured on its own reference shape, probably planetographic (check) | For 77.305 E send -77.305 or 282.695, and check the `Center geodetic` line it echoes. Convert our planetocentric latitude first, or try `COORD_TYPE='CYLINDRICAL'` |
 
 ## 5. Terrain
 
@@ -118,6 +119,11 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 
 | Trap | Do this |
 |---|---|
+| MapLibre 6.18's `globe` blends into the flat map between zoom 11 and 12. With 3D terrain on during the blend, part of the screen is drawn black and labels jump off the ground | Switch terrain on only past the blend (zoom 12.2 inwards; `map/siteLayers.ts`) |
+| MapLibre's default hillshade method ignores the light's height and fades out on gentle slopes; slopes are also worked out against Earth-sized pixels | Use `hillshade-method: 'basic'` and scale the shading source's heights by the Earth to Mars radius ratio |
+| A layer added with no position lands on top of everything, so the order depends on which file ran first | Add every layer beneath its slot in `map/slots.ts` |
+| The SIM 3464 geodatabase calls its unit polygons `GeoUnits_v1`, not the GeMS `MapUnitPolys`, and its `unit` field is a bare number | Read `symbol` for the label on the map; the script picks the layer by name |
+| Pretty-printed GeoJSON of a geologic map is about three times the size | Write large shapes with `records.write_json(..., compact=True)` |
 | Blank page on GitHub Pages | The site is served under the repository name. Set the base path in the build config and use relative asset addresses |
 | Works on Windows, breaks when hosted | File names are case-sensitive on the host |
 | Committing raw data | Never. Files over 100 MB are rejected and the repository becomes unusable. Ignore `data/raw/` |

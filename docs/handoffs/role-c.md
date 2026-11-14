@@ -1,5 +1,15 @@
 # Role C handoff
 
+## Sat 14 Nov 19:58, role C work by the team owner, with Claude Code
+
+Done: pulled Joseph's fixes (R1 to R8, R13 to R19); `npm run check` passes. Added F17 (interface upgrade, a "should") and F18 (orbiters overhead, a stretch) to SPEC and STATUS at the owner's request. Found a source for F18: JPL Horizons, in DATA_CATALOG.
+Not done: STATUS rows and a role B handoff for Joseph's evening fixes (his to write); the backup video; README; licence; project page.
+Broken or risky: none of Joseph's fixes has been seen in a browser.
+Next: try the app in a browser, then record the backup video by 23:00.
+Files: docs/SPEC.md, STATUS.md, REVIEW_QUEUE.md, DATA_CATALOG.md, PITFALLS.md, AI_USE.md
+Other roles need to know: A and B, F18 needs a pipeline step: Horizons does not answer browser calls. Send Mars longitude west-positive.
+Checks: `npm run check`: types, unit tests and build pass.
+
 ## Sat 14 Nov 16:55, role C handover from the team owner, with Claude Code. START HERE
 
 Done: documents brought up to date for the handover (STATUS, DECISIONS, SITES, DATA_CATALOG, PITFALLS, REVIEW_QUEUE, AI_USE, README); the app review logged in docs/reviews/.

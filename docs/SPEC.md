@@ -72,12 +72,30 @@ Question: "When should I go?"
 ### F13. Field tablet and helmet display
 - The same data in two reduced layouts, described below.
 
+### F17. Interface upgrade
+Question: "Can I see at a glance whether I can get home, and trust what I see?"
+- Added by the team owner on 14 November, 19:04: the interfaces are a bit rough. One design pass over all three displays below, so they look like one product and the verdict is the first thing seen. It follows the must-haves like every other "should"; the owner may move it earlier.
+- Scope:
+  - One set of design values in `app/src/style.css` (colours, type sizes, spacing, corners, shadows), and every panel moved onto them.
+  - The desktop layout as described under Displays: layers on the left, route and safety on the right, profile and time along the bottom.
+  - Route card: the verdict and tether margin at the top; route, oxygen and dose, photos, storm, when to go and sources in sections that open and close.
+  - The controls at the top right (view switch, install, full map) grouped in one bar.
+  - Loading, empty and "no data" states look the same everywhere.
+  - Field tablet and helmet: no empty or half-drawn screens (the owner found them "janky and often empty" on 14 November); large type; cautious values only.
+- Checks: screenshots at 360, 1,024 and 1,440 px wide show no overlap and no cut-off text; text contrast is at least 4.5 to 1 (WCAG AA) on panels and over the imagery; red only for danger; every number, source, date and range shown before is still shown; the F7 10-second test passes on both links; `npm run check` passes.
+- Not part of it: new features; a UI framework or component library, unless the commit message says why.
+
 ## Stretch
 
 - F15. More sites: Three Forks, Gale boxwork, then level 2 sites built by the pipeline.
 - F16. Two walkers or a rover drop-off and pick-up; route export; a live "link to Earth" indicator; rover models in the 3D view.
-- Optional ideas from Joseph, 14 November. Not scheduled; to pick up only if the must-haves and should-haves are done.
-  - Orbiter passes for communications: where the Mars relay orbiters are, and whether one is overhead at the start of a walk and along it, so a route or a rover move can be planned with a live link. Needs a source for orbiter positions; none is in DATA_CATALOG yet.
+- F18. Orbiters overhead: link and imaging coverage along a walk. Question: "Will I have a link, and could an orbiter see me, during this walk?" Asked for by the team owner on 14 November, 19:10, from Joseph's idea of orbiter passes.
+  - On the globe: the Mars orbiters at their current predicted positions, with ground tracks, labelled "predicted position, from JPL Horizons, fetched <date>".
+  - At a site, for a planned walk and its start time (F11): a timeline of when each orbiter is above the horizon seen from the site. Mark the stretches with no orbiter in view (no relay link) and with no camera-carrying orbiter high overhead in daylight (no chance of an orbital image). On the map, highlight the parts of the route walked during a gap.
+  - Source: the JPL Horizons API gives each orbiter's azimuth and elevation seen from a point on Mars; checked on 14 November (DATA_CATALOG, Space environment). It does not answer calls from a browser, so the pipeline saves a table per site for a window of days and the app reads it. Show the fetch date and where each prediction ends.
+  - Open; find a source or label as assumed: which orbiters relay for surface missions in November 2026 (Horizons notes no contact with MAVEN since 6 December 2025); the lowest elevation a relay link needs; which orbiters carry cameras and what counts as overhead for imaging. Being overhead does not mean an orbiter is imaging the walker: say "could see", never "sees".
+  - Checks: the site's longitude is sent west-positive (PITFALLS, coordinates); pass times at Bright Angel match a second Horizons query for the same window; nothing is shown past the end of an orbiter's trajectory file; every gap shows its start and end in UTC and in Mars local time.
+- Optional idea from Joseph, 14 November. Not scheduled; to pick up only if the must-haves and should-haves are done.
   - Day and night along the walk: whether the Sun is up at the start and for the whole walk, and when it sets. This extends F11 (time of day), which already plans Sun height and shadows.
 
 ## Predictions

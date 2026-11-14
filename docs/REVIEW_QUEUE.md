@@ -25,9 +25,9 @@ A larger model (Claude Fable) read the app's map, route, safety, time and displa
 - **R8, FIXED in baa2228 (speed): skip tether redraws when the allowed time has not changed** (with a 1-hour limit it is 3,600 s for the first 7 hours).
 
 **Group 3, layer order (slots)**: `main.ts`, `approach.ts`, `siteLayers.ts`, `overlays.ts`, `routeLayer.ts`
-- **R9 (medium): sun shading darkens the analysis layers; the rover-stop circles split the draped layers.** Add hidden anchor layers in `main.ts` after the approach rings (`slot-image`, `slot-shading`, `slot-overlays`, `slot-keep-out`, `slot-tether`, `slot-route`, `slot-points`) and insert every layer before its slot. Target order, bottom to top: globe; rings (all wide, all mid, all near); site image; sun shading; thermal, slope, geology, rover path; keep-out; tether; route lines; rover stops; site columns and pins. Check with `map.getStyle().layers.map(l => l.id)`.
-- **R10 (medium to low): sun shading uses Earth-scaled slopes and ignores the Sun's height.** Multiply the shading source's three factors and `baseShift` by `MAPLIBRE_METRES_PER_MARS_METRE`; set `hillshade-method` if the installed style spec has it.
-- **R11 (low): rings sorted by site first** (latent: a later site's wide ring could cover an earlier site's finer rings); sort by ring first. **R12 (low, suspected):** rings may appear one zoom late; try layer `minzoom: tiles.minZoom - 1`.
+- **R9, FIXED in c9e2a69 (medium): sun shading darkens the analysis layers; the rover-stop circles split the draped layers.** Add hidden anchor layers in `main.ts` after the approach rings (`slot-image`, `slot-shading`, `slot-overlays`, `slot-keep-out`, `slot-tether`, `slot-route`, `slot-points`) and insert every layer before its slot. Target order, bottom to top: globe; rings (all wide, all mid, all near); site image; sun shading; thermal, slope, geology, rover path; keep-out; tether; route lines; rover stops; site columns and pins. Check with `map.getStyle().layers.map(l => l.id)`.
+- **R10, FIXED in c9e2a69 (medium to low): sun shading uses Earth-scaled slopes and ignores the Sun's height.** Multiply the shading source's three factors and `baseShift` by `MAPLIBRE_METRES_PER_MARS_METRE`; set `hillshade-method` if the installed style spec has it.
+- **R11, FIXED in c9e2a69 (low): rings sorted by site first** (latent: a later site's wide ring could cover an earlier site's finer rings); sort by ring first. **R12, FIXED in c9e2a69 (low, suspected):** rings may appear one zoom late; try layer `minzoom: tiles.minZoom - 1`.
 
 **Group 4, `app/src/ui/modes.ts` and `app/src/style.css`** (check at 360 px and 1,024 px wide)
 - **R13, FIXED in 2af8745 (medium): the tablet card covers the walk and the bottom widgets.** After entering tablet mode and resizing, fit the map to the walk with bottom padding the card's height; hide `.earth-link` and `.weather-banner` in tablet mode.
@@ -41,7 +41,7 @@ A larger model (Claude Fable) read the app's map, route, safety, time and displa
 
 **Small items**
 - **R19, FIXED in 2af8745 (low):** problem boxes in `main.ts` never go away, stack, and use a red border for non-danger messages; keep-out also marks no-data cells but its text says only "steeper than"; "before sunset" is printed as a clock, not a duration (`timeSlider.ts`); the tablet's Storm button is outlined red all the time; headers of `routePanel.ts` and `style.css` still say "Still to add" for built things.
-- **R20 (speed, later):** rings only for the site in focus (3 sources, not 27; see item 6 below); skip `tidyNames` in `siteMarkers.ts` while markers are hidden.
+- **R20, FIXED in c9e2a69 (speed, later):** rings only for the site in focus (3 sources, not 27; see item 6 below); skip `tidyNames` in `siteMarkers.ts` while markers are hidden.
 
 Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `sources.py` warping, `tiles.py` terrain easing, `build_site.py`), `app/pwa/sw.js` and `vite.config.ts`, `layerPanel.ts`, `urlState.ts`, `photos.ts`.
 
@@ -55,7 +55,7 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **F7 layer choices in the link:** not built.
 - **F16 rover models in 3D:** not started: needs a NASA 3D model file and a 3D library (a new dependency), so it waits for a decision.
 - **F16 two walkers:** not built; the rover drop-off (move home) is.
-- **Optional, orbiter passes overhead:** DSN Now (the link-to-Earth line) shows which orbiters are talking to Earth, not whether one is above the site. Passes need orbit predictions (for example NASA's SPICE kernels for MRO and Odyssey); none is in DATA_CATALOG yet.
+- **Orbiter passes overhead, now F18 in SPEC (14 Nov 19:10):** DSN Now (the link-to-Earth line) shows which orbiters are talking to Earth, not whether one is above the site. A source for passes is now in DATA_CATALOG: JPL Horizons, checked 14 Nov. Still open: which orbiters relay today, the minimum elevation for a link, and what counts as overhead for imaging.
 - **F9:** one route against the rover is now shown in the route card as distance driven against distance walked between home and a target (both rover stops). A path-shape comparison is not built.
 
 
@@ -68,7 +68,8 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **Where:** the seven level 2 configs, `georeferenceFrom: terrain`.
 - **What:** GDAL reads the 1 m ortho JP2's georeferencing differently from its terrain model's label (for Spirit it reports latitude of origin -10 where the terrain says true scale at -10). The two files have the same size and scale, so the image uses the terrain file's. Check in the app that ridges in the image line up with the 3D terrain at each site.
 
-### 7. Geology layer blocked: no vector reader (high, F2 must-have)
+### 7. Geology layer blocked: no vector reader (high, F2 must-have). RESOLVED in 12b95da
+- **Resolved:** the team owner installed fiona 1.10.1 at 20:15 (`uv pip`, as this laptop's environment has no pip). `build_geology.py` needed two fixes: the unit layer is `GeoUnits_v1`, and polygons are now cut to the 12 km square (10.9 MB before, 1.2 MB after). Built and shipped at Bright Angel: 75 polygons in 10 units. Not yet looked at in a browser. Text below kept for the record.
 - **Where:** the Jezero geologic map (USGS SIM 3464) is an ArcGIS file geodatabase only, no shapefiles (`data/raw/geology/sim3464_database.zip`).
 - **What:** the pipeline has no package that reads vector data. Installing `fiona==1.10.1` into `pipeline/.venv` was refused by the AI tool's permission check on 14 Nov, so a person must approve or run it.
 - **Fix:** `pipeline\.venv\Scripts\python -m pip install fiona==1.10.1`, add it to `requirements.txt`, then write `build_geology.py` (read the map units in Mars Transverse Mercator, central meridian 77.5 E, reproject to degrees on the Mars sphere, keep units touching the 12 km near ring, colour them with a colour-blind-safe palette with no red, caveat the 100 to 200 m offset). Keep fiona and rasterio in separate processes on Windows: both carry their own GDAL.
@@ -99,12 +100,21 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **What:** fine on a laptop, slow on a phone over mobile data. The service worker now keeps everything after the first visit.
 - **Fix idea:** check that GitHub Pages serves the worker gzip-compressed; lazy-load the route and photo code until a site is opened; consider lowering the site image to zoom 17 outside the hero area.
 
-### 6. Many map sources for the approach imagery (low, to measure)
+### 6. Many map sources for the approach imagery (low, to measure). Addressed by R20 on 14 Nov: rings only for the site in focus, without a profile
 - **Where:** `app/src/map/approach.ts`.
 - **What:** three raster sources per site, 27 in all. Each is limited to its bounds and zooms, so nothing loads at globe view, but MapLibre still works out tile coverage for each on every frame.
 - **Check:** record a performance profile while spinning the globe and while zooming in. If it shows, add rings only for the site in focus.
 
 ## Done
+
+### R9, R10, R11, R12, R20 and the zoom 12 glitch: fixed Sat 14 Nov 20:37, commit c9e2a69, team owner with Claude Code
+
+- Zoom 12 glitch (not a review item; seen by the owner): a black band and labels off the ground when zooming in by hand at Bright Angel. MapLibre's globe blends into the flat map between zoom 11 and 12, and the site's terrain was already on. Terrain now switches on from zoom 12.2 and off below 12.0 (`map/siteLayers.ts`). A site chosen by zooming in by hand opens where the camera is, without the app's own flight (`main.ts`).
+- R9: new `map/slots.ts`; every layer goes beneath its slot. Rover stops are in the points slot, above the draped layers.
+- R10: the shading source's heights are scaled by the radius ratio; `hillshade-method: 'basic'` with intensity 0.5 uses the Sun's height, which the default method ignored. This is why the Sun slider and switch showed no visible change.
+- R11: rings sorted by ring, then site. R12: a ring's layer starts one zoom before its source's first zoom (256-pixel tiles).
+- R20: `watchApproachRings` keeps only the rings of the site whose wide ring holds the middle of the view; `tidyNames` does not run while markers are hidden.
+- How checked: types, 77 unit tests and the production build pass. At 20:50 the team owner confirmed in the browser that the zoom glitch and the Sun shading are fixed. Not checked by eye: ring order and first ring zoom.
 
 ### R16, R17, R18: fixed Sat 14 Nov 19:42, commit 3668b44
 
