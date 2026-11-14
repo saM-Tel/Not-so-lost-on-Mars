@@ -62,6 +62,18 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 
 Add each library with its licence when it is first installed.
 
+| Library | Version | Licence | Used for |
+|---|---|---|---|
+| MapLibre GL JS | 6.18.0 | BSD-3-Clause | The globe, the map and 3D terrain |
+| Vite | 8.3.8 | MIT | Building the static site |
+| TypeScript | 7.0.2 | Apache-2.0 | Type checking the app |
+| Vitest | 5.1.0 | MIT | Tests for the app |
+| NumPy | 2.5.4 | BSD-3-Clause and others | Arrays in the pipeline |
+| Rasterio (with GDAL 3.12.2) | 1.5.2 | BSD-3-Clause | Reading the terrain and image files |
+| Pillow | 13.0.0 | MIT-CMU | Writing tile images |
+| PyYAML | 6.0.3 | MIT | Reading site configs |
+| pytest | 9.2.0 | MIT | Tests for the pipeline |
+
 ## Images and media
 
 Add each image used in the app, video or project page with its credit line.
