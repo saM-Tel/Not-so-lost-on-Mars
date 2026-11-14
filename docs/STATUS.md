@@ -2,7 +2,7 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 15:40. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 13:25. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
@@ -14,7 +14,7 @@ Last updated: Sat 14 Nov 15:40. The Mars globe with site markers works on a deve
 
 ## Public link
 
-https://sam-tel.github.io/Not-so-lost-on-Mars/ since Sat 14 Nov 13:10. Bright Angel: https://sam-tel.github.io/Not-so-lost-on-Mars/#site=bright-angel . Every push to main that passes the app check republishes it.
+https://sam-tel.github.io/Not-so-lost-on-Mars/ since Sat 14 Nov 12:42. Bright Angel: https://sam-tel.github.io/Not-so-lost-on-Mars/#site=bright-angel . Every push to main that passes the app check republishes it.
 
 ## Features
 
@@ -23,14 +23,14 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | Feature | Owner | Status | Notes |
 |---|---|---|---|
 | F14 Mars globe and site picker | A, B | in progress | Works and is public: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Zooming in on a site by hand past zoom 4 selects it (asked for by Joseph on 14 Nov; tried in a scripted browser with camera jumps, not with a real mouse wheel or touch). Not done: not deployed |
-| F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at 11:45, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
+| F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at about 11:36, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
 | F2 Layer panel and information cards | B | not started | |
 | F3 Route planner | B | in progress | Works for one target at Bright Angel: click the ground and the walk out and back is drawn, with distance, climb, time and energy for three cases; keep-out ground (steeper than 20 degrees) is shaded red and never crossed. Seen in a scripted browser on the dev server with two targets. Not done: several targets, oxygen, elevation profile, route confidence, footing, smoothing; home is a stand-in (the site marker); not tried by a person; whole-grid search takes about 1.0 to 1.3 s |
 | F4 Tether | A, B | works with issues | At Bright Angel a white line shows how far you can go and still walk home in time (cautious case), a fainter line the expected case, and ground outside is dimmed. Controls: walk-back limit (1 hour or 30 minutes) and time since leaving home; the line shrinks as time rises; a walk that leaves it, or that there is no time for, gets a red warning. Seen in a scripted browser. Issues: time only, no energy or oxygen budget and no reserve; judged at the walk's far end only; not tried by a person |
 | F5 Dose and space weather | A, B | not started | |
 | F6 Photos along the route | C, B | not started | |
 | F7 Opening state and shareable link | B | not started | |
-| F8 Public site and repository | B | works with issues | Live. Opened in a scripted browser at 13:15: Bright Angel loaded in 1.6 s with 128 requests and none failed. Not done: README; a person opening it in a private window |
+| F8 Public site and repository | B | works with issues | Live. Opened in a scripted browser at 12:45: Bright Angel loaded in 1.6 s with 128 requests and none failed. Not done: README; a person opening it in a private window |
 | F9 Validation panel | A | not started | |
 | F10 Storm mode | A, B | not started | |
 | F11 Time of day | A, B | not started | |
@@ -55,7 +55,7 @@ Nothing recorded.
 
 ## Team data server
 
-Set up on 13 November. Reachable from the team owner's laptop and from Joseph's laptop over Tailscale (checked 14 November 11:15: listing, partial reads, about 8.6 MB/s on one 50 MB read). See [../data/AGENTS.md](../data/AGENTS.md).
+Set up on 13 November. Reachable from the team owner's laptop and from Joseph's laptop over Tailscale (checked 14 November, about 11:10: listing, partial reads, about 8.6 MB/s on one 50 MB read). See [../data/AGENTS.md](../data/AGENTS.md).
 
 | Files | State on 14 November, 09:50 UTC |
 |---|---|

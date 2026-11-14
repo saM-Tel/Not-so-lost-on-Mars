@@ -351,6 +351,26 @@ a.source:hover {
   border-top: 0;
 }
 
+/* ---- Full map: the side panel hidden so the map has the whole screen ---- */
+
+body.map-full .panel {
+  display: none;
+}
+
+body.map-full #map {
+  inset: 0;
+}
+
+.maplibregl-ctrl-group button.full-map-button {
+  width: auto;
+  min-height: 29px;
+  padding: 0 0.6rem;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* ---- Route card and route pins (F3) ---- */
 
 .route-card {

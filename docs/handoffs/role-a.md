@@ -1,10 +1,12 @@
 # Role A handoff
 
-## Sat 14 Nov 12:30, role A work by Joseph, with Claude Code
+Note, 14 Nov 13:25: the 11:49 entry below was first headed 12:30, from an estimate that ran ahead of the clock. It now shows the commit time.
+
+## Sat 14 Nov 11:49, role A work by Joseph, with Claude Code
 
 Done: `terrain.py` measures steepest slope over 6.0 m north to south and 5.69 m east to west (the smallest spans of at least 5 m). `grids.py` writes `grid/heightM.f32` and `grid/slopeMaxDeg.f32` on 4 m cells, 791 x 750, 2.4 MB each, and the grid definition in `site.json`. Bright Angel rebuilt: 15.6 MB.
 Not done: mask, roughness, sky exposure, vectors, weather, photos; slope as a map layer with its own record; home and targets in the site config.
-Broken or risky: the grid layout was a proposal when built; Joseph confirmed it at 12:40 (DECISIONS). The slope limit is 20 degrees by default, from a NASA source, decided by Joseph at 13:00 (DECISIONS, REFERENCES). Slope has not been checked against rover tilt yet (F9), so nothing independent confirms it.
+Broken or risky: the grid layout was a proposal when built; Joseph confirmed it at 12:19 (DECISIONS). The slope limit is 20 degrees by default, from a NASA source, decided by Joseph at 12:39 (DECISIONS, REFERENCES). Slope has not been checked against rover tilt yet (F9), so nothing independent confirms it.
 Next: a slope map layer for F2 (tiles and a full record), then `vectors.py` for the rover path and stops.
 Files: pipeline/terrain.py, grids.py, test_terrain.py, build_site.py, pipeline/AGENTS.md, app/public/data/bright-angel/, docs/DATA_CONTRACT.md, docs/DECISIONS.md, docs/PITFALLS.md
 Other roles need to know: B, read grids exactly as DATA_CONTRACT "Grid definition" says; NaN is no data. Stop `npm run dev` before a site build on Windows or the build fails at its last step. Slope at Bright Angel: median 10.4 degrees, 95% of 1 m cells under 23.9, steepest 53.6.

@@ -29,6 +29,29 @@ export interface GlobeMapOptions {
   center: LonLat;
 }
 
+/**
+ * A button that gives the whole screen to the map by hiding the side panel, and brings the panel back.
+ * On a phone the panel takes almost half the screen, which leaves too little map to plan on.
+ */
+function fullMapControl(map: MapLibreMap): { onAdd(): HTMLElement; onRemove(): void } {
+  const box = document.createElement('div');
+  box.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'full-map-button';
+  const show = (full: boolean): void => {
+    document.body.classList.toggle('map-full', full);
+    button.textContent = full ? 'Show panel' : 'Full map';
+    button.setAttribute('aria-pressed', String(full));
+    // The map's box has changed size; tell MapLibre once the page has laid it out again.
+    requestAnimationFrame(() => map.resize());
+  };
+  button.addEventListener('click', () => show(!document.body.classList.contains('map-full')));
+  show(false);
+  box.append(button);
+  return { onAdd: () => box, onRemove: () => { document.body.classList.remove('map-full'); box.remove(); } };
+}
+
 /** The whole-planet view. Site layers are added later by siteLayers.ts when a site is opened. */
 export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
   const { container, image, folderUrl, center } = options;
@@ -69,5 +92,6 @@ export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
   });
   // Zoom and compass only. MapLibre's scale control is left out on purpose: it assumes Earth.
   map.addControl(new NavigationControl({ visualizePitch: true }), 'top-right');
+  map.addControl(fullMapControl(map), 'top-right');
   return map;
 }
