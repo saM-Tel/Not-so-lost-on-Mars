@@ -560,16 +560,9 @@ body.map-full #map {
   cursor: pointer;
 }
 
-/* Folded: only the heading, the status line and the tether verdict stay. */
-.route-card--folded > :not(.route-card__header):not(.route-card__status):not(.tether),
-.route-card--folded .tether > :not(.tether__verdict) {
+/* Folded: only the heading and the answer (status line and tether verdict, in .route-card__summary since F17) stay. */
+.route-card--folded > :not(.route-card__header):not(.route-card__summary) {
   display: none;
-}
-
-.route-card--folded .tether {
-  margin: 0;
-  padding: 0;
-  border: 0;
 }
 
 .route-card p {
@@ -1231,5 +1224,195 @@ body.mode-tablet .weather-banner {
   .route-card {
     top: 92px;
     max-height: calc(100% - 170px);
+  }
+}
+
+/* ---- F17: interface upgrade (team owner, 14 Nov: "the interfaces are a bit rough") ----
+   One set of values for the pieces below; earlier sections keep theirs until they are moved over. */
+
+:root {
+  --accent: var(--level-1);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-strong: rgba(255, 255, 255, 0.09);
+  --radius: 8px;
+  --radius-small: 6px;
+  --gap: 0.6rem;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* Switches and sliders in the app's colour everywhere, not the browser's default blue. */
+input[type='checkbox'],
+input[type='range'] {
+  accent-color: var(--accent);
+}
+
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+select {
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--surface-strong);
+  color: var(--text);
+  font: inherit;
+}
+
+/* Side panel: once a site is open its layer panel shows, and "Open this site" has nothing left to do. */
+.panel:has(.layer-panel) .card__state,
+.panel:has(.layer-panel) .card__open {
+  display: none;
+}
+
+.layer-panel h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.layer-panel__purpose {
+  margin: 0 0 0.5rem !important;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.layer-row {
+  padding: 0.55rem 0;
+}
+
+.layer-row__fade {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.1rem 1.55rem;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+.layer-row__fade[hidden] {
+  display: none;
+}
+
+.layer-row .layer-row__fade input[type='range'] {
+  flex: 1;
+  min-height: 1.2rem;
+}
+
+.layer-row__grade {
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+/* Route card: the answer at the top, then parts that open and close. */
+.route-card {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.route-card__summary {
+  margin: 0.2rem 0 0.5rem;
+}
+
+.route-card__summary .tether__verdict {
+  margin: 0.4rem 0 0;
+}
+
+.card-section {
+  border-top: 1px solid var(--line);
+}
+
+.card-section[hidden] {
+  display: none;
+}
+
+.card-section__title {
+  padding: 0.5rem 0;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.card-section__title::-webkit-details-marker {
+  display: none;
+}
+
+.card-section__title::before {
+  content: '\25B8';
+  display: inline-block;
+  width: 1.1em;
+  color: var(--text-dim);
+  transition: transform 0.15s;
+}
+
+.card-section[open] > .card-section__title::before {
+  transform: rotate(90deg);
+}
+
+.card-section > :not(summary) {
+  margin-bottom: 0.5rem;
+}
+
+/* Each part's heading is now its title line; the old heading inside it would say the same thing twice. */
+.card-section > .tether > h3:first-child,
+.card-section > .storm > h3:first-child,
+.card-section > .when > h3:first-child,
+.card-section > .route-card__targets > h3:first-child {
+  display: none;
+}
+
+.card-section > section,
+.card-section > .route-card__targets {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Folded: only the heading and the answer stay (replaces the earlier rule for the old layout). */
+.route-card--folded > .card-section {
+  display: none;
+}
+
+/* The app's own controls in one bar at the top right, beside the zoom buttons (src/ui/toolbar.ts). */
+.map-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 56px;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: calc(100% - var(--panel-width) - 80px);
+}
+
+.map-toolbar .mode-switch,
+.map-toolbar .install-button {
+  position: static;
+}
+
+.mode-switch,
+.install-button {
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow);
+}
+
+body.map-full .map-toolbar,
+body.mode-tablet .map-toolbar,
+body.mode-helmet .map-toolbar {
+  max-width: calc(100% - 80px);
+}
+
+@media (max-width: 700px) {
+  .map-toolbar {
+    max-width: calc(100% - 70px);
   }
 }

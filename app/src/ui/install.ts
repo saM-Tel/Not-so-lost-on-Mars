@@ -8,6 +8,8 @@
 // TRAPS:   PITFALLS 10.
 // OWNER:   Role B.
 
+import { mapToolbar } from './toolbar';
+
 /** The browser's install offer. Not in TypeScript's DOM types, so it is described here. */
 interface InstallOffer extends Event {
   prompt(): Promise<void>;
@@ -35,7 +37,7 @@ export function setUpInstall(): void {
     void offer.prompt();
     void offer.userChoice.finally(() => { offer = null; button.hidden = true; });
   });
-  document.body.append(button);
+  mapToolbar().append(button);
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();

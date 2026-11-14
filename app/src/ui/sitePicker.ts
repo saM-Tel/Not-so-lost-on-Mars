@@ -152,7 +152,8 @@ export function createSitePicker(options: SitePickerOptions): SitePicker {
     back.addEventListener('click', onShowAll);
 
     const title = el('h2', 'card__title', site.name);
-    const place = el('p', 'card__place', `${site.place}. ${site.mission}, ${site.missionYears}.`);
+    // Some sites' place is their name ("Elysium Planitia. Elysium Planitia."); say it once.
+    const place = el('p', 'card__place', `${site.place && site.place !== site.name ? `${site.place}. ` : ''}${site.mission}, ${site.missionYears}.`);
     body.append(back, title, place, levelBadge(site, levels));
 
     const state = el('p', site.built ? 'card__state' : 'card__state not-built-note');
@@ -162,7 +163,8 @@ export function createSitePicker(options: SitePickerOptions): SitePicker {
     body.append(state);
 
     if (site.built) {
-      const open = el('button', 'primary-button', 'Open this site');
+      // Hidden by the style sheet once the site is open and its layer panel shows (F17).
+      const open = el('button', 'primary-button card__open', 'Open this site');
       open.type = 'button';
       open.addEventListener('click', () => onOpen(site.id));
       body.append(open);

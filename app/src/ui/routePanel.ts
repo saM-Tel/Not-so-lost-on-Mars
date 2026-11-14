@@ -1,6 +1,7 @@
 // WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3),
 //          the tether with its settings and whether the walk stays inside it (F4), the radiation dose on the walk (F5),
-//          and real rover photos taken near it (F6).
+//          and real rover photos taken near it (F6). Laid out answer first (status and tether verdict), then parts that
+//          open and close: targets, tether, this walk, photos, storm, when to go, home and suit (F17).
 //          Also the scenario's science targets, oxygen, the elevation profile, the route's confidence line, the suit's
 //          slope limit, the storm drill, the when-to-go panel, route export and the field views' state.
 //          Still to add: a route through several targets in a row.
@@ -131,7 +132,34 @@ export function startRoutePlanner(
   });
   const heading = el('header', 'route-card__header');
   heading.append(el('h2', undefined, 'Plan a walk'), fold);
-  card.append(heading, status, result, photos.element);
+  // F17: the answer first (the status line and the tether verdict), then each part under a heading that opens and
+  // closes. A part stays hidden until it has something to show.
+  const summary = el('div', 'route-card__summary');
+  summary.append(status);
+  const part = (title: string, open: boolean): HTMLDetailsElement => {
+    const box = el('details', 'card-section');
+    box.open = open;
+    box.hidden = true;
+    box.append(el('summary', 'card-section__title', title));
+    return box;
+  };
+  const parts = {
+    targets: part('Science targets', true),
+    tether: part('Tether: how far you can go', true),
+    walk: part('This walk: distance, time, oxygen, radiation', true),
+    photos: part('What you will see: rover photos', false),
+    storm: part('Storm drill', false),
+    when: part('When to go: Sun and weather', false),
+    setup: part('Home, rover and suit', false),
+  };
+  /** Put content into a part and show it. */
+  const fill = (box: HTMLDetailsElement, ...content: HTMLElement[]): void => {
+    box.append(...content);
+    box.hidden = false;
+  };
+  parts.walk.append(result);
+  fill(parts.photos, photos.element);
+  card.append(heading, summary, ...Object.values(parts));
   map.getContainer().append(card);
 
   const layer = addRouteLayer(map);
@@ -278,6 +306,8 @@ export function startRoutePlanner(
     });
   };
   const tether = createTetherControls(drawTether);
+  // The verdict answers the product's question, so it sits at the top of the card, under the status line.
+  summary.append(tether.verdictElement);
 
   /**
    * Route confidence (F3): the weakest stretch is ground close to the slope limit, where our slope from orbit may be
@@ -417,6 +447,7 @@ export function startRoutePlanner(
     showStorm();
     when.setWalk(answer.ok ? caseValue(answer.out, 'cautious', 'timeS') + caseValue(answer.back, 'cautious', 'timeS') : null);
     result.replaceChildren();
+    parts.walk.hidden = true;
     if (!answer.ok) {
       layer.showRoute(null);
       photos.show(null);
@@ -490,6 +521,7 @@ export function startRoutePlanner(
       doseBasis,
       details,
     );
+    parts.walk.hidden = false;
   };
 
   // The site's routing grids, read once; the worker is started again whenever the slope limit changes.
@@ -510,6 +542,7 @@ export function startRoutePlanner(
     layer.showRoute(null);
     layer.hideTether();
     result.replaceChildren();
+    parts.walk.hidden = true;
     photos.show(null);
     when.setWalk(null);
     showVerdict();
@@ -582,11 +615,9 @@ export function startRoutePlanner(
         `${(ready.reachableShare * 100).toFixed(0)}% of it can be walked to and back from.`;
       const targets = loaded.site.targets ?? [];
       if (first) {
-        card.insertBefore(about, result);
-        card.insertBefore(moveRover, result);
-        card.insertBefore(suit.element, result);
+        fill(parts.setup, about, moveRover, suit.element);
         if (targets.length > 0) {
-          card.insertBefore(targetList(targets, (target) => planTo([target.lonEastDeg, target.latDeg])), result);
+          fill(parts.targets, targetList(targets, (target) => planTo([target.lonEastDeg, target.latDeg])));
           layer.showTargets(targets);
         }
       }
@@ -600,9 +631,9 @@ export function startRoutePlanner(
             ...(restore.elapsedMin ? { elapsedS: restore.elapsedMin * 60 } : {}),
           });
         }
-        if (!tether.element.isConnected) card.insertBefore(tether.element, result);
-        if (!storm.element.isConnected) card.insertBefore(storm.element, result);
-        if (!when.element.isConnected) card.insertBefore(when.element, result);
+        if (!tether.element.isConnected) fill(parts.tether, tether.element);
+        if (!storm.element.isConnected) fill(parts.storm, storm.element);
+        if (!when.element.isConnected) fill(parts.when, when.element);
         showStorm();
         drawTether();
       });

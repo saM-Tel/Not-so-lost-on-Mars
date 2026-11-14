@@ -9,6 +9,7 @@
 // OWNER:   Role B.
 
 import { formatDistance, formatDuration } from './format';
+import { mapToolbar } from './toolbar';
 
 export type Mode = 'planner' | 'tablet' | 'helmet';
 
@@ -109,7 +110,8 @@ export function createModeSwitch(actions: {
   const credit = el('p', 'helmet__credit');
   helmet.append(photo, arrow, readout, marginBar, alertLine, concept, credit);
 
-  document.body.append(bar, tablet, helmet);
+  mapToolbar().prepend(bar);
+  document.body.append(tablet, helmet);
 
   const render = (): void => {
     if (mode === 'helmet' && !helmetReady) mode = 'planner';

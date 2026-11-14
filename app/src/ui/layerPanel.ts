@@ -1,4 +1,5 @@
-// WHAT:    Layer panel: one row per layer with a switch, opacity control, legend and information card (F2), and what the
+// WHAT:    Layer panel: a line saying what it is for and what the grades mean, then one row per layer with a switch, an
+//          opacity control shown while the layer is on, legend and information card (F2), and what the
 //          rover's own measurements say about our terrain (F9).
 // IN:      Overlays from src/map/overlays.ts and src/ui/routePanel.ts; layers left out because their record is incomplete.
 // OUT:     Page elements inside the element given. Returns functions to add a layer later and to clear the panel.
@@ -43,15 +44,19 @@ function layerRow(overlay: Overlay): HTMLElement {
   fade.step = '5';
   fade.value = String(Math.round(overlay.opacity * 100));
   fade.setAttribute('aria-label', `Opacity of ${overlay.record.title}`);
-  fade.disabled = !overlay.visible;
+  // The opacity control is shown only while the layer is on, so the panel reads as a list of switches.
+  const fadeRow = document.createElement('label');
+  fadeRow.className = 'layer-row__fade';
+  fadeRow.append('Opacity', fade);
+  fadeRow.hidden = !overlay.visible;
 
   box.addEventListener('change', () => {
     overlay.setVisible(box.checked);
-    fade.disabled = !box.checked;
+    fadeRow.hidden = !box.checked;
   });
   fade.addEventListener('input', () => overlay.setOpacity(Number(fade.value) / 100));
 
-  row.append(head, fade);
+  row.append(head, fadeRow);
   if (overlay.legend) row.append(legendElement(overlay.legend));
   row.append(infoCard(overlay.record));
   return row;
@@ -100,10 +105,16 @@ export function createLayerPanel(
   section.className = 'layer-panel';
   const title = document.createElement('h3');
   title.textContent = 'Layers';
+  // What the panel is for, in one line (asked by the team owner on 14 Nov: its point was not clear).
+  const purpose = document.createElement('p');
+  purpose.className = 'layer-panel__purpose';
+  purpose.textContent =
+    'What we know about this ground, and how well. Switch a layer on to see it on the map; each one says who measured it, ' +
+    'when, and how far to trust it: grade A is measured on the ground, B from orbit, C measured elsewhere or modelled, D assumed.';
   const list = document.createElement('ul');
   list.className = 'layer-panel__list';
   for (const overlay of overlays) list.append(layerRow(overlay));
-  section.append(title, list);
+  section.append(title, purpose, list);
   if (leftOut.length > 0) {
     const note = document.createElement('p');
     note.className = 'left-out';
@@ -112,10 +123,13 @@ export function createLayerPanel(
   }
   const checks = validationSection(validation);
   if (checks) section.append(checks);
-  const missing = document.createElement('p');
-  missing.className = 'panel__line';
-  missing.textContent = 'Geology is not built for this site yet.';
-  section.append(missing);
+  // Said only where it is true: Bright Angel has had geology since 14 Nov.
+  if (!overlays.some((overlay) => overlay.record.dataType === 'geologic')) {
+    const missing = document.createElement('p');
+    missing.className = 'panel__line';
+    missing.textContent = 'Geology is not built for this site yet.';
+    section.append(missing);
+  }
   parent.append(section);
   return {
     add(overlay) { list.append(layerRow(overlay)); },

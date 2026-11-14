@@ -120,6 +120,8 @@ export function createStormDrill(onChange: () => void): StormDrill {
 
 export interface TetherControls {
   element: HTMLElement;
+  /** The verdict line on its own, so the route card can show it at its top (F17). It starts inside `element`. */
+  verdictElement: HTMLElement;
   settings(): TetherSettings;
   /** Put the controls at given settings, as when a shared link is opened. A limit that is not offered is ignored. */
   set(settings: Partial<TetherSettings>): void;
@@ -190,6 +192,7 @@ export function createTetherControls(onChange: () => void): TetherControls {
 
   return {
     element: box,
+    verdictElement: verdict,
     settings,
     set(wanted) {
       if (wanted.walkBackLimitS !== undefined && (WALK_BACK_LIMITS_S as readonly number[]).includes(wanted.walkBackLimitS)) {
