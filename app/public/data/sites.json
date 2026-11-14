@@ -1,0 +1,355 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T09:36:38Z",
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees.",
+  "levels": {
+    "1": {
+      "name": "Walk-ready",
+      "offers": "Everything: walking routes, tether, storm mode, photos, validation."
+    },
+    "2": {
+      "name": "Scout-ready",
+      "offers": "Walking routes and tether inside the terrain strip, marked 'not checked on the ground'."
+    },
+    "3": {
+      "name": "Survey",
+      "offers": "Layers and vehicle-scale route sketches only. No walking plan."
+    },
+    "4": {
+      "name": "Overview",
+      "offers": "Layered context map, radiation estimate by altitude, season and Sun. No routes."
+    }
+  },
+  "sites": [
+    {
+      "id": "arctic-plain",
+      "name": "Arctic plain",
+      "place": "North polar region",
+      "mission": "Phoenix",
+      "missionYears": "2008",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": -125.74051,
+      "latDeg": 68.206915,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEPC_008591_2485_008644_2485_U01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_008500_008599/PSP_008591_2485_PSP_008644_2485/"
+      },
+      "landing": {
+        "asPublished": "nominally at 68.15 N, 125.9 W",
+        "source": "NASA NSSDCA catalogue, Phoenix Mars Lander",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2007-034A",
+        "insideTerrainFootprint": true
+      },
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "The terrain model is in a polar projection, unlike every other site. The pipeline cannot read it yet.",
+        "The source does not say whether its latitude is planetocentric."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": -125.914252,
+        "eastLonDeg": -125.566769,
+        "southLatDeg": 68.121496,
+        "northLatDeg": 68.292335,
+        "widthKm": 7.6,
+        "heightKm": 10.1
+      }
+    },
+    {
+      "id": "ares-vallis",
+      "name": "Ares Vallis",
+      "place": "Ares Vallis",
+      "mission": "Pathfinder",
+      "missionYears": "1997",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": -33.247025,
+      "latDeg": 19.06053,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEEC_002391_1995_001890_1995_A01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_002300_002399/PSP_002391_1995_PSP_001890_1995/"
+      },
+      "landing": {
+        "asPublished": "19.33 N, 33.55 W",
+        "source": "NASA NSSDCA catalogue, Mars Pathfinder",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A",
+        "insideTerrainFootprint": false
+      },
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "The landing position NASA's catalogue prints (19.33 N, 33.55 W) is outside this terrain model. It is an older figure and the source does not say which latitude type or reference frame it uses. The terrain label itself says 'possible' landing site. Do not show a lander position here until it is settled."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": -33.305037,
+        "eastLonDeg": -33.189012,
+        "southLatDeg": 18.93891,
+        "northLatDeg": 19.182149,
+        "widthKm": 6.5,
+        "heightKm": 14.4
+      }
+    },
+    {
+      "id": "bright-angel",
+      "name": "Bright Angel",
+      "place": "Neretva Vallis, Jezero crater",
+      "mission": "Perseverance",
+      "missionYears": "2021 to now",
+      "level": 1,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": 77.305191,
+      "latDeg": 18.497484,
+      "position": {
+        "what": "A single point taken from the source.",
+        "source": "Perseverance waypoints file, stop RMC 56_0, first logged on sol 1210",
+        "sourceUrl": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+        "why": "NASA says the Cheyava Falls rock core was collected on 21 July 2024 at the northern edge of Neretva Vallis. By our count from the landing date that is sol 1215, and the rover's log has it at this stop from sol 1210 until it next moved on sol 1219.",
+        "whySourceUrl": "https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/"
+      },
+      "landing": {
+        "asPublished": "18.44463 N, 77.45089 E: the rover's first logged stop (RMC 3_0, sol 13), before it had driven",
+        "source": "Perseverance waypoints file",
+        "sourceUrl": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+      },
+      "data": [
+        "Image mosaic at 25 cm from HiRISE (USGS)",
+        "Terrain mosaic on a 1 m grid from HiRISE stereo images (USGS); real detail about 3 to 5 m",
+        "Perseverance's own stops, 708 logged to sol 2022, with tilt and height at each",
+        "Rover photographs taken on the ground"
+      ],
+      "problems": [
+        "Not built yet: the site's box, home position and science targets are still to be set."
+      ]
+    },
+    {
+      "id": "chryse-planitia",
+      "name": "Chryse Planitia",
+      "place": "Chryse Planitia",
+      "mission": "Viking 1",
+      "missionYears": "1976 to 1982",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": -47.945636,
+      "latDeg": 22.271203,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEEC_001521_2025_001719_2025_U01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_001500_001599/PSP_001521_2025_PSP_001719_2025/"
+      },
+      "landing": {
+        "asPublished": "22.27 deg N latitude and 312.05 deg E longitude (planetocentric)",
+        "source": "NASA NSSDCA catalogue, Viking 1 Lander",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-075C",
+        "insideTerrainFootprint": true
+      },
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": -48.022875,
+        "eastLonDeg": -47.868396,
+        "southLatDeg": 22.097036,
+        "northLatDeg": 22.445371,
+        "widthKm": 8.5,
+        "heightKm": 20.6
+      }
+    },
+    {
+      "id": "columbia-hills",
+      "name": "Columbia Hills",
+      "place": "Gusev crater",
+      "mission": "Spirit",
+      "missionYears": "2004 to 2010",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": 175.498342,
+      "latDeg": -14.585043,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEEC_001513_1655_001777_1650_U01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_001500_001599/PSP_001513_1655_PSP_001777_1650/"
+      },
+      "landing": {
+        "asPublished": "14.572 S, 175.478 E",
+        "source": "NASA NSSDCA catalogue, Mars Exploration Rover A (Spirit)",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-027A",
+        "insideTerrainFootprint": true
+      },
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": 175.441866,
+        "eastLonDeg": 175.554818,
+        "southLatDeg": -14.67752,
+        "northLatDeg": -14.492566,
+        "widthKm": 6.5,
+        "heightKm": 11.0
+      }
+    },
+    {
+      "id": "elysium-planitia",
+      "name": "Elysium Planitia",
+      "place": "Elysium Planitia",
+      "mission": "InSight",
+      "missionYears": "2018 to 2022",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": 135.626734,
+      "latDeg": 4.431049,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEEC_037262_1845_036761_1845_U01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845/"
+      },
+      "landing": null,
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "The landing position was not found in the NASA catalogue page we read, so whether this model contains the lander is not checked."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": 135.561,
+        "eastLonDeg": 135.692468,
+        "southLatDeg": 4.230825,
+        "northLatDeg": 4.631272,
+        "widthKm": 7.8,
+        "heightKm": 23.7
+      }
+    },
+    {
+      "id": "gale-crater",
+      "name": "Gale crater",
+      "place": "Gale crater",
+      "mission": "Curiosity",
+      "missionYears": "2012 to now",
+      "level": 1,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": 137.441633,
+      "latDeg": -4.589467,
+      "position": {
+        "what": "A single point taken from the source.",
+        "source": "Curiosity waypoints file, first logged stop (RMC 2_0, sol 3), before it had driven",
+        "sourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+      },
+      "landing": {
+        "asPublished": "4.589467 S, 137.441633 E: the rover's first logged stop (RMC 2_0, sol 3)",
+        "source": "Curiosity waypoints file",
+        "sourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+      },
+      "data": [
+        "Image mosaic at 25 cm and terrain mosaic on a 1 m grid from HiRISE (USGS)",
+        "Curiosity's own stops, 1,388 logged to sol 5070",
+        "Radiation and daily weather measured on the ground by Curiosity"
+      ],
+      "problems": [
+        "Not built yet. The rover is now far from where it landed; the box to build has not been chosen."
+      ]
+    },
+    {
+      "id": "meridiani",
+      "name": "Meridiani",
+      "place": "Terra Meridiani",
+      "mission": "Opportunity",
+      "missionYears": "2004 to 2018",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": -5.479169,
+      "latDeg": -2.046748,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEEC_021747_1780_022380_1780_U01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780/"
+      },
+      "landing": {
+        "asPublished": "1.946 S, 354.473 E (IAU 2000 body-centered coordinates)",
+        "source": "NASA NSSDCA catalogue, Mars Exploration Rover B (Opportunity)",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A",
+        "insideTerrainFootprint": true
+      },
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "Three more terrain models are on the team data server for this site: DTEEC_001414_1780_001612_1780_U01 (its label says 'Possibily Opportunity Rover landing site', but its footprint does not contain the published landing position), DTEEC_018701_1775_018846_1775_U01 (Endeavour crater western rim) and DTEEC_028815_1780_028670_1780_A01 (north-central Endeavour crater)."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": -5.536837,
+        "eastLonDeg": -5.4215,
+        "southLatDeg": -2.160533,
+        "northLatDeg": -1.932964,
+        "widthKm": 6.8,
+        "heightKm": 13.5
+      }
+    },
+    {
+      "id": "utopia-planitia",
+      "name": "Utopia Planitia",
+      "place": "Utopia Planitia",
+      "mission": "Viking 2",
+      "missionYears": "1976 to 1980",
+      "level": 2,
+      "built": false,
+      "reviewedByPerson": false,
+      "lonEastDeg": 134.285596,
+      "latDeg": 47.660288,
+      "position": {
+        "what": "The centre of the terrain model's footprint.",
+        "source": "Label at the start of DTEEC_002055_2280_001976_2280_A01.IMG, HiRISE archive, University of Arizona",
+        "sourceUrl": "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_002000_002099/PSP_002055_2280_PSP_001976_2280/"
+      },
+      "landing": {
+        "asPublished": "47.6673 deg N latitude and 134.2809 deg E longitude",
+        "source": "NASA NSSDCA catalogue, Viking 2 Lander",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C",
+        "insideTerrainFootprint": true
+      },
+      "data": [
+        "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip",
+        "HiRISE images matched to that terrain model"
+      ],
+      "problems": [
+        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "The source does not say whether its latitude is planetocentric."
+      ],
+      "terrainFootprint": {
+        "westLonDeg": 134.192373,
+        "eastLonDeg": 134.378819,
+        "southLatDeg": 47.552679,
+        "northLatDeg": 47.767897,
+        "widthKm": 7.4,
+        "heightKm": 12.8
+      }
+    }
+  ]
+}
