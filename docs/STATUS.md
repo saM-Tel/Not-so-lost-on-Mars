@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 13:45. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 14:40. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
 | A: data and science | Joseph, covering for the team owner | Slope and routing grids built; next a slope map layer and the rover path | Sat 11:00 |
-| B: app | Joseph, covering for the team owner | Route core built; next the route worker and panel | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Route on screen for one target; next the tether | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
@@ -25,7 +25,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F14 Mars globe and site picker | A, B | in progress | Works locally: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Not done: not deployed |
 | F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at 11:45, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
 | F2 Layer panel and information cards | B | not started | |
-| F3 Route planner | B | in progress | Routing grids built for Bright Angel. In the app the route core is built and tested (walking model, keep-out, route search from and to home, statistics for three cases) but nothing is on screen yet: no worker, no panel, no home or targets. Default slope limit 20 degrees (DECISIONS) |
+| F3 Route planner | B | in progress | Works for one target at Bright Angel: click the ground and the walk out and back is drawn, with distance, climb, time and energy for three cases; keep-out ground (steeper than 20 degrees) is shaded red and never crossed. Seen in a scripted browser on the dev server with two targets. Not done: several targets, oxygen, elevation profile, route confidence, footing, smoothing; home is a stand-in (the site marker); not tried by a person; whole-grid search takes about 1.0 to 1.3 s |
 | F4 Tether | A, B | not started | |
 | F5 Dose and space weather | A, B | not started | |
 | F6 Photos along the route | C, B | not started | |

@@ -33,7 +33,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `layers.ts` | Loads a layers.json and checks that each layer's record is complete; incomplete layers are left out with the reasons | F2, F14 |
 | `loadSites.ts` | Loads the list of every site for the globe; a site with no cited position is left out with the reason | F14 |
 | `records.test.ts` | Tests for the record checks in `layers.ts` and `loadSites.ts`, on made-up fixtures | |
-| `loadSite.ts` | Loads one built site. Built so far: site.json and layers.json. To add: routing grids as typed arrays, and vectors | F1 to F4 |
+| `loadSite.ts` | Loads one built site: site.json, layers.json and the routing grid files. To add: vectors | F1 to F4 |
 | `feeds.ts` | Fetches the live NASA space-weather feeds, falling back to the saved snapshot | F5 |
 
 ## Known issues

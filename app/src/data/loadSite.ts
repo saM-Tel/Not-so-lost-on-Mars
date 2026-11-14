@@ -1,4 +1,4 @@
-// WHAT:    Loads one built site: site.json and layers.json so far (F1). Still to add: routing grids as typed arrays, and vectors (F2 to F4).
+// WHAT:    Loads one built site: site.json, layers.json and the routing grid files (F1, F3). Still to add: vectors (F2).
 // IN:      A site id; files under public/data/<site id>/.
 // OUT:     The site in memory, or an error with a plain reason.
 // USED BY: src/main.ts, src/map/siteLayers.ts.
@@ -41,6 +41,31 @@ async function fetchSite(dataUrl: string, siteId: string): Promise<LoadedSite> {
     image: withTiles.find((layer) => layer.dataType === 'optical') ?? null,
     terrain: withTiles.find((layer) => layer.dataType === 'topographic' && layer.tiles?.encoding === 'mapbox') ?? null,
   };
+}
+
+/**
+ * Fetch the site's two routing grid files. Each call fetches again, because the buffers are handed to the
+ * route worker and cannot be reused. Throws with a plain reason if the site has no grids or a file is missing.
+ */
+export async function loadRoutingGridFiles(loaded: LoadedSite): Promise<{ heightM: ArrayBuffer; slopeMaxDeg: ArrayBuffer }> {
+  const definition = loaded.site.grid;
+  if (!definition) throw new Error('This site has no routing grids, so routes cannot be planned here.');
+  const fetchFile = async (name: string): Promise<ArrayBuffer> => {
+    const file = definition.files.find((f) => f.name === name);
+    if (!file) throw new Error(`The routing grid '${name}' is not listed for this site.`);
+    if (file.numberType !== 'float32' || definition.byteOrder !== 'little-endian') {
+      throw new Error(`The routing grid '${name}' is stored in a form this version cannot read.`);
+    }
+    const response = await fetch(loaded.folderUrl + file.path);
+    if (!response.ok) throw new Error(`Could not load the routing grid '${name}' (status ${response.status}).`);
+    const buffer = await response.arrayBuffer();
+    if (buffer.byteLength !== definition.rows * definition.cols * 4) {
+      throw new Error(`The routing grid '${name}' is not the size its definition says.`);
+    }
+    return buffer;
+  };
+  const [heightM, slopeMaxDeg] = await Promise.all([fetchFile('heightM'), fetchFile('slopeMaxDeg')]);
+  return { heightM, slopeMaxDeg };
 }
 
 /** Load a built site once; later calls reuse the first answer. */

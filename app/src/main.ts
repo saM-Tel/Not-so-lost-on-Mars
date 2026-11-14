@@ -1,5 +1,5 @@
 // WHAT:    Entry point. Opens the Mars globe with a marker at every site, flies to a chosen site, and opens a built site's
-//          own image and 3D terrain (F14, F1, F7). Still to add: the layer, route and safety panels and the route worker.
+//          own image and 3D terrain, and starts route planning there (F14, F1, F3, F7). Still to add: the layer and safety panels.
 // IN:      public/data/globe/layers.json, public/data/sites.json and a built site's folder; the site named in the address bar, if any.
 // OUT:     Nothing. Starts the app.
 // USED BY: index.html.
@@ -15,6 +15,7 @@ import { createGlobeMap } from './map/mapView';
 import { addScaleBar } from './map/scaleBar';
 import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
+import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
 import { readUrlState, writeUrlState } from './ui/urlState';
 
@@ -60,12 +61,16 @@ async function start(): Promise<void> {
   addScaleBar(map);
 
   let stopIdleTurn = (): void => {};
+  /** Takes the route card and the route off the map when the person leaves a site. */
+  let stopRoutePlanner = (): void => {};
   /** Counts choices, so a slow load for one site cannot overwrite a later choice. */
   let choice = 0;
 
   const select = async (siteId: string | null): Promise<void> => {
     const thisChoice = ++choice;
     stopIdleTurn();
+    stopRoutePlanner();
+    stopRoutePlanner = () => {};
     const site = siteId === null ? undefined : sites.find((s) => s.id === siteId);
     markers.setSelected(site?.id ?? null);
     picker.show(site?.id ?? null);
@@ -86,6 +91,8 @@ async function start(): Promise<void> {
       // The column and the name would stand in the middle of the ground the person came to see.
       markers.setVisible(false);
       await flyIntoSite(map, builtSite.site);
+      if (thisChoice !== choice) return;
+      if (builtSite.site.grid) stopRoutePlanner = startRoutePlanner(map, builtSite);
     } catch (error) {
       if (thisChoice !== choice) return;
       showProblem(error instanceof Error ? error.message : String(error));

@@ -1,0 +1,50 @@
+// WHAT:    The messages that pass between the page and the route worker (F3).
+// IN:      Nothing.
+// OUT:     Types only.
+// USED BY: src/route/worker.ts, src/route/client.ts, src/ui/routePanel.ts, src/map/routeLayer.ts.
+// RULES:   Positions are [east-positive longitude, planetocentric latitude] in degrees.
+// TRAPS:   PITFALLS 6.
+// OWNER:   Role B.
+
+import type { GridDefinition } from '../data/contract';
+import type { LonLat } from '../mars/geometry';
+import type { RouteStats } from './stats';
+
+export type Request =
+  | {
+      type: 'init';
+      definition: GridDefinition;
+      heightM: ArrayBuffer;
+      slopeMaxDeg: ArrayBuffer;
+      home: LonLat;
+      slopeLimitDeg: number;
+    }
+  | { type: 'route'; id: number; target: LonLat };
+
+/** One direction of a walk: the line to draw, in walking order, and its numbers. */
+export interface RouteLeg {
+  line: LonLat[];
+  stats: RouteStats;
+}
+
+export interface Ready {
+  type: 'ready';
+  rows: number;
+  cols: number;
+  /** 1 for each keep-out cell, north row first. */
+  keepOut: Uint8Array;
+  /** False when home is outside the grid or in a keep-out cell, so no route can start. */
+  homeUsable: boolean;
+  /** Centre of the grid cell that holds home, or null when home is outside the grid. */
+  homeCentre: LonLat | null;
+  /** Fraction of cells that are keep-out, and fraction that can be walked to and back from. */
+  keepOutShare: number;
+  reachableShare: number;
+  searchMs: number;
+}
+
+export type RouteAnswer =
+  | { type: 'route'; id: number; ok: true; target: LonLat; out: RouteLeg; back: RouteLeg }
+  | { type: 'route'; id: number; ok: false; reason: 'outside' | 'keep-out' | 'unreachable' };
+
+export type Reply = Ready | RouteAnswer | { type: 'error'; message: string };
