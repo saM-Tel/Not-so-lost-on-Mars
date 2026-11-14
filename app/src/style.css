@@ -1568,3 +1568,64 @@ body.mode-helmet .map-toolbar {
   border: 1px dashed rgba(255, 255, 255, 0.6);
   box-sizing: border-box;
 }
+
+/* ---- F19: walk-through astronaut ---- */
+
+.walker-pin {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  background: rgba(7, 8, 12, 0.8);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.walk__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.4rem 0;
+}
+
+.walk__buttons .route-card__target {
+  margin: 0;
+}
+
+.walk__readout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.7rem;
+  margin: 0.4rem 0;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-small);
+  background: var(--surface);
+}
+
+.walk__readout:empty {
+  display: none;
+}
+
+.walk__readout dt {
+  color: var(--text-dim);
+}
+
+.walk__readout dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.walk__caution {
+  color: var(--caution);
+}
+
+/* Red: outside the tether or cut off from home, the same danger the field views show in red. */
+.walk__danger {
+  color: var(--danger);
+}
+
+.walk__status:empty {
+  display: none;
+}

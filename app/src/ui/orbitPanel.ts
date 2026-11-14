@@ -10,7 +10,7 @@
 // OWNER:   Role B.
 
 import {
-  IMAGING_MIN_ELEVATION_DEG, LINK_MIN_ELEVATION_DEG, loadGlobeOrbiters, loadSitePasses, stretchesInGaps, walkCoverage,
+  elevationAt, IMAGING_MIN_ELEVATION_DEG, LINK_MIN_ELEVATION_DEG, loadGlobeOrbiters, loadSitePasses, stretchesInGaps, walkCoverage,
   type GlobeOrbiters, type SitePasses,
 } from '../data/orbiters';
 import { localTrueSolarTimeHours } from '../mars/time';
@@ -30,6 +30,8 @@ export interface OrbitPanel {
   setWalk(walk: OrbitWalk | null): void;
   /** Whether the part holding this panel is open: the map glow shows only then. */
   setOpen(open: boolean): void;
+  /** Short names of the confirmed relays high enough for a link at a moment; null when there is no prediction then. */
+  relaysAt(utc: Date): string[] | null;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -202,6 +204,17 @@ export function createOrbitPanel(options: {
     setOpen(next) {
       open = next;
       options.onGaps(open ? stretches : null);
+    },
+    relaysAt(utc) {
+      if (!globe || !site) return null;
+      const names: string[] = [];
+      for (const orbiter of site.orbiters) {
+        const elevation = elevationAt(orbiter, utc);
+        if (elevation === null) return null;
+        const track = globe.orbiters.find((o) => o.id === orbiter.id);
+        if (track?.relay === true && elevation >= LINK_MIN_ELEVATION_DEG) names.push(track.short);
+      }
+      return names;
     },
   };
 }

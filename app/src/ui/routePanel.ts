@@ -28,6 +28,7 @@ import { stormAdvice } from '../safety/storm';
 import { tetherPicture, walkFarthestFromHomeS } from '../safety/tether';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createOrbitPanel } from './orbitPanel';
+import { createWalkThrough } from './walkThrough';
 import { createPhotoStrip } from './photoStrip';
 import { profileChart } from './profileChart';
 import { createTimePanel } from './timeSlider';
@@ -149,6 +150,7 @@ export function startRoutePlanner(
     tether: part('Tether: how far you can go', true),
     walk: part('This walk: distance, time, oxygen, radiation', true),
     orbit: part('Link and view from orbit', false),
+    walkthrough: part('Walk-through: an astronaut on the ground', false),
     photos: part('What you will see: rover photos', false),
     storm: part('Storm drill', false),
     when: part('When to go: Sun and weather', false),
@@ -173,6 +175,26 @@ export function startRoutePlanner(
   });
   fill(parts.orbit, orbit.element);
   parts.orbit.addEventListener('toggle', () => orbit.setOpen(parts.orbit.open));
+  // Walk-through (F19): a to-scale astronaut on the ground, using this card's ground, tether, home and route.
+  let keepOutCells: Uint8Array | null = null;
+  let homeAt: [number, number] | null = null;
+  let heightView: Float32Array | null = null;
+  const walk = createWalkThrough(map, {
+    ground: () => {
+      const definition = loaded.site.grid;
+      if (!definition || !gridFiles) return null;
+      heightView ??= new Float32Array(gridFiles.heightM);
+      return { definition, heightM: heightView, keepOut: keepOutCells };
+    },
+    timeHomeS: () => tetherFields?.cautiousS ?? null,
+    home: () => homeAt,
+    route: () => (lastAnswer?.ok ? { out: lastAnswer.out.line, back: lastAnswer.back.line } : null),
+    allowedS: (elapsedS) => allowedTimeHomeS({ ...tether.settings(), elapsedS }),
+    setElapsed: (elapsedS) => { tether.set({ elapsedS }); drawTether(); },
+    relaysAt: (utc) => orbit.relaysAt(utc),
+    site: [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg],
+  });
+  fill(parts.walkthrough, walk.element);
   let stopped = false;
   let stopWorker = (): void => {};
   let onClick: ((event: MapMouseEvent) => void) | null = null;
@@ -605,6 +627,8 @@ export function startRoutePlanner(
       const ready = await client.ready;
       if (stopped) return;
       layer.showKeepOut(ready.keepOut, definition);
+      keepOutCells = ready.keepOut;
+      homeAt = ready.homeCentre;
       const first = firstStart;
       firstStart = false;
       // Keep-out ground is a layer like any other in the layer panel. Its record is the slope layer's, with what
@@ -716,6 +740,7 @@ export function startRoutePlanner(
     stopWorker();
     if (onClick) map.off('click', onClick);
     map.getCanvas().style.cursor = '';
+    walk.remove();
     layer.remove();
     card.remove();
     modes.remove();
