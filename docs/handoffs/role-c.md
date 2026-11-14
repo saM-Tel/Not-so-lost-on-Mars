@@ -1,5 +1,15 @@
 # Role C handoff
 
+## Sat 14 Nov 21:35, team owner with Claude Code (app and pipeline work for the evening plan). START HERE
+
+Done (all pushed; plan and statuses in STATUS.md, "Evening work plan"): zoom 12 glitch; R9 to R12 and R20; sun shading; geology at Bright Angel; level 2 terrain edges eased; globe as one overview picture; F17 two passes; F18 orbiters (globe, and link and view timeline in the route card); F19 walk-through astronaut.
+Not done: F17 at phone and laptop widths, and the tablet and helmet views by eye; the backup video (owner: Sunday).
+Broken or risky: F17, F18 and F19 have not been seen in a browser. Orbiter predictions end 30 Nov (MRO 12:45 UTC): rerun `pipeline/build_orbiters.py` before submitting.
+Next: open the dev server and check, at Bright Angel: the route card's parts; "Link and view from orbit" (open it, move "Set out in"; purple glow on the map); "Walk-through" (Put the astronaut at home, arrow keys; Walk the planned route); orbiters on the globe.
+Files: app/src/ui (routePanel, orbitPanel, walkThrough, layerPanel, toolbar, weatherBanner), app/src/map (slots, approach, siteLayers, orbiters, astronaut, mapView), app/src/data/orbiters.ts, app/src/safety/walker.ts, pipeline (build_orbiters, build_geology, build_globe, tiles, build_site).
+Other roles need to know: Joseph, much of role B's code changed tonight; pull before editing. Thresholds for link (10 degrees) and imaging (60 degrees) are assumed, and say so.
+Checks: `npm run check` (types, 87 tests, build) and `pytest -q` (54 tests) pass.
+
 ## Sat 14 Nov 19:58, role C work by the team owner, with Claude Code
 
 Done: pulled Joseph's fixes (R1 to R8, R13 to R19); `npm run check` passes. Added F17 (interface upgrade, a "should") and F18 (orbiters overhead, a stretch) to SPEC and STATUS at the owner's request. Found a source for F18: JPL Horizons, in DATA_CATALOG.
