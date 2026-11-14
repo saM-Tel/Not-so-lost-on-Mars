@@ -30,9 +30,9 @@ A larger model (Claude Fable) read the app's map, route, safety, time and displa
 - **R11 (low): rings sorted by site first** (latent: a later site's wide ring could cover an earlier site's finer rings); sort by ring first. **R12 (low, suspected):** rings may appear one zoom late; try layer `minzoom: tiles.minZoom - 1`.
 
 **Group 4, `app/src/ui/modes.ts` and `app/src/style.css`** (check at 360 px and 1,024 px wide)
-- **R13 (medium): the tablet card covers the walk and the bottom widgets.** After entering tablet mode and resizing, fit the map to the walk with bottom padding the card's height; hide `.earth-link` and `.weather-banner` in tablet mode.
-- **R14 (low to medium, honesty): the helmet arrow is rotated over a photo whose look direction is not confirmed.** Keep the bearing as text, or a small compass marked N.
-- **R15 (low): widgets overlap:** the link-to-Earth line sits on the scale bar (move it to `bottom: 96px`); below about 1,120 px the mode switch covers the route card's Hide button (move it to the bottom right there).
+- **R13, FIXED in 2af8745 (medium): the tablet card covers the walk and the bottom widgets.** After entering tablet mode and resizing, fit the map to the walk with bottom padding the card's height; hide `.earth-link` and `.weather-banner` in tablet mode.
+- **R14, FIXED in 2af8745 (low to medium, honesty): the helmet arrow is rotated over a photo whose look direction is not confirmed.** Keep the bearing as text, or a small compass marked N.
+- **R15, FIXED in 2af8745 (low): widgets overlap:** the link-to-Earth line sits on the scale bar (move it to `bottom: 96px`); below about 1,120 px the mode switch covers the route card's Hide button (move it to the bottom right there).
 
 **Group 5, `flight.ts`, `tether.ts`, `overlays.ts`**
 - **R16 (low to medium, suspected): a flight promise can resolve at the start of a flight** when a second site is clicked mid-flight (`moveend` from the stopped flight). Call `flyTo` first, then wait for `moveend`; return at once on the `jumpTo` path.
@@ -40,7 +40,7 @@ A larger model (Claude Fable) read the app's map, route, safety, time and displa
 - **R18 (speed): the slope picture is built at site open though it starts hidden** (2.4 MB fetch and a PNG encode). Build it when first switched on.
 
 **Small items**
-- **R19 (low):** problem boxes in `main.ts` never go away, stack, and use a red border for non-danger messages; keep-out also marks no-data cells but its text says only "steeper than"; "before sunset" is printed as a clock, not a duration (`timeSlider.ts`); the tablet's Storm button is outlined red all the time; headers of `routePanel.ts` and `style.css` still say "Still to add" for built things.
+- **R19, FIXED in 2af8745 (low):** problem boxes in `main.ts` never go away, stack, and use a red border for non-danger messages; keep-out also marks no-data cells but its text says only "steeper than"; "before sunset" is printed as a clock, not a duration (`timeSlider.ts`); the tablet's Storm button is outlined red all the time; headers of `routePanel.ts` and `style.css` still say "Still to add" for built things.
 - **R20 (speed, later):** rings only for the site in focus (3 sources, not 27; see item 6 below); skip `tidyNames` in `siteMarkers.ts` while markers are hidden.
 
 Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `sources.py` warping, `tiles.py` terrain easing, `build_site.py`), `app/pwa/sw.js` and `vite.config.ts`, `layerPanel.ts`, `urlState.ts`, `photos.ts`.
@@ -105,6 +105,14 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **Check:** record a performance profile while spinning the globe and while zooming in. If it shows, add rings only for the site in focus.
 
 ## Done
+
+### R13, R14, R15, R19: fixed Sat 14 Nov 19:39, commit 2af8745
+
+- R13: CSS hides the two bottom widgets in tablet mode; onLayoutChange fits the walk with the card's height as bottom padding.
+- R14: the arrow element is hidden.
+- R15: .earth-link at bottom 96px; .route-card starts at 52px under 1,120 px wide and 92px under 720 px, in place of moving the mode switch to the bottom right, where the forecast banner is.
+- R19: showProblem in main.ts stacks, closes and expires notes; wording and headers corrected.
+- How checked: types, 77 unit tests and the production build pass. Layout changes were made from the style sheet alone and have not been seen at any screen width; check at 360 px and 1,024 px.
 
 ### R1, R2, R3, R4, R5, R6, R7, R8: fixed Sat 14 Nov 19:37, commit baa2228
 
