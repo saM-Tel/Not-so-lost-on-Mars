@@ -1629,3 +1629,186 @@ body.mode-helmet .map-toolbar {
 .walk__status:empty {
   display: none;
 }
+
+/* ---- F19 first person: the map fills the screen under a helmet visor (src/ui/visor.ts) ---- */
+
+body.walk-first-person #map {
+  inset: 0;
+}
+
+body.walk-first-person .panel,
+body.walk-first-person .route-card,
+body.walk-first-person .map-toolbar,
+body.walk-first-person .weather-banner,
+body.walk-first-person .earth-link,
+body.walk-first-person .maplibregl-ctrl-top-right,
+body.walk-first-person .route-pin,
+body.walk-first-person .walker-pin,
+body.walk-first-person .scale-bar {
+  display: none !important;
+}
+
+.visor {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  color: #e8f4ff;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  /* The helmet's edge: dark towards the rim, clear in the middle. */
+  background: radial-gradient(ellipse 72% 78% at 50% 48%, transparent 62%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+}
+
+.visor p {
+  margin: 0;
+}
+
+.visor__top {
+  position: absolute;
+  top: 4%;
+  left: 50%;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.visor__heading {
+  padding: 0.15rem 0.7rem;
+  border: 1px solid rgba(232, 244, 255, 0.6);
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.visor__badge {
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(240, 228, 66, 0.9);
+  color: #111;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-shadow: none;
+}
+
+.visor__panel {
+  position: absolute;
+  top: 34%;
+  width: min(13rem, 28vw);
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(232, 244, 255, 0.35);
+  border-radius: 10px;
+  background: rgba(6, 14, 24, 0.45);
+}
+
+.visor__panel--left {
+  left: 9%;
+}
+
+.visor__panel--right {
+  right: 9%;
+}
+
+.visor__label {
+  color: rgba(232, 244, 255, 0.7);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.visor__arrow {
+  display: inline-block;
+  margin: 0.15rem 0;
+  font-size: 2.4rem;
+  line-height: 1;
+  transition: transform 0.1s linear;
+}
+
+.visor__big {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.visor__small {
+  font-size: 0.75rem;
+  color: rgba(232, 244, 255, 0.85);
+}
+
+.visor__bar {
+  height: 0.6rem;
+  margin: 0.35rem 0;
+  border: 1px solid rgba(232, 244, 255, 0.6);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.visor__bar-fill {
+  height: 100%;
+  background: #56b4e9;
+}
+
+/* Red only for danger: outside the tether, or no way home. */
+.visor__bar-fill--danger {
+  background: var(--danger);
+}
+
+.visor__danger {
+  color: #ff8a8d;
+  font-weight: 700;
+}
+
+.visor__bottom {
+  position: absolute;
+  bottom: 9%;
+  left: 50%;
+  width: min(44rem, 80vw);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.visor__clock {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.visor__alert {
+  margin-top: 0.3rem !important;
+  color: var(--caution);
+  font-weight: 700;
+}
+
+.visor__leave {
+  position: absolute;
+  top: 3.5%;
+  right: 4%;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(232, 244, 255, 0.6);
+  border-radius: 6px;
+  background: rgba(6, 14, 24, 0.7);
+  color: #e8f4ff;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.visor__note {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  width: min(40rem, 86vw);
+  color: rgba(232, 244, 255, 0.6);
+  font-size: 0.65rem;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 720px) {
+  .visor__panel { top: auto; bottom: 26%; width: 40vw; }
+  .visor__panel--left { left: 4%; }
+  .visor__panel--right { right: 4%; }
+  .visor__bottom { bottom: 12%; }
+}

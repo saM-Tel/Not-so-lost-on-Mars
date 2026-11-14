@@ -47,12 +47,12 @@ export type Stop = 'keep-out' | 'edge' | 'no-data';
  */
 export function walkFreely(
   ground: WalkerGround, position: LonLat, bearing: number, seconds: number,
-): { position: LonLat; stoppedBy: Stop | null; speedMps: number } {
+): { position: LonLat; stoppedBy: Stop | null; speedMps: number; slopeDeg: number } {
   const here = heightAt(ground, position);
   const ahead = destination(position, bearing, SLOPE_AHEAD_M);
   const there = heightAt(ground, ahead);
   if (here === null || there === null) {
-    return { position, stoppedBy: cellIndex(ground.definition, ahead) < 0 ? 'edge' : 'no-data', speedMps: 0 };
+    return { position, stoppedBy: cellIndex(ground.definition, ahead) < 0 ? 'edge' : 'no-data', speedMps: 0, slopeDeg: 0 };
   }
   const slopeDeg = (Math.atan2(there - here, SLOPE_AHEAD_M) * 180) / Math.PI;
   const speed = speedMps(slopeDeg, CAUTIOUS);
@@ -65,10 +65,10 @@ export function walkFreely(
     const next = destination(position, bearing, (total * i) / count);
     const cell = cellIndex(ground.definition, next);
     const stop: Stop | null = cell < 0 ? 'edge' : ground.keepOut?.[cell] ? 'keep-out' : !Number.isFinite(ground.heightM[cell]!) ? 'no-data' : null;
-    if (stop) return { position: at, stoppedBy: stop, speedMps: speed };
+    if (stop) return { position: at, stoppedBy: stop, speedMps: speed, slopeDeg };
     at = next;
   }
-  return { position: at, stoppedBy: null, speedMps: speed };
+  return { position: at, stoppedBy: null, speedMps: speed, slopeDeg };
 }
 
 /** The longest unchecked stretch in one step, metres: a quarter of a routing cell. */
