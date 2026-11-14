@@ -36,12 +36,13 @@ Add a row when you add a file. Remove it when you delete one.
 | `safetyPanel.ts` | Built so far: the tether's controls (walk-back limit, time since leaving home) and the line saying whether the planned walk stays inside it. To add: suit settings, dose and storm advice | F4, F5, F10 |
 | `profileChart.ts` | Elevation profile along the route, with the confidence line under it | F3 |
 | `photoStrip.ts` | Real rover photos taken near points on the route | F6 |
-| `weatherBanner.ts` | Space-weather banner: the latest NASA forecast that names Mars, with issue time and arrival window | F5 |
+| `weatherBanner.ts` | Space-weather banner on the map: NASA's latest forecast of an eruption reaching Mars, with issue time, arrival window, and whether it is live or a snapshot. Built | F5 |
+| `weatherBanner.test.ts` | Tests for the forecast parsing and the banner's wording, on made-up notices | |
 | `timeSlider.ts` | Local-time slider: typical temperature, pressure, ultraviolet and dust-devil likelihood, Sun height and shadows | F11 |
 | `modes.ts` | Switches between the habitat planner, field tablet and helmet display layouts | F13 |
 | `urlState.ts` | Keeps the view in the address bar so any view can be shared: the site, the walk's target and the tether settings, as `#site=<site id>&to=<lon>,<lat>&back=<minutes>&t=<minutes>` | F7 |
 | `urlState.test.ts` | Tests for reading and writing the address bar state | |
-| `format.ts` | Turns numbers into text. Built so far: distance, height, duration, energy and three-case ranges. To add: dates in Earth UTC and Mars time |  |
+| `format.ts` | Turns numbers into text. Built so far: distance, height, duration, energy, dose and three-case ranges. To add: dates in Earth UTC and Mars time |  |
 | `format.test.ts` | Tests for `format.ts` | |
 
 ## Known issues

@@ -1,5 +1,5 @@
 // WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3),
-//          and the tether with its settings and whether the walk stays inside it (F4).
+//          the tether with its settings and whether the walk stays inside it (F4), and the radiation dose on the walk (F5).
 //          Still to add: several targets, oxygen, the route's confidence line, the elevation profile.
 // IN:      A loaded site with routing grids; clicks on the map; results from src/route/client.ts.
 // OUT:     A card over the map, and the route drawn through src/map/routeLayer.ts. Returns a function that removes both.
@@ -16,8 +16,9 @@ import { startRouteWorker } from '../route/client';
 import { WALK_CASES } from '../route/cost';
 import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
 import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS } from '../safety/budget';
+import { walkDose } from '../safety/dose';
 import { farthestFromHomeS, tetherPicture } from '../safety/tether';
-import { formatDistance, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
+import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createTetherControls } from './safetyPanel';
 import { updateUrlState, type UrlState } from './urlState';
 
@@ -171,6 +172,15 @@ export function startRoutePlanner(
       answer.out.stats.steepestUpDeg, -answer.out.stats.steepestDownDeg,
       answer.back.stats.steepestUpDeg, -answer.back.stats.steepestDownDeg,
     );
+    // Radiation picked up outside over the round trip. Gray and sievert each come from their own measured rate.
+    const walkTime = (caseId: string): number => caseValue(answer.out, caseId, 'timeS') + caseValue(answer.back, caseId, 'timeS');
+    const dose = walkDose({ favourable: walkTime('favourable'), expected: walkTime('expected'), cautious: walkTime('cautious') });
+    const doseLine = el('p', 'route-card__dose');
+    doseLine.textContent =
+      `Radiation on this walk: ${formatRange(dose.equivalentUSv.expected, dose.equivalentUSv.lowest, dose.equivalentUSv.highest, (v) => formatDose(v, 'Sv'))} dose equivalent; ` +
+      `${formatRange(dose.absorbedUGy.expected, dose.absorbedUGy.lowest, dose.absorbedUGy.highest, (v) => formatDose(v, 'Gy'))} absorbed dose.`;
+    const doseBasis = el('p', 'route-card__note',
+      'Modelled from the everyday background Curiosity measured at Gale crater, applied here (grade C), for the walking time only. The range covers the solar cycle and the three walking cases. A solar storm can add far more in hours and is not included.');
     const details = el('details', 'route-card__basis');
     details.append(el('summary', undefined, 'What these numbers rest on'));
     const basis = el('ul');
@@ -186,6 +196,8 @@ export function startRoutePlanner(
     result.append(
       table,
       el('p', 'route-card__note', `Steepest step along the route: ${steepest.toFixed(0)} degrees. Out and back differ because uphill and downhill cost differently.`),
+      doseLine,
+      doseBasis,
       details,
     );
   };

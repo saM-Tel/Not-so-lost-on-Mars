@@ -598,6 +598,10 @@ body.map-full #map {
   white-space: nowrap;
 }
 
+.route-card__dose {
+  font-weight: 600;
+}
+
 .route-card__swatch {
   display: inline-block;
   width: 0.9rem;
@@ -670,6 +674,52 @@ body.map-full #map {
 .tether__verdict--outside {
   border-left-color: var(--danger);
   background: rgba(229, 72, 77, 0.18);
+}
+
+/* ---- Space-weather banner (F5) ---- */
+
+.weather-banner {
+  position: absolute;
+  right: 12px;
+  bottom: 56px;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(24rem, calc(100% - 24px));
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.weather-banner p {
+  margin: 0;
+}
+
+.weather-banner__headline {
+  font-weight: 600;
+}
+
+.weather-banner__source {
+  margin-top: 0.2rem !important;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+}
+
+.weather-banner__source a {
+  color: inherit;
+}
+
+/* An arrival window that is open or still ahead: the caution colour, not red, because it is a forecast. */
+.weather-banner--ahead {
+  border-left-color: var(--caution);
+}
+
+@media (max-width: 700px) {
+  /* Clear of the scale bar, which sits at the bottom left. */
+  .weather-banner { bottom: 96px; }
 }
 
 /* ---- Problems ---- */

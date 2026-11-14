@@ -32,7 +32,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `budget.ts` | The time budget behind the tether: an 8-hour walk and a walk-back limit of 30 minutes or 1 hour, both from a NASA source. To add: energy and oxygen budgets, a reserve | F4 |
 | `tether.ts` | The tether: a picture of the boundary where the walk home takes as long as is allowed, cautious line strong and expected line faint; how far from home a route gets | F4 |
 | `tether.test.ts` | Tests for `budget.ts` and `tether.ts` on a made-up grid | |
-| `dose.ts` | Radiation dose for a planned walk, with its range | F5 |
+| `dose.ts` | Radiation dose for a planned walk: dose equivalent and absorbed dose, each from its own measured rate, with a range. To add: terrain shielding | F5 |
+| `dose.test.ts` | Tests for `dose.ts` | |
 | `storm.ts` | Storm mode: compares going home with sheltering against terrain, and replays the 20 May 2024 event | F10 |
 
 ## Known issues

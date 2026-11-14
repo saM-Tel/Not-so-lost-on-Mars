@@ -34,7 +34,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `loadSites.ts` | Loads the list of every site for the globe; a site with no cited position is left out with the reason | F14 |
 | `records.test.ts` | Tests for the record checks in `layers.ts` and `loadSites.ts`, on made-up fixtures | |
 | `loadSite.ts` | Loads one built site: site.json, layers.json, validation.json and the routing grid files | F1 to F4, F9 |
-| `feeds.ts` | Fetches the live NASA space-weather feeds, falling back to the saved snapshot | F5 |
+| `feeds.ts` | Reads NASA's notices that forecast a solar eruption reaching Mars: live, or else the saved snapshot, and says which. Built | F5 |
 
 ## Known issues
 

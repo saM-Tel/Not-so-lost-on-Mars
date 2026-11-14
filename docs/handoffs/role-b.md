@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 13:43, roles A and B work by Joseph, with Claude Code
+
+Done: dose and space weather (F5). `safety/dose.ts` gives the dose on a walk from two rates Curiosity measured at Gale; the route card shows it. `pipeline/build_space_weather.py` saves a snapshot of NASA's forecasts for Mars; `data/feeds.ts` reads NASA live and falls back to the snapshot; `ui/weatherBanner.ts` shows the latest forecast with its window.
+Not done: terrain shielding of dose; storm mode (F10); a banner state for a forecast still ahead has only been unit-tested, because today's one forecast has passed.
+Broken or risky: NASA's public demo key allows about 10 requests an hour from one address, so judges will often see the snapshot; refresh it before submitting. The absorbed-dose rate (0.210 plus or minus 0.040 mGy a day) is as recorded in DATA_CATALOG from Hassler 2014, not re-read today; the dose-equivalent figures were read today in Guo 2015.
+Next: photos along the route (F6), then the README (F8).
+Files: app/src/safety/dose.ts, dose.test.ts; data/feeds.ts; ui/weatherBanner.ts, weatherBanner.test.ts, routePanel.ts, format.ts; main.ts; style.css; pipeline/build_space_weather.py, test_space_weather.py; app/public/data/space-weather.json
+Other roles need to know: C, real numbers for the story: a 2.2 km round trip at Bright Angel is about 58 microsieverts (18 to 130). The forecast on screen today: issued 11 Nov, a glancing blow reaching Mars between 13 Nov 05:00 and 19:00 UTC.
+Checks: `npm run check` passes: types, 68 tests, build. `pytest -q` passes, 43 tests. Built app opened in a scripted browser: banner read live from NASA, dose line shown.
+
 ## Sat 14 Nov 13:31, role B work by Joseph, with Claude Code
 
 Done: the shareable link (F7). `urlState.ts` reads and writes the walk's target (`to=lon,lat`), the walk-back limit (`back=` minutes, left out at the default) and time since leaving home (`t=` minutes). The route card keeps the address bar in step and restores a walk from a link once, at the site the link names.

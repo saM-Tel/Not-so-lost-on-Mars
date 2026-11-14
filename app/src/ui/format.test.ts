@@ -7,7 +7,7 @@
 // OWNER:   Role B.
 
 import { describe, expect, it } from 'vitest';
-import { formatDistance, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
+import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 
 describe('formatting', () => {
   it('writes distances in metres, then kilometres', () => {
@@ -24,6 +24,12 @@ describe('formatting', () => {
     expect(formatEnergy(84_300)).toBe('84 kJ');
     expect(formatEnergy(1_260_000)).toBe('1,300 kJ');
     expect(formatHeight(41.6)).toBe('42 m');
+  });
+
+  it('writes a dose in micro-units with its own unit', () => {
+    expect(formatDose(17.5, 'Gy')).toBe('18 µGy');
+    expect(formatDose(58.33, 'Sv')).toBe('58 µSv');
+    expect(formatDose(126.4, 'Sv')).toBe('130 µSv');
   });
 
   it('writes a range as the expected value with the other two after it', () => {

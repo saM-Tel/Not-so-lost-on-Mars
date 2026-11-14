@@ -42,6 +42,8 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Source | Used for | Read |
 |---|---|---|
 | Hassler and others 2014, Mars' surface radiation environment measured with Curiosity, Science. https://ntrs.nasa.gov/citations/20180007641 | Background dose rate | No |
+| Guo and others 2015, Modeling the variations of dose rate measured by RAD during the first MSL Martian year: 2012 to 2014, Astrophysical Journal. https://arxiv.org/abs/1507.03473 | Dose equivalent rate on the surface: "the current surface measurement ~0.7 mSv/day", and an estimated range over the solar cycle "from about 0.35 mSv/day to about 1.15 mSv/day". Also "around 220 uGy/day" absorbed, which agrees with Hassler 2014 | Pages 10, 20 and 21 read on 14 Nov |
+| NASA CCMC DONKI notifications, read through api.nasa.gov with its public demo key. https://ccmc.gsfc.nasa.gov/tools/DONKI/ | Forecasts of solar eruptions reaching Mars, for the banner and its snapshot. NASA calls them experimental research information | Read live on 14 Nov: 16 notices from 31 Oct to 14 Nov, one forecasting an arrival at Mars |
 | Ehresmann and others 2021, Natural radiation shielding on Mars measured with MSL/RAD, JGR Planets, doi 10.1029/2021JE006851 | Terrain shielding | Abstract only |
 | Guo and others 2021, Directionality of the Martian surface radiation, GRL, doi 10.1029/2021GL093912 | Terrain shielding | Abstract only |
 | NASA, "NASA watches Mars light up during epic solar storm", 2024. https://www.nasa.gov/solar-system/planets/mars/nasa-watches-mars-light-up-during-epic-solar-storm | May 2024 storm | No |

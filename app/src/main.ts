@@ -1,5 +1,5 @@
 // WHAT:    Entry point. Opens the Mars globe with a marker at every site, flies to a chosen site, and opens a built site's
-//          own image and 3D terrain, its layer panel and route planning there (F14, F1, F2, F3, F7).
+//          own image and 3D terrain, its layer panel and route planning there, and shows the space-weather banner (F14, F1, F2, F3, F5, F7).
 // IN:      public/data/globe/layers.json, public/data/sites.json and a built site's folder; the site named in the address bar, if any.
 // OUT:     Nothing. Starts the app.
 // USED BY: index.html.
@@ -21,6 +21,7 @@ import { createLayerPanel } from './ui/layerPanel';
 import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
 import { readUrlState, writeUrlState, type UrlState } from './ui/urlState';
+import { addWeatherBanner } from './ui/weatherBanner';
 
 /** Everything the pipeline wrote is under this address. Relative, so it works under the repository name. */
 const DATA_URL = new URL('data/', document.baseURI).href;
@@ -64,6 +65,7 @@ async function start(): Promise<void> {
   if (import.meta.env.DEV) (window as unknown as { tetherMap: unknown }).tetherMap = map;
   await new Promise<void>((resolve) => { void map.once('load', () => resolve()); });
   addScaleBar(map);
+  addWeatherBanner(container, DATA_URL);
 
   let stopIdleTurn = (): void => {};
   /** Takes the route card, the route, the layer panel and the site's overlays away when the person leaves a site. */

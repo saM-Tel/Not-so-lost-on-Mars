@@ -31,6 +31,11 @@ export function formatEnergy(joules: number): string {
   return `${rounded.toLocaleString('en-GB')} kJ`;
 }
 
+/** A radiation dose given in micro-units, to two significant figures, with the unit named: "58 µSv". Micro is never turned into milli. */
+export function formatDose(microUnits: number, unit: 'Gy' | 'Sv'): string {
+  return `${Number(microUnits.toPrecision(2)).toLocaleString('en-GB')} µ${unit}`;
+}
+
 /** The expected value with the favourable and cautious values after it: "2 h 10 min (1 h 50 min to 2 h 45 min)". */
 export function formatRange(expected: number, favourable: number, cautious: number, format: (value: number) => string): string {
   return `${format(expected)} (${format(favourable)} to ${format(cautious)})`;

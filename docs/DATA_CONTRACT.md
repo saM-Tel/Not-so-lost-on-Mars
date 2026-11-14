@@ -37,12 +37,15 @@ These parts are built and the app reads them. They are still a proposal until ro
 ```
 app/public/data/
   sites.json                         every site for the globe
+  space-weather.json                 snapshot of NASA's forecasts for Mars; one file for the planet, not one per site
   globe/
     layers.json                      one record: the whole-planet image
     tiles/image-viking/{z}/{x}/{y}.jpg
 ```
 
 **`layers.json`** holds `contractVersion`, `builtUtc` and `layers`. Each layer record has every field of [CONFIDENCE.md](CONFIDENCE.md) section 1, in camelCase: `id`, `title`, `dataType`, `mission`, `instrument`, `agency`, `productId`, `sourceUrl`, `doi`, `acquiredFrom`, `acquiredTo`, `published`, `gridSpacing`, `realDetail`, `positionAccuracy`, `heightAccuracy`, `processing`, `grade`, `caveats` (a list) and `credit`. A value that was looked for and not found is the text `not found`; one that does not apply is `not applicable`. The app leaves out any layer whose mission, instrument, dates, detail, grade, caveats or credit is absent or `not found`. A layer drawn from a routing grid has `grid`, the name of the grid file (so far only `slopeMaxDeg`, for the layer `slope-hirise`). A layer of points or lines has `vector`: `path` (relative to the folder holding `layers.json`), `geometry` (`point` or `line`), `count` and `bytes`. A layer with map tiles also has `tiles`: `path` (a pattern with `{z}`, `{x}`, `{y}`, relative to the folder holding `layers.json`), `minZoom`, `maxZoom`, `tileSizePx`, `count` and `bytes`.
+
+**`space-weather.json`** holds `contractVersion`, `fetchedUtc`, `periodFromUtc`, `periodToUtc`, `noticesRead`, `source` (`name`, `url`, `credit`, `disclaimer`) and `forecasts`, newest notice first. Each forecast has `arrivalUtc`, `windowHours` (the uncertainty the notice states, or null), `kind` (the notice's own words, or null), `issuedUtc`, `messageId` and `messageUrl`. Written by `pipeline/build_space_weather.py`; the app reads it only when NASA's live feed cannot be read.
 
 **Image tiles** are 256-pixel JPEG files on the Web Mercator square, addressed zoom, then column counted east, then row counted south.
 
