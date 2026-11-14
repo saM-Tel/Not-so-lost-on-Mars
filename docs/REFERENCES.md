@@ -19,6 +19,7 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Source | Address |
 |---|---|
 | Mars Trek map services | https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars |
+| Mars Viking Colorized Global Mosaic 232m (MDIM 2.1), USGS Astrogeology Science Center, 2009. The globe image; read as tiles from Mars Trek layer `Mars_Viking_MDIM21_ClrMosaic_global_232m` | https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m |
 | Mars 2020 Jezero landing site terrain and image mosaics, USGS | https://astrogeology.usgs.gov/search/map/mars-2020-jezero-crater-landing-site-products |
 | HiRISE LPL PDS archive, 1 m terrain models and ortho images for the seven landing sites (Viking 1, Viking 2, Pathfinder, Spirit, Opportunity, Phoenix, InSight) | https://hirise.lpl.arizona.edu/PDS/DTM/ |
 | MRO CRISM targeted products (Jezero mineral observations, 6 products, 10.94 GB), PDS Geosciences Node | https://pds-geosciences.wustl.edu/mro/mro-m-crism-5-rdr-mptargeted-v1/ |
@@ -77,3 +78,7 @@ Add each library with its licence when it is first installed.
 ## Images and media
 
 Add each image used in the app, video or project page with its credit line.
+
+| Image | Where it is used | Credit line |
+|---|---|---|
+| Viking colour mosaic of Mars (see Data above) | The globe in the app | NASA Viking Orbiter; mosaic by USGS Astrogeology Science Center; colour by NASA Ames |
