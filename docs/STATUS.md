@@ -2,19 +2,19 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 12:30. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 13:45. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
 | A: data and science | Joseph, covering for the team owner | Slope and routing grids built; next a slope map layer and the rover path | Sat 11:00 |
-| B: app | Joseph, covering for the team owner | Checking F1 in the browser; next F8 | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Route core built; next the route worker and panel | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
 
-Not deployed yet. It will be `https://sam-tel.github.io/Not-so-lost-on-Mars/` once GitHub Pages is switched on; not confirmed until it loads.
+https://sam-tel.github.io/Not-so-lost-on-Mars/ since Sat 14 Nov 13:10. Bright Angel: https://sam-tel.github.io/Not-so-lost-on-Mars/#site=bright-angel . Every push to main that passes the app check republishes it.
 
 ## Features
 
@@ -25,12 +25,12 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F14 Mars globe and site picker | A, B | in progress | Works locally: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Not done: not deployed |
 | F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at 11:45, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
 | F2 Layer panel and information cards | B | not started | |
-| F3 Route planner | B | in progress | Pipeline half only: routing grids of height and steepest slope on 4 m cells are built for Bright Angel. Default slope limit 20 degrees, decided (DECISIONS). Nothing in the app yet |
+| F3 Route planner | B | in progress | Routing grids built for Bright Angel. In the app the route core is built and tested (walking model, keep-out, route search from and to home, statistics for three cases) but nothing is on screen yet: no worker, no panel, no home or targets. Default slope limit 20 degrees (DECISIONS) |
 | F4 Tether | A, B | not started | |
 | F5 Dose and space weather | A, B | not started | |
 | F6 Photos along the route | C, B | not started | |
 | F7 Opening state and shareable link | B | not started | |
-| F8 Public site and repository | B | in progress | `.github/workflows/deploy.yml` checks and publishes the app on every push to main. GitHub Pages was switched on by the team owner at about 13:00. No README yet |
+| F8 Public site and repository | B | works with issues | Live. Opened in a scripted browser at 13:15: Bright Angel loaded in 1.6 s with 128 requests and none failed. Not done: README; a person opening it in a private window |
 | F9 Validation panel | A | not started | |
 | F10 Storm mode | A, B | not started | |
 | F11 Time of day | A, B | not started | |

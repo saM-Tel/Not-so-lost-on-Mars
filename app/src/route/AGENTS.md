@@ -31,14 +31,16 @@ Add a row when you add a file. Remove it when you delete one.
 
 | File | What it does | Feature |
 |---|---|---|
-| `cost.ts` | Walking speed and effort for a suited person on a slope, for the favourable, expected and cautious cases | F3 |
-| `grid.ts` | The routing grid: indexing, neighbours, and step lengths from the corrected cell spacing | F3, F4 |
-| `search.ts` | Least-effort route between two cells, and cost-to-home for every cell | F3, F4 |
+| `cost.ts` | Walking speed and effort for a suited person on a slope, and the three cases with their sources. Built. To add: a footing factor | F3 |
+| `grid.ts` | The routing grid: indexing, neighbours, and step lengths from the corrected cell spacing. Built | F3, F4 |
+| `search.ts` | Keep-out cells from the slope limit; one pass from home gives the least-effort route to every cell, a second gives the way home and cost-to-home. Built | F3, F4 |
 | `smooth.ts` | Removes the staircase from a route, then the cost is recomputed along the smoothed path | F3 |
-| `stats.ts` | Distance, time, energy, oxygen and the elevation profile along a route, for all three cases | F3 |
+| `stats.ts` | Distance, climb, time, energy and the elevation profile along a route, for all three cases. Built. To add: oxygen | F3 |
+| `route.test.ts` | Tests for `cost.ts`, `grid.ts`, `search.ts` and `stats.ts` on made-up grids, with expected values worked by hand | |
 | `worker.ts` | Web Worker entry: receives grids and requests, runs the route search and cost-to-home, posts results | F3, F4 |
 | `client.ts` | Page-side wrapper that starts the route worker and turns its messages into promises | F3, F4 |
 
 ## Known issues
 
-None recorded.
+- A route follows grid cells, so it zigzags and its distance is up to about 8% longer than a smoothed path. That errs on the cautious side. `smooth.ts` is not built.
+- The slope along a step is taken between the mean heights of neighbouring 4 m cells, a span of 3.8 to 5.5 m.

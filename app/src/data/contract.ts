@@ -1,4 +1,4 @@
-// WHAT:    Types that mirror docs/DATA_CONTRACT.md: layers.json, sites.json and site.json so far. Still to add: the routing grid definition.
+// WHAT:    Types that mirror docs/DATA_CONTRACT.md: layers.json, sites.json and site.json with its routing grid definition so far.
 // IN:      Nothing.
 // OUT:     Types only.
 // USED BY: src/data loaders and everything that reads site files.
@@ -131,6 +131,42 @@ export interface BoxDeg {
   northLatDeg: number;
 }
 
+/** One routing grid file: `rows * cols` numbers, north row first, west cell first within a row. */
+export interface GridFile {
+  name: string;
+  /** Relative to the site's folder. */
+  path: string;
+  numberType: 'float32';
+  unit: string;
+  /** How a cell with no data is stored. 'NaN' so far. */
+  noData: string;
+  cellsWithNoData: number;
+  bytes: number;
+  /** The layer record that gives this grid's source, dates and accuracy. */
+  fromLayer: string;
+  meaning: string;
+}
+
+/** The routing grid definition in site.json, as docs/DATA_CONTRACT.md "Grid definition". */
+export interface GridDefinition {
+  rows: number;
+  cols: number;
+  /** Outer corner of the first cell. */
+  northWestCorner: { lonEastDeg: number; latDeg: number };
+  cellLonDeg: number;
+  cellLatDeg: number;
+  /** A cell's size on the ground, metres. East to west is narrower. */
+  cellNorthSouthM: number;
+  cellEastWestM: number;
+  cellEastWestMeasuredAtLatDeg: number;
+  rowOrder: string;
+  byteOrder: 'little-endian';
+  sourceCellsPerCell: number;
+  /** The span each slope was measured over, metres. */
+  slopeBaselineM: { northSouthM: number; eastWestM: number };
+  files: GridFile[];
+}
+
 /** A built site's own file, site.json. */
 export interface SiteFile {
   contractVersion: number;
@@ -147,6 +183,8 @@ export interface SiteFile {
   centre: { lonEastDeg: number; latDeg: number };
   /** Heights in the box, metres relative to the areoid. */
   terrainHeightM: { lowest: number; highest: number; atCentre: number };
+  /** The routing grids, when the site has them. */
+  grid?: GridDefinition;
   /** Which source each input was read from when the site was built, in words. */
   readFrom: Record<string, string>;
   files: { path: string; files: number; bytes: number }[];

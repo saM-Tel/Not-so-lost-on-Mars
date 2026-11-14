@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 13:45, role B work by Joseph, with Claude Code
+
+Done: the site is public at https://sam-tel.github.io/Not-so-lost-on-Mars/ (F8). Route core built and tested in `src/route/`: `cost.ts` (speed and energy by slope, three cases), `grid.ts`, `search.ts` (keep-out, routes from and to home for every cell), `stats.ts`. `contract.ts` has the grid definition.
+Not done: nothing of the route is on screen. `worker.ts`, `client.ts`, loading the grid files in `loadSite.ts`, `routeLayer.ts`, `routePanel.ts`, a home position and targets. Oxygen, footing, smoothing. README.
+Broken or risky: the search has only run on small test grids, not on the real 791 x 750 grid, so its speed is unknown. The pairing of published figures with the three cases is ours (DECISIONS, proposed). The equations were read from the SEXTANT planner's source code, not from the two papers it credits.
+Next: load the grids, run the search in the worker on the real grid and time it, then draw a route from home to a clicked point with its numbers.
+Files: app/src/route/cost.ts, grid.ts, search.ts, stats.ts, route.test.ts, route/AGENTS.md, app/src/data/contract.ts, data/AGENTS.md
+Other roles need to know: C, the three cases and their sources are in `cost.ts` and REFERENCES; the wording on screen should say "Apollo-based model applied to Mars".
+Checks: `npm run check` passes: types, 41 tests, build. Public site opened in a scripted browser: Bright Angel loads in 1.6 s, no failed requests.
+
 ## Sat 14 Nov 12:00, role B work by Joseph, with Claude Code
 
 Done: scale bar moved above the credit line (it overlapped). Deploy workflow added: `.github/workflows/deploy.yml` runs `npm ci` and `npm run check`, then publishes `app/dist` to GitHub Pages. `package-lock.json` refreshed, because `npm ci` failed on the committed one.
