@@ -76,6 +76,9 @@ Question: "When should I go?"
 
 - F15. More sites: Three Forks, Gale boxwork, then level 2 sites built by the pipeline.
 - F16. Two walkers or a rover drop-off and pick-up; route export; a live "link to Earth" indicator; rover models in the 3D view.
+- Optional ideas from Joseph, 14 November. Not scheduled; to pick up only if the must-haves and should-haves are done.
+  - Orbiter passes for communications: where the Mars relay orbiters are, and whether one is overhead at the start of a walk and along it, so a route or a rover move can be planned with a live link. Needs a source for orbiter positions; none is in DATA_CATALOG yet.
+  - Day and night along the walk: whether the Sun is up at the start and for the whole walk, and when it sets. This extends F11 (time of day), which already plans Sun height and shadows.
 
 ## Predictions
 

@@ -1,5 +1,5 @@
-// WHAT:    Web Worker entry: receives grids and requests, runs the route search from and to home, posts results (F3).
-//          Still to add: cost-to-home arrays for the tether (F4).
+// WHAT:    Web Worker entry: receives grids and requests, runs the route search from and to home, posts results (F3),
+//          then the time to walk home from every cell for the tether (F4).
 // IN:      Messages from src/route/client.ts, typed in src/route/messages.ts.
 // OUT:     Messages with keep-out cells, routes and statistics.
 // USED BY: src/route/client.ts.
@@ -49,7 +49,7 @@ self.onmessage = (event: MessageEvent<Request>): void => {
       let reachable = 0;
       for (let i = 0; i < blocked.length; i++) {
         keepOutCells += blocked[i]!;
-        if (Number.isFinite(out.energyJ[i]!) && Number.isFinite(back.energyJ[i]!)) reachable++;
+        if (Number.isFinite(out.cost[i]!) && Number.isFinite(back.cost[i]!)) reachable++;
       }
       const copy = blocked.slice();
       post({
@@ -58,6 +58,15 @@ self.onmessage = (event: MessageEvent<Request>): void => {
         keepOutShare: keepOutCells / blocked.length, reachableShare: reachable / blocked.length,
         searchMs: performance.now() - started,
       }, [copy.buffer]);
+
+      // For the tether: the quickest walk home from every cell, in the cautious case and in the expected case.
+      const tetherStarted = performance.now();
+      const timeHome = (caseId: WalkCase['id']): Float32Array => Float32Array.from(searchFromHome(
+        grid, blocked, homeUsable ? home : -1, WALK_CASES.find((c) => c.id === caseId) as WalkCase, 'toHome', 'timeS',
+      ).cost);
+      const cautiousS = timeHome('cautious');
+      const expectedS = timeHome('expected');
+      post({ type: 'tether', cautiousS, expectedS, searchMs: performance.now() - tetherStarted }, [cautiousS.buffer, expectedS.buffer]);
       return;
     }
     if (!state) throw new Error('A route was asked for before the grids were loaded.');
@@ -65,7 +74,7 @@ self.onmessage = (event: MessageEvent<Request>): void => {
     const target = cellAt(grid, request.target);
     if (target < 0) { post({ type: 'route', id: request.id, ok: false, reason: 'outside' }); return; }
     if (blocked[target]) { post({ type: 'route', id: request.id, ok: false, reason: 'keep-out' }); return; }
-    if (!Number.isFinite(out.energyJ[target]!) || !Number.isFinite(back.energyJ[target]!)) {
+    if (!Number.isFinite(out.cost[target]!) || !Number.isFinite(back.cost[target]!)) {
       post({ type: 'route', id: request.id, ok: false, reason: 'unreachable' });
       return;
     }

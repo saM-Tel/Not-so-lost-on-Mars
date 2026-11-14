@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 15:40, role B work by Joseph, with Claude Code
+
+Done: the tether (F4, first version). The worker sends the quickest time home from every cell for the cautious and expected cases; `safety/tether.ts` turns that into a picture; the card has the walk-back limit and a slider for time since leaving home, and says whether the planned walk stays inside. The card is narrower and folds away with "Hide".
+Not done: energy and oxygen budgets; a reserve; suit settings the person can change (mass, speed, slope limit); the route and tether settings in the address bar (F7).
+Broken or risky: the tether rule is ours, built from three published figures (DECISIONS, proposed). At Bright Angel with 1 hour allowed, 72% of the box is inside the cautious tether, and with 30 minutes 21%; the longest cautious walk home from anywhere reachable is 175 minutes. The open card hides the target when it is near the middle of the view. Seen only in a scripted browser.
+Next: F2, the layer panel: slope as a map layer with its record, and an information card for each layer.
+Files: app/src/safety/budget.ts, tether.ts, tether.test.ts; ui/safetyPanel.ts, routePanel.ts; route/search.ts, worker.ts, messages.ts, client.ts; map/routeLayer.ts; style.css; the folder guides
+Other roles need to know: C, two ideas from Joseph are logged as optional in SPEC under Stretch: orbiter passes for communications, and day and night along the walk.
+Checks: `npm run check` passes: types, 56 tests, build. Scripted browser at Bright Angel: tether search 1.35 s; a 650 m walk east is 19 min from home (inside); the walk up the north-west slope is 36 min from home (inside); with 7 h 35 min gone the card says there is not enough time.
+
 ## Sat 14 Nov 14:40, role B work by Joseph, with Claude Code
 
 Done: the route is on screen (F3, first version). Opening Bright Angel starts the route worker, shades keep-out ground red, marks home, and a click on the ground draws the walk out (blue) and back (yellow, dashed) with a table of distance, climb, time and energy for three cases and a list of what the numbers rest on.

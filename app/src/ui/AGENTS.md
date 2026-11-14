@@ -32,8 +32,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `sitePicker.ts` | The list of sites beside the globe, the details card for a chosen site, and the record of the globe image | F14 |
 | `layerPanel.ts` | Layer panel: one row per layer with a switch, opacity control and legend | F2 |
 | `infoCard.ts` | Information card for a layer or a prediction: mission, instrument, dates, detail, grade and caveats | F2 |
-| `routePanel.ts` | Route card over the map: click a target, see the walk out and back with distance, climb, time and energy for three cases, and what the numbers rest on. Holds the default slope limit. To add: several targets, oxygen, confidence, the profile | F3 |
-| `safetyPanel.ts` | Safety panel: suit settings, tether margin, turnaround warning, dose and storm advice | F4, F5, F10 |
+| `routePanel.ts` | Route card over the map: click a target, see the walk out and back with distance, climb, time and energy for three cases, and what the numbers rest on; draws the tether and judges the walk against it. Can be folded away. Holds the default slope limit. To add: several targets, oxygen, confidence, the profile | F3 |
+| `safetyPanel.ts` | Built so far: the tether's controls (walk-back limit, time since leaving home) and the line saying whether the planned walk stays inside it. To add: suit settings, dose and storm advice | F4, F5, F10 |
 | `profileChart.ts` | Elevation profile along the route, with the confidence line under it | F3 |
 | `photoStrip.ts` | Real rover photos taken near points on the route | F6 |
 | `weatherBanner.ts` | Space-weather banner: the latest NASA forecast that names Mars, with issue time and arrival window | F5 |

@@ -1,4 +1,5 @@
-// WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3).
+// WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3),
+//          and the tether with its settings and whether the walk stays inside it (F4).
 //          Still to add: several targets, oxygen, the route's confidence line, the elevation profile.
 // IN:      A loaded site with routing grids; clicks on the map; results from src/route/client.ts.
 // OUT:     A card over the map, and the route drawn through src/map/routeLayer.ts. Returns a function that removes both.
@@ -12,8 +13,11 @@ import { loadRoutingGridFiles, type LoadedSite } from '../data/loadSite';
 import { addRouteLayer, BACK_COLOUR, OUT_COLOUR } from '../map/routeLayer';
 import { startRouteWorker } from '../route/client';
 import { WALK_CASES } from '../route/cost';
-import type { RouteAnswer, RouteLeg } from '../route/messages';
+import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
+import { allowedTimeHomeS, timeLeftS } from '../safety/budget';
+import { farthestFromHomeS, tetherPicture } from '../safety/tether';
 import { formatDistance, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
+import { createTetherControls } from './safetyPanel';
 
 /**
  * Steepest ground a person in a suit may walk on, degrees. NASA's Artemis III requirement is that slopes for
@@ -72,7 +76,18 @@ export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => v
   const status = el('p', 'route-card__status', 'Reading the ground and working out the ways from home…');
   status.setAttribute('role', 'status');
   const result = el('div');
-  card.append(el('h2', undefined, 'Plan a walk'), status, result);
+  // The card can be folded away so the map is clear; the status line stays in view.
+  const fold = el('button', 'route-card__fold', 'Hide');
+  fold.type = 'button';
+  fold.setAttribute('aria-expanded', 'true');
+  fold.addEventListener('click', () => {
+    const folded = card.classList.toggle('route-card--folded');
+    fold.textContent = folded ? 'Show' : 'Hide';
+    fold.setAttribute('aria-expanded', String(!folded));
+  });
+  const heading = el('header', 'route-card__header');
+  heading.append(el('h2', undefined, 'Plan a walk'), fold);
+  card.append(heading, status, result);
   map.getContainer().append(card);
 
   const layer = addRouteLayer(map);
@@ -80,8 +95,45 @@ export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => v
   let stopWorker = (): void => {};
   let onClick: ((event: MapMouseEvent) => void) | null = null;
   let latest = 0;
+  let tetherFields: TetherFields | null = null;
+  let lastAnswer: RouteAnswer | null = null;
+  let redraw = 0;
+
+  /** Say whether the walk on screen stays inside the tether, judged at its far end in the cautious case. */
+  const showVerdict = (): void => {
+    const definition = loaded.site.grid;
+    if (!tetherFields || !definition || !lastAnswer?.ok) { tether.showVerdict(null); return; }
+    const settings = tether.settings();
+    const outS = caseValue(lastAnswer.out, 'cautious', 'timeS');
+    const backS = caseValue(lastAnswer.back, 'cautious', 'timeS');
+    // By the time the walker reaches the far end, this much of the walk has gone.
+    const allowedThereS = allowedTimeHomeS({ ...settings, elapsedS: settings.elapsedS + outS });
+    const farthestS = farthestFromHomeS(tetherFields.cautiousS, definition, lastAnswer.out.line);
+    if (settings.elapsedS + outS + backS > settings.elapsedS + timeLeftS(settings.elapsedS)) {
+      tether.showVerdict({ inside: false, text: `Not enough time left. Out and back takes ${formatDuration(outS + backS)} in the cautious case and ${formatDuration(timeLeftS(settings.elapsedS))} is left.` });
+    } else if (farthestS > allowedThereS) {
+      tether.showVerdict({ inside: false, text: `This walk leaves the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case; the most allowed by then is ${formatDuration(allowedThereS)}. Choose a nearer target.` });
+    } else {
+      tether.showVerdict({ inside: true, text: `This walk stays inside the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case; ${formatDuration(allowedThereS)} is allowed.` });
+    }
+  };
+
+  /** Draw the tether for the settings now chosen. Several changes in one frame are drawn once. */
+  const drawTether = (): void => {
+    cancelAnimationFrame(redraw);
+    redraw = requestAnimationFrame(() => {
+      const definition = loaded.site.grid;
+      if (stopped || !tetherFields || !definition) return;
+      const allowedS = allowedTimeHomeS(tether.settings());
+      layer.showTether(tetherPicture(tetherFields.cautiousS, tetherFields.expectedS, allowedS, definition.rows, definition.cols), definition);
+      showVerdict();
+    });
+  };
+  const tether = createTetherControls(drawTether);
 
   const showAnswer = (answer: RouteAnswer): void => {
+    lastAnswer = answer;
+    showVerdict();
     result.replaceChildren();
     if (!answer.ok) {
       layer.showRoute(null);
@@ -140,10 +192,16 @@ export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => v
       if (ready.homeCentre) layer.showHome(ready.homeCentre);
       const about = el('p', 'route-card__note');
       about.textContent =
-        `Home is the site's marker, where Perseverance stood at Cheyava Falls: a stand-in until the team chooses where the crew's rover parks. ` +
-        `Red shading is keep-out ground, steeper than ${SLOPE_LIMIT_DEG} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
-        `${(ready.reachableShare * 100).toFixed(0)}% of the box can be walked to and back from.`;
+        `Home is the site's marker, a stand-in until the team chooses where the crew's rover parks. ` +
+        `Red is keep-out ground, steeper than ${SLOPE_LIMIT_DEG} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
+        `${(ready.reachableShare * 100).toFixed(0)}% of it can be walked to and back from.`;
       card.insertBefore(about, result);
+      void client.tether.then((fields) => {
+        if (stopped) return;
+        tetherFields = fields;
+        card.insertBefore(tether.element, result);
+        drawTether();
+      });
       if (!ready.homeUsable) {
         status.textContent = 'Home is on keep-out ground or outside the box, so no walk can start here.';
         return;
@@ -158,7 +216,7 @@ export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => v
       };
       map.on('click', onClick);
       map.getCanvas().style.cursor = 'crosshair';
-      if (import.meta.env.DEV) (window as unknown as { tetherRoute: unknown }).tetherRoute = { client, ready, showAnswer };
+      if (import.meta.env.DEV) (window as unknown as { tetherRoute: unknown }).tetherRoute = { client, ready, showAnswer, tetherReady: client.tether };
     } catch (error) {
       if (!stopped) status.textContent = error instanceof Error ? error.message : String(error);
     }
@@ -166,6 +224,7 @@ export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => v
 
   return () => {
     stopped = true;
+    cancelAnimationFrame(redraw);
     stopWorker();
     if (onClick) map.off('click', onClick);
     map.getCanvas().style.cursor = '';

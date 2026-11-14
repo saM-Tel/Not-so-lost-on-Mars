@@ -29,11 +29,13 @@ Add a row when you add a file. Remove it when you delete one.
 
 | File | What it does | Feature |
 |---|---|---|
-| `budget.ts` | Suit settings and consumables: usable energy, oxygen and time, minus the reserve | F4 |
-| `tether.ts` | The tether: the boundary where the cost to get home equals what is left | F4 |
+| `budget.ts` | The time budget behind the tether: an 8-hour walk and a walk-back limit of 30 minutes or 1 hour, both from a NASA source. To add: energy and oxygen budgets, a reserve | F4 |
+| `tether.ts` | The tether: a picture of the boundary where the walk home takes as long as is allowed, cautious line strong and expected line faint; how far from home a route gets | F4 |
+| `tether.test.ts` | Tests for `budget.ts` and `tether.ts` on a made-up grid | |
 | `dose.ts` | Radiation dose for a planned walk, with its range | F5 |
 | `storm.ts` | Storm mode: compares going home with sheltering against terrain, and replays the 20 May 2024 event | F10 |
 
 ## Known issues
 
-None recorded.
+- The tether is a time limit only. Energy and oxygen are not yet budgets, and no reserve is taken off, because we have no sourced figures for them.
+- Whether a walk stays inside the tether is judged once, at the walk's far end, not at every point along it.

@@ -87,7 +87,7 @@ describe('route search', () => {
     const home = 2 * 5 + 0;
     const field = searchFromHome(grid, keepOut(grid, 20), home, expected, 'fromHome');
     const oneStep = stepCost(3.8, 0, expected).energyJ;
-    expect(field.energyJ[2 * 5 + 4]).toBeCloseTo(4 * oneStep, 6);
+    expect(field.cost[2 * 5 + 4]).toBeCloseTo(4 * oneStep, 6);
     expect(pathToHome(field, 2 * 5 + 4)).toEqual([14, 13, 12, 11, 10]);
   });
 
@@ -106,7 +106,7 @@ describe('route search', () => {
     const grid = fixtureGrid(3, 3);
     for (const row of [0, 1, 2]) grid.heightM[row * 3 + 1] = NaN;         // a column with no data cuts the grid in two
     const field = searchFromHome(grid, keepOut(grid, 20), 0, expected, 'fromHome');
-    expect(field.energyJ[2]).toBe(Infinity);
+    expect(field.cost[2]).toBe(Infinity);
     expect(pathToHome(field, 2)).toEqual([]);
   });
 
@@ -118,13 +118,13 @@ describe('route search', () => {
     const far = 1 * 6 + 5;
     const out = searchFromHome(grid, blocked, home, expected, 'fromHome');
     const back = searchFromHome(grid, blocked, home, expected, 'toHome');
-    expect(back.energyJ[far]).toBeLessThan(out.energyJ[far]!);            // home is downhill
+    expect(back.cost[far]).toBeLessThan(out.cost[far]!);            // home is downhill
 
     // The field's number is the energy of actually walking its route, in walking order.
     const homeward = pathToHome(back, far);
-    expect(routeStats(grid, homeward, [expected]).cases[0]!.energyJ).toBeCloseTo(back.energyJ[far]!, 3);
+    expect(routeStats(grid, homeward, [expected]).cases[0]!.energyJ).toBeCloseTo(back.cost[far]!, 3);
     const outward = pathToHome(out, far).reverse();
-    expect(routeStats(grid, outward, [expected]).cases[0]!.energyJ).toBeCloseTo(out.energyJ[far]!, 3);
+    expect(routeStats(grid, outward, [expected]).cases[0]!.energyJ).toBeCloseTo(out.cost[far]!, 3);
   });
 });
 

@@ -47,4 +47,14 @@ export type RouteAnswer =
   | { type: 'route'; id: number; ok: true; target: LonLat; out: RouteLeg; back: RouteLeg }
   | { type: 'route'; id: number; ok: false; reason: 'outside' | 'keep-out' | 'unreachable' };
 
-export type Reply = Ready | RouteAnswer | { type: 'error'; message: string };
+/** Time to walk home from every cell, seconds, north row first; Infinity where there is no way home. */
+export interface TetherFields {
+  type: 'tether';
+  /** The quickest way home in the cautious case. The tether is drawn from this. */
+  cautiousS: Float32Array;
+  /** The quickest way home in the expected case, for the lighter line. */
+  expectedS: Float32Array;
+  searchMs: number;
+}
+
+export type Reply = Ready | TetherFields | RouteAnswer | { type: 'error'; message: string };

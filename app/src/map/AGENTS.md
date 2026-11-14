@@ -39,7 +39,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `legend.ts` | Builds the legend for each layer from its record | F2 |
 | `scaleBar.ts` | Our own scale bar, correct for Mars; shown from zoom 7 inwards | F1 |
 | `scaleBar.test.ts` | Tests for the scale bar's arithmetic | |
-| `routeLayer.ts` | Draws keep-out ground in red, home, the target, and the route out and back. To add: the tether lines | F3, F4 |
+| `routeLayer.ts` | Draws keep-out ground in red, the tether picture, home, the target, and the route out and back | F3, F4 |
 
 ## Known issues
 

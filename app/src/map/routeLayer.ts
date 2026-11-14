@@ -1,5 +1,5 @@
-// WHAT:    Draws keep-out ground, home, the target and the route out and back on the map (F3). Still to add: the tether lines (F4).
-// IN:      Keep-out cells and route lines from the route worker, as longitude and latitude.
+// WHAT:    Draws keep-out ground, the tether, home, the target and the route out and back on the map (F3, F4).
+// IN:      Keep-out cells and route lines from the route worker; the tether picture from src/safety/tether.ts.
 // OUT:     Map sources, layers and markers; a function that removes them all.
 // USED BY: src/ui/routePanel.ts.
 // RULES:   Red means danger and nothing else: here it marks keep-out ground. The route colours are colour-blind-safe and
@@ -7,11 +7,12 @@
 // TRAPS:   PITFALLS 6, 11.
 // OWNER:   Role B.
 
-import { Marker, type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl';
+import { Marker, type GeoJSONSource, type ImageSource, type Map as MapLibreMap } from 'maplibre-gl';
 import type { GridDefinition } from '../data/contract';
 import type { LonLat } from '../mars/geometry';
 
 const KEEP_OUT_ID = 'route-keep-out';
+const TETHER_ID = 'route-tether';
 const LINES_ID = 'route-lines';
 /** Okabe and Ito colours: sky blue for the way out, yellow for the way home. */
 export const OUT_COLOUR = '#56b4e9';
@@ -21,6 +22,8 @@ const DANGER_RGB = [229, 72, 77] as const;
 
 export interface RouteLayer {
   showKeepOut(keepOut: Uint8Array, definition: GridDefinition): void;
+  /** Draw the tether from a picture with four bytes per grid cell (src/safety/tether.ts). */
+  showTether(picture: Uint8ClampedArray, definition: GridDefinition): void;
   showHome(position: LonLat): void;
   /** Draw a walk, or clear it with null. */
   showRoute(route: { target: LonLat; out: LonLat[]; back: LonLat[] } | null): void;
@@ -40,6 +43,15 @@ function lines(out: LonLat[], back: LonLat[]): Parameters<GeoJSONSource['setData
     type: 'Feature' as const, properties: { leg }, geometry: { type: 'LineString' as const, coordinates },
   });
   return { type: 'FeatureCollection' as const, features: out.length > 1 ? [feature('out', out), feature('back', back)] : [] };
+}
+
+/** The grid's four corners, clockwise from the north-west, as an image source wants them. */
+function corners(definition: GridDefinition): [[number, number], [number, number], [number, number], [number, number]] {
+  const west = definition.northWestCorner.lonEastDeg;
+  const north = definition.northWestCorner.latDeg;
+  const east = west + definition.cols * definition.cellLonDeg;
+  const south = north - definition.rows * definition.cellLatDeg;
+  return [[west, north], [east, north], [east, south], [west, south]];
 }
 
 export function addRouteLayer(map: MapLibreMap): RouteLayer {
@@ -81,20 +93,39 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
         picture.data[i * 4 + 3] = 255;
       }
       context.putImageData(picture, 0, 0);
-      const west = definition.northWestCorner.lonEastDeg;
-      const north = definition.northWestCorner.latDeg;
-      const east = west + definition.cols * definition.cellLonDeg;
-      const south = north - definition.rows * definition.cellLatDeg;
       if (map.getLayer(KEEP_OUT_ID)) map.removeLayer(KEEP_OUT_ID);
       if (map.getSource(KEEP_OUT_ID)) map.removeSource(KEEP_OUT_ID);
       map.addSource(KEEP_OUT_ID, {
         type: 'image', url: canvas.toDataURL('image/png'),
-        coordinates: [[west, north], [east, north], [east, south], [west, south]],
+        coordinates: corners(definition),
       });
       // Beneath the route lines, and see-through so the ground still shows.
       map.addLayer({
         id: KEEP_OUT_ID, type: 'raster', source: KEEP_OUT_ID,
         paint: { 'raster-opacity': 0.4, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 },
+      }, `${LINES_ID}-edge`);
+    },
+    showTether(picture, definition) {
+      const canvas = document.createElement('canvas');
+      canvas.width = definition.cols;
+      canvas.height = definition.rows;
+      const context = canvas.getContext('2d');
+      if (!context) return;
+      const image = context.createImageData(definition.cols, definition.rows);
+      image.data.set(picture);
+      context.putImageData(image, 0, 0);
+      const url = canvas.toDataURL('image/png');
+      const coordinates = corners(definition);
+      const source = map.getSource(TETHER_ID) as ImageSource | undefined;
+      if (source) {
+        source.updateImage({ url, coordinates });
+        return;
+      }
+      map.addSource(TETHER_ID, { type: 'image', url, coordinates });
+      // Above the keep-out shading, beneath the route lines.
+      map.addLayer({
+        id: TETHER_ID, type: 'raster', source: TETHER_ID,
+        paint: { 'raster-opacity': 0.9, 'raster-fade-duration': 0 },
       }, `${LINES_ID}-edge`);
     },
     showHome(position) {
@@ -112,10 +143,10 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
     remove() {
       home?.remove();
       target?.remove();
-      for (const id of [`${LINES_ID}-back`, `${LINES_ID}-out`, `${LINES_ID}-edge`, KEEP_OUT_ID]) {
+      for (const id of [`${LINES_ID}-back`, `${LINES_ID}-out`, `${LINES_ID}-edge`, TETHER_ID, KEEP_OUT_ID]) {
         if (map.getLayer(id)) map.removeLayer(id);
       }
-      for (const id of [LINES_ID, KEEP_OUT_ID]) if (map.getSource(id)) map.removeSource(id);
+      for (const id of [LINES_ID, TETHER_ID, KEEP_OUT_ID]) if (map.getSource(id)) map.removeSource(id);
     },
   };
 }

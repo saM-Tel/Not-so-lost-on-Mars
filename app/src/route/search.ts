@@ -22,8 +22,8 @@ export function keepOut(grid: RoutingGrid, slopeLimitDeg: number): Uint8Array {
 }
 
 export interface Field {
-  /** Energy in joules along the best route between home and each cell; Infinity where no route exists. */
-  energyJ: Float64Array;
+  /** Total along the best route between home and each cell, in joules or seconds as asked for; Infinity where no route exists. */
+  cost: Float64Array;
   /** The next cell along that route on the way towards home, or -1 at home and where no route exists. */
   towardsHome: Int32Array;
 }
@@ -71,22 +71,24 @@ class Heap {
 }
 
 /**
- * Least energy between home and every cell, in one pass outward from home.
+ * The least energy, or the least time, between home and every cell, in one pass outward from home.
  * `direction` 'fromHome' prices each step as walked away from home; 'toHome' prices it as walked towards home,
  * which is what cost-to-home needs because uphill and downhill differ.
+ * `minimise` picks what is added up: 'energyJ' in joules (the default) or 'timeS' in seconds.
  */
 export function searchFromHome(
   grid: RoutingGrid, blocked: Uint8Array, home: number, walkCase: WalkCase, direction: 'fromHome' | 'toHome',
+  minimise: 'energyJ' | 'timeS' = 'energyJ',
 ): Field {
   const cells = grid.rows * grid.cols;
-  const energyJ = new Float64Array(cells).fill(Infinity);
+  const best = new Float64Array(cells).fill(Infinity);
   const towardsHome = new Int32Array(cells).fill(-1);
   const done = new Uint8Array(cells);
-  if (home < 0 || home >= cells || blocked[home]) return { energyJ, towardsHome };
+  if (home < 0 || home >= cells || blocked[home]) return { cost: best, towardsHome };
 
   const moves = steps(grid);
   const heap = new Heap();
-  energyJ[home] = 0;
+  best[home] = 0;
   heap.push(home, 0);
   while (heap.size > 0) {
     const { cell, cost } = heap.pop();
@@ -105,21 +107,21 @@ export function searchFromHome(
       if (move.dRow !== 0 && move.dCol !== 0 && (blocked[row * grid.cols + c] || blocked[r * grid.cols + col])) continue;
       const rise = grid.heightM[next]! - height;
       // Away from home the walker goes cell -> next; towards home the walker goes next -> cell.
-      const step = stepCost(move.lengthM, direction === 'fromHome' ? rise : -rise, walkCase).energyJ;
+      const step = stepCost(move.lengthM, direction === 'fromHome' ? rise : -rise, walkCase)[minimise];
       const total = cost + Math.max(step, 1e-6);
-      if (total < energyJ[next]!) {
-        energyJ[next] = total;
+      if (total < best[next]!) {
+        best[next] = total;
         towardsHome[next] = cell;
         heap.push(next, total);
       }
     }
   }
-  return { energyJ, towardsHome };
+  return { cost: best, towardsHome };
 }
 
 /** The cells from a cell back to home along a field's route, starting at the cell. Empty if no route exists. */
 export function pathToHome(field: Field, cell: number): number[] {
-  if (cell < 0 || !Number.isFinite(field.energyJ[cell]!)) return [];
+  if (cell < 0 || !Number.isFinite(field.cost[cell]!)) return [];
   const path = [cell];
   let at = cell;
   while (field.towardsHome[at]! >= 0) {
