@@ -1,0 +1,41 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T09:25:45Z",
+  "layers": [
+    {
+      "id": "image-viking",
+      "title": "Mars from orbit",
+      "dataType": "optical",
+      "mission": "Viking Orbiter 1 and 2",
+      "instrument": "Visual Imaging Subsystem (VIS)",
+      "agency": "NASA",
+      "productId": "Mars_Viking_MDIM21_ClrMosaic_global_232m",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m",
+      "doi": "not found",
+      "acquiredFrom": "1976",
+      "acquiredTo": "1980",
+      "published": "2009-02-02",
+      "gridSpacing": "232 m in the source mosaic; about 2.6 km at the equator in our copy",
+      "realDetail": "About 2.6 km at the equator in our copy",
+      "positionAccuracy": "About 200 m, one pixel of the source mosaic (USGS product page)",
+      "heightAccuracy": "not applicable",
+      "processing": "Read as tiles from NASA Mars Trek at its zoom 4, redrawn on the Web Mercator square, and cut into tiles for zoom 0 to 5. Latitudes beyond 85.1 degrees are not kept.",
+      "grade": "B",
+      "caveats": [
+        "The colour was added artistically by NASA Ames. It is not measured colour.",
+        "Brightness differences between regions were filtered out of the source mosaic to show landforms.",
+        "Imaged from 1976 to 1980. Dust cover and the polar caps have changed since.",
+        "Too coarse to show anything at walking scale. It is for finding sites, not for planning."
+      ],
+      "credit": "NASA Viking Orbiter; mosaic by USGS Astrogeology Science Center; colour by NASA Ames",
+      "tiles": {
+        "path": "tiles/image-viking/{z}/{x}/{y}.jpg",
+        "minZoom": 0,
+        "maxZoom": 5,
+        "tileSizePx": 256,
+        "count": 1365,
+        "bytes": 13389507
+      }
+    }
+  ]
+}
