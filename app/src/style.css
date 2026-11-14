@@ -1,5 +1,5 @@
 /*
- * WHAT:    Layout and colours for the globe view and the three display modes (F13, F14).
+ * WHAT:    Layout and colours for the globe view (F14). Still to add: the three display modes (F13).
  * IN:      Nothing.
  * OUT:     Styles.
  * USED BY: index.html and everything in src/ui and src/map.
@@ -7,3 +7,41 @@
  * TRAPS:   PITFALLS 11.
  * OWNER:   Role B.
  */
+
+:root {
+  --space: #07080c;
+  --panel: rgba(16, 18, 26, 0.88);
+  --text: #f1ece4;
+  --text-dim: #b9b2a6;
+  --line: rgba(241, 236, 228, 0.22);
+  --danger: #e5484d; /* red: danger only */
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--space);
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  background: var(--space);
+}
+
+.problem {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translateX(-50%);
+  max-width: 40rem;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  background: var(--panel);
+  line-height: 1.45;
+}

@@ -10,7 +10,7 @@ Role B.
 
 ## Commands
 
-Run from `app/`. They are listed in [../AGENTS.md](../AGENTS.md).
+Run from `app/`. They are listed in [../../AGENTS.md](../../AGENTS.md).
 
 ## Reads and writes
 
@@ -22,7 +22,7 @@ Reads loaded site data from `../data/`. Writes nothing.
 - Terrain heights are scaled by the Earth to Mars radius ratio. The built-in scale bar and the atmosphere glow stay off.
 - A layer appears only if its record in `layers.json` is complete, and its credit is visible.
 - Red means danger and nothing else. Site markers show readiness level in other colours.
-- Every file starts with the header from [../../docs/WORKFLOW.md](../../docs/WORKFLOW.md). A file with only its header is not built yet.
+- Every file starts with the header from [../../../docs/WORKFLOW.md](../../../docs/WORKFLOW.md). A file with only its header is not built yet.
 
 ## File index
 
@@ -40,4 +40,5 @@ Add a row when you add a file. Remove it when you delete one.
 
 ## Known issues
 
-None recorded.
+- MapLibre 6 looks for its worker file beside its own module. Under Vite that address is wrong, so `mapView.ts` sets it with `setWorkerUrl`. Without it the map stays blank.
+- MapLibre 6 has no default export. Import names: `import { Map } from 'maplibre-gl'`.

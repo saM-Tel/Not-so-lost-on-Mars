@@ -10,7 +10,7 @@ Role B.
 
 ## Commands
 
-Run from `app/`. They are listed in [../AGENTS.md](../AGENTS.md).
+Run from `app/`. They are listed in [../../AGENTS.md](../../AGENTS.md).
 
 ## Reads and writes
 
@@ -21,7 +21,7 @@ Reads results from the other folders. Writes only to the page and the address ba
 - English, plain words, SI units. Every number comes with its range and source.
 - Use the fixed words in `docs/CONFIDENCE.md` section 4: measured, typical, forecast, modelled, assumed, live.
 - Tablet and helmet layouts show cautious values only.
-- Every file starts with the header from [../../docs/WORKFLOW.md](../../docs/WORKFLOW.md). A file with only its header is not built yet.
+- Every file starts with the header from [../../../docs/WORKFLOW.md](../../../docs/WORKFLOW.md). A file with only its header is not built yet.
 
 ## File index
 

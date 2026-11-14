@@ -10,7 +10,7 @@ Role B.
 
 ## Commands
 
-Run from `app/`. They are listed in [../AGENTS.md](../AGENTS.md).
+Run from `app/`. They are listed in [../../AGENTS.md](../../AGENTS.md).
 
 ## Reads and writes
 
@@ -23,7 +23,7 @@ Reads the routing grids handed over by `client.ts`. Writes nothing.
 - The route is chosen on the expected case; all three cases are reported along it.
 - Step lengths come from the corrected cell spacing in `grid.ts`.
 - Tests use small made-up grids. They are named as fixtures and live only in test files.
-- Every file starts with the header from [../../docs/WORKFLOW.md](../../docs/WORKFLOW.md). A file with only its header is not built yet.
+- Every file starts with the header from [../../../docs/WORKFLOW.md](../../../docs/WORKFLOW.md). A file with only its header is not built yet.
 
 ## File index
 

@@ -10,7 +10,7 @@ Role B.
 
 ## Commands
 
-Run from `app/`. They are listed in [../AGENTS.md](../AGENTS.md).
+Run from `app/`. They are listed in [../../AGENTS.md](../../AGENTS.md).
 
 ## Reads and writes
 
@@ -21,7 +21,7 @@ Reads results from `../route/` and feeds from `../data/`. Writes nothing.
 - Anything that protects the crew uses the cautious case.
 - Gray and sievert are never converted 1:1.
 - Every default is cited or labelled assumed, with its grade from `docs/CONFIDENCE.md`.
-- Every file starts with the header from [../../docs/WORKFLOW.md](../../docs/WORKFLOW.md). A file with only its header is not built yet.
+- Every file starts with the header from [../../../docs/WORKFLOW.md](../../../docs/WORKFLOW.md). A file with only its header is not built yet.
 
 ## File index
 

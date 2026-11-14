@@ -72,5 +72,5 @@ Add a row when you add a file. Remove it when you delete one.
 
 ## Known issues
 
-- No tests exist yet, so the check passes with none. Add tests beside the file they test, as `<name>.test.ts`.
+- Tests sit beside the file they test, as `<name>.test.ts`.
 - The installed versions are MapLibre GL JS 6, Vite 8, TypeScript 7 and Vitest 5. Check their own documentation before relying on behaviour remembered from older versions.
