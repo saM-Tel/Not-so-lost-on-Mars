@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T16:03:59Z",
+  "builtUtc": "2026-11-14T20:56:50Z",
   "id": "arctic-plain",
   "name": "Arctic plain",
   "place": "North polar region",
@@ -72,14 +72,14 @@
     ]
   },
   "readFrom": {
-    "terrain": "team data server, warped from its own projection onto the app's grid",
-    "image": "team data server, warped from its own projection onto the app's grid"
+    "terrain": "local working copy, first read from the team data server, warped from its own projection onto the app's grid",
+    "image": "local working copy, first read from the team data server, warped from its own projection onto the app's grid"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 4671
+      "bytes": 5161
     },
     {
       "path": "validation.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 41,
-      "bytes": 426322
+      "files": 76,
+      "bytes": 615181
     },
     {
       "path": "grid",
@@ -102,5 +102,5 @@
       "bytes": 5211264
     }
   ],
-  "totalBytes": 6269211
+  "totalBytes": 6458560
 }

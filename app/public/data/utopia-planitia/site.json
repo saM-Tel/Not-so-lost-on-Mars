@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:58:20Z",
+  "builtUtc": "2026-11-14T20:56:33Z",
   "id": "utopia-planitia",
   "name": "Utopia Planitia",
   "place": "Utopia Planitia",
@@ -72,14 +72,14 @@
     ]
   },
   "readFrom": {
-    "terrain": "team data server, warped from its own projection onto the app's grid",
-    "image": "team data server, warped from its own projection onto the app's grid"
+    "terrain": "local working copy, first read from the team data server, warped from its own projection onto the app's grid",
+    "image": "local working copy, first read from the team data server, warped from its own projection onto the app's grid"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 4670
+      "bytes": 5157
     },
     {
       "path": "validation.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 47,
-      "bytes": 611841
+      "files": 86,
+      "bytes": 861493
     },
     {
       "path": "grid",
@@ -102,5 +102,5 @@
       "bytes": 2319616
     }
   ],
-  "totalBytes": 3416633
+  "totalBytes": 3666772
 }

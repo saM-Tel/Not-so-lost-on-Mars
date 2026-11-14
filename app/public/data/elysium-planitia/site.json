@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T16:05:40Z",
+  "builtUtc": "2026-11-14T20:56:59Z",
   "id": "elysium-planitia",
   "name": "Elysium Planitia",
   "place": "Elysium Planitia",
@@ -72,14 +72,14 @@
     ]
   },
   "readFrom": {
-    "terrain": "team data server, warped from its own projection onto the app's grid",
-    "image": "team data server, warped from its own projection onto the app's grid"
+    "terrain": "local working copy, first read from the team data server, warped from its own projection onto the app's grid",
+    "image": "local working copy, first read from the team data server, warped from its own projection onto the app's grid"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 4672
+      "bytes": 5158
     },
     {
       "path": "validation.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 29,
-      "bytes": 317143
+      "files": 46,
+      "bytes": 446031
     },
     {
       "path": "grid",
@@ -102,5 +102,5 @@
       "bytes": 1956240
     }
   ],
-  "totalBytes": 2707213
+  "totalBytes": 2836587
 }

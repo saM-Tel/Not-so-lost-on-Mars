@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T16:00:14Z",
+  "builtUtc": "2026-11-14T20:56:21Z",
   "id": "meridiani",
   "name": "Meridiani",
   "place": "Terra Meridiani",
@@ -72,14 +72,14 @@
     ]
   },
   "readFrom": {
-    "terrain": "team data server, warped from its own projection onto the app's grid",
-    "image": "team data server, warped from its own projection onto the app's grid"
+    "terrain": "local working copy, first read from the team data server, warped from its own projection onto the app's grid",
+    "image": "local working copy, first read from the team data server, warped from its own projection onto the app's grid"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 4672
+      "bytes": 5157
     },
     {
       "path": "validation.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 26,
-      "bytes": 329946
+      "files": 40,
+      "bytes": 484533
     },
     {
       "path": "grid",
@@ -102,5 +102,5 @@
       "bytes": 1952288
     }
   ],
-  "totalBytes": 2837972
+  "totalBytes": 2993044
 }

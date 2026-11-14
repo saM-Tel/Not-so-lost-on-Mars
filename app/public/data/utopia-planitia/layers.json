@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:58:19Z",
+  "builtUtc": "2026-11-14T20:56:33Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -54,21 +54,28 @@
       "caveats": [
         "One terrain model from one pair of images, not checked against anything measured on the ground here.",
         "Made on its own map projection and warped onto the app's grid by our pipeline.",
-        "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model."
+        "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model.",
+        "For 400 m round the box the 3D ground is eased down to the box's lowest point so the box does not stand up as a block; that edge is not measured terrain."
       ],
       "credit": "NASA/JPL-Caltech/University of Arizona",
       "id": "terrain-hirise",
       "title": "Terrain height",
       "dataType": "topographic",
-      "processing": "Cut to the site's box and stored as height tiles for zoom 11 to 15, to the nearest 0.1 m. One tile pixel at zoom 15 is 1.7 m on the ground, so the 3D view is smoother than the 1 m grid. Past the edge of the box the edge height is repeated so the surface has no cliff; that is not data.",
+      "processing": "Cut to the site's box and stored as height tiles for zoom 11 to 15, to the nearest 0.1 m. One tile pixel at zoom 15 is 1.7 m on the ground, so the 3D view is smoother than the 1 m grid. Past the edge of the box the edge heights are eased down to the box's lowest point over 400 m, because the map has no terrain beyond it; that easing is for the picture only and is not data. Routes and slopes use only the terrain inside the box.",
       "tiles": {
         "path": "tiles/terrain-hirise/{z}/{x}/{y}.png",
         "minZoom": 11,
         "maxZoom": 15,
         "tileSizePx": 256,
-        "count": 47,
-        "bytes": 611841,
-        "encoding": "mapbox"
+        "count": 86,
+        "bytes": 861493,
+        "encoding": "mapbox",
+        "bounds": {
+          "westLonDeg": 134.2505285,
+          "eastLonDeg": 134.3206635,
+          "southLatDeg": 47.6366693,
+          "northLatDeg": 47.683907
+        }
       }
     },
     {

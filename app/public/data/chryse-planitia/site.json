@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:56:34Z",
+  "builtUtc": "2026-11-14T20:56:03Z",
   "id": "chryse-planitia",
   "name": "Chryse Planitia",
   "place": "Chryse Planitia",
@@ -72,14 +72,14 @@
     ]
   },
   "readFrom": {
-    "terrain": "team data server, warped from its own projection onto the app's grid",
-    "image": "team data server, warped from its own projection onto the app's grid"
+    "terrain": "local working copy, first read from the team data server, warped from its own projection onto the app's grid",
+    "image": "local working copy, first read from the team data server, warped from its own projection onto the app's grid"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 4672
+      "bytes": 5160
     },
     {
       "path": "validation.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 28,
-      "bytes": 426461
+      "files": 60,
+      "bytes": 591963
     },
     {
       "path": "grid",
@@ -102,5 +102,5 @@
       "bytes": 2081840
     }
   ],
-  "totalBytes": 3188639
+  "totalBytes": 3354629
 }

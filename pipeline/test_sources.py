@@ -146,6 +146,33 @@ def test_site_tiles_put_cells_in_the_right_place(tmp_path):
     assert lat[0, 0] < north and lat[-1, 0] > south
 
 
+def test_terrain_margin_eases_edge_heights_down_to_the_reference(tmp_path):
+    # Level 2 sites: past the block the 3D ground falls from the edge height to the reference over the margin, and the
+    # tiles reach the margin's outer edge, so no tile ends in a wall.
+    grid = fixture_plane(rows=400, cols=600)
+    box = grid.box
+    zoom = 14
+    reference = float(np.nanmin(grid.values)) - 50.0
+    tiles.write_site_terrain_tiles(grid, box, zoom, zoom, tmp_path / "terrain", feather_m=400.0, reference_m=reference)
+    reach = tiles.eased_margin_box(box, 400.0)
+    columns, rows = tiles.tile_range(reach, zoom)
+    box_columns, box_rows = tiles.tile_range(box, zoom)
+    assert len(columns) * len(rows) > len(box_columns) * len(box_rows)
+    lon_all, lat_all, height_all = [], [], []
+    for x in columns:
+        for y in rows:
+            decoded = tiles.decode_terrain(np.asarray(Image.open(tmp_path / "terrain" / str(zoom) / str(x) / f"{y}.png")))
+            lon, lat = tiles.tile_pixel_positions(zoom, x, y)
+            lon_all.append(lon.ravel()); lat_all.append(lat.ravel()); height_all.append(decoded.ravel())
+    lon, lat, height = np.concatenate(lon_all), np.concatenate(lat_all), np.concatenate(height_all)
+    inside = (lon >= box.west_lon_deg) & (lon <= box.east_lon_deg) & (lat >= box.south_lat_deg) & (lat <= box.north_lat_deg)
+    beyond = (lon < reach.west_lon_deg) | (lon > reach.east_lon_deg) | (lat < reach.south_lat_deg) | (lat > reach.north_lat_deg)
+    # Inside the block: the data, unchanged. Past the margin: the reference. In between: never outside the two.
+    assert np.abs(height[inside] - grid.sample(lon[inside], lat[inside], clamp=True)).max() <= 0.05 + 1e-6
+    assert beyond.any() and np.abs(height[beyond] - reference).max() <= 0.05 + 1e-6
+    assert height[~inside].min() >= reference - 0.05 and height[~inside].max() <= float(np.nanmax(grid.values)) + 0.05
+
+
 def test_image_tiles_are_transparent_outside_the_block(tmp_path):
     values = np.full((300, 300), 200, dtype=np.uint8)
     grid = sources.Grid(values, 10.0, 20.0, 0.001, 0.001, nodata=0.0, origin="test fixture")

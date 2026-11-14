@@ -41,6 +41,9 @@ TERRAIN_ZOOMS = (11, 15)
 # at its outer edge.
 SURROUND_MIN_ZOOM = 9
 SURROUND_FEATHER_M = 1500.0
+# A site with no coarser terrain round it: its edge heights are eased to its lowest point over this width, display only.
+# 400 m keeps the eased slope under about 9 degrees for the 60 m steps seen at the level 2 sites.
+EDGE_FEATHER_M = 400.0
 # Size budget from data/AGENTS.md, in megabytes, by readiness level.
 BUDGET_MB = {1: 120, 2: 50}
 
@@ -162,11 +165,15 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
                           "Routes and slopes use only the 1 m terrain.")
             print(f"Terrain round the box: {surround['file']} over {surround['sizeKm']} km, from the {coarse.origin}")
         else:
-            count, size = tiles.write_site_terrain_tiles(grids[name], box, zooms[0], zooms[1], folder)
+            reference = float(grids["terrain"].values.min())
+            count, size = tiles.write_site_terrain_tiles(grids[name], box, zooms[0], zooms[1], folder,
+                                                         EDGE_FEATHER_M, reference)
             extension = "png"
             processing = (f"Cut to the site's box and stored as height tiles for zoom {zooms[0]} to {zooms[1]}, to the nearest 0.1 m. "
                           f"One tile pixel at zoom {zooms[1]} is {pixel_m:.1f} m on the ground, so the 3D view is smoother than the 1 m grid. "
-                          "Past the edge of the box the edge height is repeated so the surface has no cliff; that is not data.")
+                          f"Past the edge of the box the edge heights are eased down to the box's lowest point over {EDGE_FEATHER_M:.0f} m, "
+                          "because the map has no terrain beyond it; that easing is for the picture only and is not data. "
+                          "Routes and slopes use only the terrain inside the box.")
         record = dict(site["sources"][name]["record"])
         record.update({
             "id": layer_id, "title": title, "dataType": data_type, "processing": processing,
@@ -183,6 +190,12 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
                 record["caveats"] = [*record["caveats"],
                                      f"Round the box the 3D shape comes from a {surround['record']['gridSpacing']} CTX terrain model and "
                                      "is eased flat at its outer edge; it is not this layer's 1 m data."]
+            else:
+                margin = tiles.eased_margin_box(box, EDGE_FEATHER_M)
+                record["tiles"]["bounds"] = {key: round(value, 7) for key, value in margin.as_dict().items()}
+                record["caveats"] = [*record["caveats"],
+                                     f"For {EDGE_FEATHER_M:.0f} m round the box the 3D ground is eased down to the box's lowest point so "
+                                     "the box does not stand up as a block; that edge is not measured terrain."]
         layers.append(record)
         print(f"Wrote {count} {name} tiles, {size / 1e6:.1f} MB")
 

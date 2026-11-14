@@ -248,12 +248,26 @@ def write_terrain_tiles_with_surround(fine, fine_box, coarse, outer_box, zoom_mi
     return count, size
 
 
-def write_site_terrain_tiles(grid, box, zoom_min: int, zoom_max: int, folder: pathlib.Path) -> tuple[int, int]:
+def eased_margin_box(box, feather_m: float):
+    """The box grown by `feather_m` on every side: how far the eased margin of `write_site_terrain_tiles` reaches."""
+    centre_lat = (box.south_lat_deg + box.north_lat_deg) / 2
+    d_lat = feather_m / mars.METRES_PER_DEGREE
+    d_lon = feather_m / (mars.METRES_PER_DEGREE * np.cos(np.radians(centre_lat)))
+    return type(box)(box.west_lon_deg - d_lon, box.east_lon_deg + d_lon, box.south_lat_deg - d_lat, box.north_lat_deg + d_lat)
+
+
+def write_site_terrain_tiles(grid, box, zoom_min: int, zoom_max: int, folder: pathlib.Path,
+                             feather_m: float = 0.0, reference_m: float | None = None) -> tuple[int, int]:
     """Cut a height block into terrain tiles. Heights are true Mars metres relative to the areoid.
 
     A terrain tile cannot be transparent. Where a tile reaches past the block, the nearest edge
     height is repeated so the 3D surface has no cliff; those pixels are not data. Missing cells
     inside the block stop the build, because the mask stage that would handle them is not built.
+
+    With `feather_m`, the tiles cover the block and a margin that wide round it, and in the margin the edge height is
+    eased down to `reference_m` (the block's lowest height, which the app draws at the level of the flat map round it).
+    Without it, each tile's repeated edge heights end in a wall where the tile ends, which moves with the zoom (seen at
+    the level 2 sites on 14 Nov). The margin is for the picture only and is not data.
 
     Returns (number of tiles, total bytes).
     """
@@ -261,13 +275,24 @@ def write_site_terrain_tiles(grid, box, zoom_min: int, zoom_max: int, folder: pa
         raise NotImplementedError("the terrain block has missing cells; masking them is not built yet")
     centre_lat = (box.south_lat_deg + box.north_lat_deg) / 2
     levels = detail_levels(grid, zoom_min, zoom_max, centre_lat)
+    reach = eased_margin_box(box, feather_m) if feather_m > 0 else box
+    reference = float(np.nanmin(grid.values)) if reference_m is None else reference_m
+    metres_per_deg_lat = mars.METRES_PER_DEGREE
+    metres_per_deg_lon = mars.METRES_PER_DEGREE * np.cos(np.radians(centre_lat))
     count = size = 0
     for zoom in range(zoom_min, zoom_max + 1):
-        columns, rows = tile_range(box, zoom)
+        columns, rows = tile_range(reach, zoom)
         for x in columns:
             for y in rows:
                 lon, lat = tile_pixel_positions(zoom, x, y)
                 heights = levels[zoom].sample(lon, lat, clamp=True)
+                if feather_m > 0:
+                    # Distance outside the block in metres (0 inside), then a smooth fall to the reference height.
+                    dx = np.maximum.reduce([box.west_lon_deg - lon, lon - box.east_lon_deg, np.zeros_like(lon)]) * metres_per_deg_lon
+                    dy = np.maximum.reduce([box.south_lat_deg - lat, lat - box.north_lat_deg, np.zeros_like(lat)]) * metres_per_deg_lat
+                    fraction = np.clip(np.hypot(dx, dy) / feather_m, 0.0, 1.0)
+                    weight = 0.5 * (1.0 + np.cos(np.pi * fraction))
+                    heights = reference + (heights - reference) * weight
                 path = folder / str(zoom) / str(x) / f"{y}.png"
                 path.parent.mkdir(parents=True, exist_ok=True)
                 Image.fromarray(encode_terrain(heights), mode="RGB").save(path, format="PNG", optimize=True)

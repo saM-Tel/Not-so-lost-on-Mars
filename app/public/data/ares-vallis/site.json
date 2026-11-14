@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:59:10Z",
+  "builtUtc": "2026-11-14T20:55:51Z",
   "id": "ares-vallis",
   "name": "Ares Vallis",
   "place": "Ares Vallis",
@@ -72,14 +72,14 @@
     ]
   },
   "readFrom": {
-    "terrain": "team data server, warped from its own projection onto the app's grid",
-    "image": "team data server, warped from its own projection onto the app's grid"
+    "terrain": "local working copy, first read from the team data server, warped from its own projection onto the app's grid",
+    "image": "local working copy, first read from the team data server, warped from its own projection onto the app's grid"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 4671
+      "bytes": 5159
     },
     {
       "path": "validation.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 25,
-      "bytes": 459963
+      "files": 64,
+      "bytes": 651492
     },
     {
       "path": "grid",
@@ -102,5 +102,5 @@
       "bytes": 2046720
     }
   ],
-  "totalBytes": 3095624
+  "totalBytes": 3287641
 }
