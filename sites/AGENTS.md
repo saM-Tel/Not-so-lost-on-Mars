@@ -1,6 +1,6 @@
 # sites: guide
 
-Prepared 13 November 2026, before the event, as planning. This folder holds only guide files until 09:00 Saturday.
+Scaffold added on Saturday 14 November. Configs are YAML files named `<site id>.yaml`.
 
 ## Purpose
 
@@ -31,4 +31,4 @@ Role A, with role C supplying science targets and their reasons.
 
 | File | Site | Level | Reviewed by a person |
 |---|---|---|---|
-| | | | |
+| `bright-angel.yaml` | Bright Angel, Neretva Vallis, Jezero crater | 1 | No. Header only; not filled in yet |

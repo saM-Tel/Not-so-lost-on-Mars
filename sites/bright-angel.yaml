@@ -1,0 +1,7 @@
+# WHAT:    Site config for Bright Angel in Neretva Vallis, Jezero crater: the hero site, readiness level 1.
+# IN:      Nothing.
+# OUT:     Everything the pipeline needs to build this site: box, source files, home, science targets, dates and accuracy.
+# USED BY: pipeline/build_site.py, pipeline/build_globe.py.
+# RULES:   No invented coordinates. Every position cites its source, such as a rover stop and sol.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A, with role C supplying targets.

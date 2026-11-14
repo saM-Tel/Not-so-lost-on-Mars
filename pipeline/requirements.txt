@@ -1,0 +1,7 @@
+# Python packages for the pipeline, pinned so every machine builds the same outputs.
+# Add a package only with the reason in the commit message.
+numpy==2.5.4
+rasterio==1.5.2
+Pillow==13.0.0
+PyYAML==6.0.3
+pytest==9.2.0
