@@ -1,0 +1,106 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T15:58:20Z",
+  "id": "utopia-planitia",
+  "name": "Utopia Planitia",
+  "place": "Utopia Planitia",
+  "mission": "Viking 2",
+  "level": 2,
+  "reviewedByPerson": false,
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees. Heights in metres relative to the areoid.",
+  "box": {
+    "westLonDeg": 134.2605478,
+    "eastLonDeg": 134.3106443,
+    "southLatDeg": 47.6434175,
+    "northLatDeg": 47.6771587
+  },
+  "boxSizeKm": {
+    "eastWest": 2,
+    "northSouth": 2
+  },
+  "centre": {
+    "lonEastDeg": 134.285596,
+    "latDeg": 47.6602881
+  },
+  "terrainHeightM": {
+    "lowest": -4518.73,
+    "highest": -4489.97,
+    "atCentre": -4496.66
+  },
+  "grid": {
+    "rows": 442,
+    "cols": 656,
+    "northWestCorner": {
+      "lonEastDeg": 134.26054645,
+      "latDeg": 47.677173602
+    },
+    "cellLonDeg": 7.62912145891662e-05,
+    "cellLatDeg": 7.62912145891662e-05,
+    "cellNorthSouthM": 4.5221,
+    "cellEastWestM": 3.0458,
+    "cellEastWestMeasuredAtLatDeg": 47.6602881,
+    "rowOrder": "north row first; within a row, west cell first",
+    "byteOrder": "little-endian",
+    "sourceCellsPerCell": 4,
+    "slopeBaselineM": {
+      "northSouthM": 6.783,
+      "eastWestM": 6.092
+    },
+    "files": [
+      {
+        "name": "heightM",
+        "path": "grid/heightM.f32",
+        "numberType": "float32",
+        "unit": "m",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 1159808,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Mean terrain height of the 4 x 4 source cells in the routing cell, relative to the areoid."
+      },
+      {
+        "name": "slopeMaxDeg",
+        "path": "grid/slopeMaxDeg.f32",
+        "numberType": "float32",
+        "unit": "deg",
+        "noData": "NaN",
+        "cellsWithNoData": 442,
+        "bytes": 1159808,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Steepest slope found among the 4 x 4 source cells in the routing cell. Each source cell's slope is measured over 6.783 m north to south and 6.092 m east to west. Use it for keep-out; for effort use the slope along the direction of travel, taken from heightM."
+      }
+    ]
+  },
+  "readFrom": {
+    "terrain": "team data server, warped from its own projection onto the app's grid",
+    "image": "team data server, warped from its own projection onto the app's grid"
+  },
+  "files": [
+    {
+      "path": "layers.json",
+      "files": 1,
+      "bytes": 4670
+    },
+    {
+      "path": "validation.json",
+      "files": 1,
+      "bytes": 84
+    },
+    {
+      "path": "tiles/image-hirise",
+      "files": 51,
+      "bytes": 480422
+    },
+    {
+      "path": "tiles/terrain-hirise",
+      "files": 47,
+      "bytes": 611841
+    },
+    {
+      "path": "grid",
+      "files": 2,
+      "bytes": 2319616
+    }
+  ],
+  "totalBytes": 3416633
+}

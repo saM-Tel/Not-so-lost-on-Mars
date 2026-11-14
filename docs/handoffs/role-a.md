@@ -1,5 +1,15 @@
 # Role A handoff
 
+## Sat 14 Nov 16:05, role A work by the team owner, with Claude Code
+
+Done: approach imagery for all nine sites (`build_approach.py`, CTX rings, 6.3 MB); seven landing sites built as level 2 (`sources.py` now warps any projection; dates from the HiRISE archive labels); CTX 20 m terrain round Bright Angel out to 10 km; hero scenario (`scenario.py`); Gale weather by Mars month (`weather.py`); thermal layer config and colour tiles; `build_geology.py` written.
+Not done: Gale (mosaic image dates not found); geology (needs fiona); minerals (CRISM unprocessed); MEDA weather for Jezero (not on the server).
+Broken or risky: Esri's CTX service sends some tiles cut short or fails on them; those are left as no data. Level 2 images borrow their terrain model's georeferencing: check alignment by eye. Nothing new was looked at by a person.
+Next: run `build_site.py` for Bright Angel to ship the thermal layer; install fiona and run `build_geology.py` if the team approves.
+Files: pipeline/build_approach.py, build_geology.py, scenario.py, weather.py, sources.py, build_site.py, tiles.py; sites/*.yaml; app/public/data/
+Other roles need to know: B, `site.json` has `home` and `targets`; layer records can carry `legend` and `tiles.bounds` (DATA_CONTRACT). C, the review list is docs/REVIEW_QUEUE.md.
+Checks: pytest 44 pass; every build named above ran with real data except geology and the thermal layer.
+
 ## Sat 14 Nov 13:35, role A work by Joseph, with Claude Code
 
 Done: slope checked against the rover's tilt (F9). `validate.slope_check` samples our 1 m slope at each rover stop. At Bright Angel, 116 of 116 stops: ours minus the rover's has median 0.3 degrees, typical size 1.4 degrees, 9 in 10 within 4.0 degrees, correlation 0.89. Written to `validation.json` and into the slope layer's caveats.

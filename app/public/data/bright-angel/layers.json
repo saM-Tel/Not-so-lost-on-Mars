@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:45:53Z",
+  "builtUtc": "2026-11-14T16:07:57Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -76,6 +76,63 @@
           "southLatDeg": 18.413131,
           "northLatDeg": 18.581837
         }
+      }
+    },
+    {
+      "mission": "Mars Odyssey",
+      "instrument": "Thermal Emission Imaging System (THEMIS), night infrared",
+      "agency": "NASA",
+      "productId": "nili_THEMIS_NightIR_Controlled_oct2018 (USGS THEMIS controlled mosaic, October 2018, as shipped in SIM 3464)",
+      "sourceUrl": "https://doi.org/10.3133/sim3464",
+      "doi": "10.3133/sim3464",
+      "acquiredFrom": "2002 at the earliest (THEMIS began mapping in 2002; not stated in the file)",
+      "acquiredTo": "Before October 2018, the mosaic version named in its folder",
+      "published": "2020",
+      "gridSpacing": "100 m",
+      "realDetail": "About 100 m: 30 pixels across the 3 km site box",
+      "positionAccuracy": "not found",
+      "heightAccuracy": "not applicable",
+      "grade": "C",
+      "caveats": [
+        "Brightness stretched to 8 bits for display, not a temperature.",
+        "Far coarser than the walking map: one pixel is 100 m. A guide to where footing changes, not a footing map.",
+        "Dust cover hides what is underneath; a dusty rock surface can look like loose ground."
+      ],
+      "credit": "NASA/JPL-Caltech/Arizona State University; mosaic by USGS; in Sun and Stack 2020 (USGS SIM 3464)",
+      "id": "thermal-themis",
+      "title": "Night-time warmth",
+      "dataType": "thermal",
+      "processing": "Read from nili_THEMIS_NightIR_Controlled_oct2018.tif over a 12 km square centred on the site marker (local copy in data/raw, warped from its own projection onto the app's grid), coloured along a ramp from value 40 to 200, and cut into tiles for zoom 9 to 12. The map stretches them at closer zooms.",
+      "tiles": {
+        "path": "tiles/thermal-themis/{z}/{x}/{y}.webp",
+        "minZoom": 9,
+        "maxZoom": 12,
+        "tileSizePx": 256,
+        "count": 17,
+        "bytes": 54016,
+        "bounds": {
+          "westLonDeg": 77.198453,
+          "eastLonDeg": 77.411929,
+          "southLatDeg": 18.3962604,
+          "northLatDeg": 18.5987076
+        }
+      },
+      "legend": {
+        "kind": "ramp",
+        "colours": [
+          "#440154",
+          "#3b528b",
+          "#21918c",
+          "#5ec962",
+          "#fde725"
+        ],
+        "labels": [
+          "cooler at night",
+          "",
+          "",
+          "warmer at night"
+        ],
+        "note": "Relative brightness of the night infrared mosaic, not a temperature. Warmer at night often means rock or firm ground; cooler means fine, loose material."
       }
     },
     {

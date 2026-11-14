@@ -1,0 +1,106 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T15:59:10Z",
+  "id": "ares-vallis",
+  "name": "Ares Vallis",
+  "place": "Ares Vallis",
+  "mission": "Pathfinder",
+  "level": 2,
+  "reviewedByPerson": false,
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees. Heights in metres relative to the areoid.",
+  "box": {
+    "westLonDeg": -33.2648737,
+    "eastLonDeg": -33.2291753,
+    "southLatDeg": 19.0436591,
+    "northLatDeg": 19.0774003
+  },
+  "boxSizeKm": {
+    "eastWest": 2,
+    "northSouth": 2
+  },
+  "centre": {
+    "lonEastDeg": -33.2470245,
+    "latDeg": 19.0605297
+  },
+  "terrainHeightM": {
+    "lowest": -3694.23,
+    "highest": -3660.77,
+    "atCentre": -3682.69
+  },
+  "grid": {
+    "rows": 492,
+    "cols": 520,
+    "northWestCorner": {
+      "lonEastDeg": -33.264881306,
+      "latDeg": 19.077408623
+    },
+    "cellLonDeg": 6.857979207445527e-05,
+    "cellLatDeg": 6.857979207445527e-05,
+    "cellNorthSouthM": 4.065,
+    "cellEastWestM": 3.8422,
+    "cellEastWestMeasuredAtLatDeg": 19.0605297,
+    "rowOrder": "north row first; within a row, west cell first",
+    "byteOrder": "little-endian",
+    "sourceCellsPerCell": 4,
+    "slopeBaselineM": {
+      "northSouthM": 6.098,
+      "eastWestM": 5.763
+    },
+    "files": [
+      {
+        "name": "heightM",
+        "path": "grid/heightM.f32",
+        "numberType": "float32",
+        "unit": "m",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 1023360,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Mean terrain height of the 4 x 4 source cells in the routing cell, relative to the areoid."
+      },
+      {
+        "name": "slopeMaxDeg",
+        "path": "grid/slopeMaxDeg.f32",
+        "numberType": "float32",
+        "unit": "deg",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 1023360,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Steepest slope found among the 4 x 4 source cells in the routing cell. Each source cell's slope is measured over 6.098 m north to south and 5.763 m east to west. Use it for keep-out; for effort use the slope along the direction of travel, taken from heightM."
+      }
+    ]
+  },
+  "readFrom": {
+    "terrain": "team data server, warped from its own projection onto the app's grid",
+    "image": "team data server, warped from its own projection onto the app's grid"
+  },
+  "files": [
+    {
+      "path": "layers.json",
+      "files": 1,
+      "bytes": 4671
+    },
+    {
+      "path": "validation.json",
+      "files": 1,
+      "bytes": 84
+    },
+    {
+      "path": "tiles/image-hirise",
+      "files": 75,
+      "bytes": 584186
+    },
+    {
+      "path": "tiles/terrain-hirise",
+      "files": 25,
+      "bytes": 459963
+    },
+    {
+      "path": "grid",
+      "files": 2,
+      "bytes": 2046720
+    }
+  ],
+  "totalBytes": 3095624
+}

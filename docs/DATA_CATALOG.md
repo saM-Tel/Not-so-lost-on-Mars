@@ -123,6 +123,14 @@ Ranked by value for effort. None is needed for the must-have list.
 | Partner agency data: Mars Express HRSC (ESA), Trace Gas Orbiter CaSSIS (ESA), Hope probe (UAE) | Colour stereo imagery and global weather; widens the "multiple agencies" story | Medium to high | HRSC layers are in the Trek catalogue; others known |
 | Free tools from the event's Global Collaborators (GoDaddy, Google, Meteomatics, Microsoft, Miro) | Possibly a free domain name or cloud credit | Low | Named in search results; offers not read |
 
+## B2. Worth adding to the team data server (14 Nov)
+
+| What | Why | Where | Size |
+|---|---|---|---|
+| Perseverance MEDA derived environment data, sols 3 to 64, 672 to 733 and 1340 to 1402 | Typical weather by hour at Jezero for today's season (solar longitude about 22 degrees, worked out with Mars24); today the app has weather only at Gale | `https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_NNNN/`, one folder per sol, into `/raw/meda/` | About 23 MB per sol, so about 4.3 GB for the 187 sols |
+| Curiosity RAD data for 20 May 2024 | A storm replay from measurements instead of the one published total | PDS Planetary Plasma Interactions node, MSL RAD | Small; folder not yet found |
+| Gale mosaic labels or metadata giving image dates | Needed before Gale can be built (REVIEW_QUEUE 8) | USGS Astrogeology product pages for the MSL Gale mosaics | Small |
+
 ## C. Known not to work
 
 | Thing | Problem | Use instead |

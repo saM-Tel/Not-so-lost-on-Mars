@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 16:05, role B work by the team owner, with Claude Code
+
+Done (coded, mostly not opened in a browser): approach layers; installable app (manifest, icon, service worker, Install button); tether slider via a canvas source and a drawing-density cap; hero scenario in the route card (targets, opens on Cheyava Falls); suit slope limit; elevation profile; oxygen; route confidence line; rover drive comparison; storm drill; when-to-go panel with Mars24 time, Sun and computed shading; field tablet and helmet concept views.
+Not done: layer choices in the link; route through several targets in a row; photos by direction of travel.
+Broken or risky: the route card is long now; the mode switch and install button share the top right. The service worker only runs in the built site.
+Next: open the app (`npm run build`, `npm run preview`) and try every panel; fix what breaks; then push.
+Files: app/src/ (main.ts, map/approach.ts, siteLayers.ts, routeLayer.ts, overlays.ts, mapView.ts; ui/routePanel.ts, safetyPanel.ts, timeSlider.ts, profileChart.ts, modes.ts, install.ts; safety/oxygen.ts, storm.ts; mars/time.ts, sun.ts), app/pwa/, app/public/manifest.webmanifest, app/public/icons/, app/vite.config.ts, style.css
+Other roles need to know: commits are local only (owner's choice); the public site is behind.
+Checks: tsc passes; 76 tests pass (4 new for Mars time); the zoom-in at Bright Angel was seen in headless Chrome only.
+
 ## Sat 14 Nov 13:56, role C work by Joseph, with Claude Code
 
 Done: `README.md` at the top of the repository, for judges and visitors: what Tether is, what you can do at Bright Angel, the three promises and the grades, the check against the rover, a table of data sources, an open list of what it does not do yet, how to run the app and the pipeline, and how AI was used.

@@ -1,0 +1,106 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T15:54:59Z",
+  "id": "columbia-hills",
+  "name": "Columbia Hills",
+  "place": "Gusev crater",
+  "mission": "Spirit",
+  "level": 2,
+  "reviewedByPerson": false,
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees. Heights in metres relative to the areoid.",
+  "box": {
+    "westLonDeg": 175.4809097,
+    "eastLonDeg": 175.5157744,
+    "southLatDeg": -14.6019136,
+    "northLatDeg": -14.5681724
+  },
+  "boxSizeKm": {
+    "eastWest": 2,
+    "northSouth": 2
+  },
+  "centre": {
+    "lonEastDeg": 175.498342,
+    "latDeg": -14.585043
+  },
+  "terrainHeightM": {
+    "lowest": -1948.58,
+    "highest": -1914.73,
+    "atCentre": -1939.76
+  },
+  "grid": {
+    "rows": 493,
+    "cols": 509,
+    "northWestCorner": {
+      "lonEastDeg": 175.480895196,
+      "latDeg": -14.568160994
+    },
+    "cellLonDeg": 6.848710985364266e-05,
+    "cellLatDeg": 6.848710985364266e-05,
+    "cellNorthSouthM": 4.0596,
+    "cellEastWestM": 3.9287,
+    "cellEastWestMeasuredAtLatDeg": -14.585043,
+    "rowOrder": "north row first; within a row, west cell first",
+    "byteOrder": "little-endian",
+    "sourceCellsPerCell": 4,
+    "slopeBaselineM": {
+      "northSouthM": 6.089,
+      "eastWestM": 5.893
+    },
+    "files": [
+      {
+        "name": "heightM",
+        "path": "grid/heightM.f32",
+        "numberType": "float32",
+        "unit": "m",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 1003748,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Mean terrain height of the 4 x 4 source cells in the routing cell, relative to the areoid."
+      },
+      {
+        "name": "slopeMaxDeg",
+        "path": "grid/slopeMaxDeg.f32",
+        "numberType": "float32",
+        "unit": "deg",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 1003748,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Steepest slope found among the 4 x 4 source cells in the routing cell. Each source cell's slope is measured over 6.089 m north to south and 5.893 m east to west. Use it for keep-out; for effort use the slope along the direction of travel, taken from heightM."
+      }
+    ]
+  },
+  "readFrom": {
+    "terrain": "team data server, warped from its own projection onto the app's grid",
+    "image": "team data server, warped from its own projection onto the app's grid"
+  },
+  "files": [
+    {
+      "path": "layers.json",
+      "files": 1,
+      "bytes": 4672
+    },
+    {
+      "path": "validation.json",
+      "files": 1,
+      "bytes": 84
+    },
+    {
+      "path": "tiles/image-hirise",
+      "files": 73,
+      "bytes": 268148
+    },
+    {
+      "path": "tiles/terrain-hirise",
+      "files": 23,
+      "bytes": 352163
+    },
+    {
+      "path": "grid",
+      "files": 2,
+      "bytes": 2007496
+    }
+  ],
+  "totalBytes": 2632563
+}

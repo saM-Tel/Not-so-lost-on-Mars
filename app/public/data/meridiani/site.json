@@ -1,0 +1,106 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T16:00:14Z",
+  "id": "meridiani",
+  "name": "Meridiani",
+  "place": "Terra Meridiani",
+  "mission": "Opportunity",
+  "level": 2,
+  "reviewedByPerson": false,
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees. Heights in metres relative to the areoid.",
+  "box": {
+    "westLonDeg": -5.49605,
+    "eastLonDeg": -5.4622873,
+    "southLatDeg": -2.0636187,
+    "northLatDeg": -2.0298775
+  },
+  "boxSizeKm": {
+    "eastWest": 2,
+    "northSouth": 2
+  },
+  "centre": {
+    "lonEastDeg": -5.4791686,
+    "latDeg": -2.0467481
+  },
+  "terrainHeightM": {
+    "lowest": -1431.84,
+    "highest": -1372.39,
+    "atCentre": -1385.95
+  },
+  "grid": {
+    "rows": 494,
+    "cols": 494,
+    "northWestCorner": {
+      "lonEastDeg": -5.496063406,
+      "latDeg": -2.029861433
+    },
+    "cellLonDeg": 6.828227847368268e-05,
+    "cellLatDeg": 6.828227847368268e-05,
+    "cellNorthSouthM": 4.0474,
+    "cellEastWestM": 4.0448,
+    "cellEastWestMeasuredAtLatDeg": -2.0467481,
+    "rowOrder": "north row first; within a row, west cell first",
+    "byteOrder": "little-endian",
+    "sourceCellsPerCell": 4,
+    "slopeBaselineM": {
+      "northSouthM": 6.071,
+      "eastWestM": 6.067
+    },
+    "files": [
+      {
+        "name": "heightM",
+        "path": "grid/heightM.f32",
+        "numberType": "float32",
+        "unit": "m",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 976144,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Mean terrain height of the 4 x 4 source cells in the routing cell, relative to the areoid."
+      },
+      {
+        "name": "slopeMaxDeg",
+        "path": "grid/slopeMaxDeg.f32",
+        "numberType": "float32",
+        "unit": "deg",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 976144,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Steepest slope found among the 4 x 4 source cells in the routing cell. Each source cell's slope is measured over 6.071 m north to south and 6.067 m east to west. Use it for keep-out; for effort use the slope along the direction of travel, taken from heightM."
+      }
+    ]
+  },
+  "readFrom": {
+    "terrain": "team data server, warped from its own projection onto the app's grid",
+    "image": "team data server, warped from its own projection onto the app's grid"
+  },
+  "files": [
+    {
+      "path": "layers.json",
+      "files": 1,
+      "bytes": 4672
+    },
+    {
+      "path": "validation.json",
+      "files": 1,
+      "bytes": 84
+    },
+    {
+      "path": "tiles/image-hirise",
+      "files": 76,
+      "bytes": 550982
+    },
+    {
+      "path": "tiles/terrain-hirise",
+      "files": 26,
+      "bytes": 329946
+    },
+    {
+      "path": "grid",
+      "files": 2,
+      "bytes": 1952288
+    }
+  ],
+  "totalBytes": 2837972
+}

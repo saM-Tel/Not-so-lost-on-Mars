@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:45:56Z",
+  "builtUtc": "2026-11-14T16:08:01Z",
   "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees.",
   "levels": {
     "1": {
@@ -28,7 +28,7 @@
       "mission": "Phoenix",
       "missionYears": "2008",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": -125.74051,
       "latDeg": 68.206915,
@@ -48,7 +48,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "Built automatically from one terrain strip and not reviewed by a person.",
         "The terrain model is in a polar projection, unlike every other site. The pipeline cannot read it yet.",
         "The source does not say whether its latitude is planetocentric."
       ],
@@ -68,7 +68,7 @@
       "mission": "Pathfinder",
       "missionYears": "1997",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": -33.247025,
       "latDeg": 19.06053,
@@ -88,7 +88,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "Built automatically from one terrain strip and not reviewed by a person.",
         "The landing position NASA's catalogue prints (19.33 N, 33.55 W) is outside this terrain model. It is an older figure and the source does not say which latitude type or reference frame it uses. The terrain label itself says 'possible' landing site. Do not show a lander position here until it is settled."
       ],
       "terrainFootprint": {
@@ -140,7 +140,7 @@
       "mission": "Viking 1",
       "missionYears": "1976 to 1982",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": -47.945636,
       "latDeg": 22.271203,
@@ -160,7 +160,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'."
+        "Built automatically from one terrain strip and not reviewed by a person."
       ],
       "terrainFootprint": {
         "westLonDeg": -48.022875,
@@ -178,7 +178,7 @@
       "mission": "Spirit",
       "missionYears": "2004 to 2010",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": 175.498342,
       "latDeg": -14.585043,
@@ -198,7 +198,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'."
+        "Built automatically from one terrain strip and not reviewed by a person."
       ],
       "terrainFootprint": {
         "westLonDeg": 175.441866,
@@ -216,7 +216,7 @@
       "mission": "InSight",
       "missionYears": "2018 to 2022",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": 135.626734,
       "latDeg": 4.431049,
@@ -231,7 +231,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "Built automatically from one terrain strip and not reviewed by a person.",
         "The landing position was not found in the NASA catalogue page we read, so whether this model contains the lander is not checked."
       ],
       "terrainFootprint": {
@@ -280,7 +280,7 @@
       "mission": "Opportunity",
       "missionYears": "2004 to 2018",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": -5.479169,
       "latDeg": -2.046748,
@@ -300,7 +300,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "Built automatically from one terrain strip and not reviewed by a person.",
         "Three more terrain models are on the team data server for this site: DTEEC_001414_1780_001612_1780_U01 (its label says 'Possibily Opportunity Rover landing site', but its footprint does not contain the published landing position), DTEEC_018701_1775_018846_1775_U01 (Endeavour crater western rim) and DTEEC_028815_1780_028670_1780_A01 (north-central Endeavour crater)."
       ],
       "terrainFootprint": {
@@ -319,7 +319,7 @@
       "mission": "Viking 2",
       "missionYears": "1976 to 1980",
       "level": 2,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": 134.285596,
       "latDeg": 47.660288,
@@ -339,7 +339,7 @@
         "HiRISE images matched to that terrain model"
       ],
       "problems": [
-        "Not built. An automatic build would be marked 'not reviewed by a person'.",
+        "Built automatically from one terrain strip and not reviewed by a person.",
         "The source does not say whether its latitude is planetocentric."
       ],
       "terrainFootprint": {
