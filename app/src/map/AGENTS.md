@@ -38,6 +38,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `zoomSelect.ts` | Selects a site when the person zooms in on it by hand: from zoom 4 inwards, the nearest site within the middle of the view | F14 |
 | `zoomSelect.test.ts` | Tests for choosing the site in focus, on made-up positions | |
 | `siteLayers.ts` | Adds a built site's image and 3D terrain (terrain may reach past the box, `tiles.bounds`; on only from zoom 12.2 inwards) and takes them away again; computed sun shading for a Sun position (hillshade lit from the Sun's direction and height, on true Mars slopes) | F1, F11 |
+| `orbiters.ts` | The orbiters on the globe (F18): a labelled dot at the point below each one now and its track 45 minutes either side, moved every second, up to zoom 8; credited as predicted from JPL Horizons | F18 |
 | `legend.ts` | Legends for map layers (named colours or a ramp) and the colour-blind-safe ramp the slope layer is drawn with | F2 |
 | `overlays.ts` | A built site's layers as things the layer panel can switch and fade: the ground image, slope drawn from the routing grid, the rover's path and stops, and any tiled or polygon layer the pipeline coloured itself (night-time warmth, geology), with the legend from its record | F2, F12 |
 | `scaleBar.ts` | Our own scale bar, correct for Mars; shown from zoom 7 inwards | F1 |

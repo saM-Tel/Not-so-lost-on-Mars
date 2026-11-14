@@ -67,6 +67,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `build_approach.py` | Builds the approach imagery: three rings of CTX images (320 km, 40 km, 12 km) around every site, from the CTX global mosaic through Esri's OnMars service, or from a file the site config names under `approach.near` (Bright Angel: the USGS Jezero CTX mosaic). Writes `../app/public/data/approach/` | F14, F1 |
 | `build_geology.py` | Turns the USGS geologic map (SIM 3464 geodatabase) into GeoJSON in degrees for one site, in `../data/work/<site id>/geology.geojson`, which `build_site.py` then ships with a legend. Polygons are cut to a 12 km square and kept to 5 decimal places (1.2 MB at Bright Angel). Needs `fiona` (in requirements.txt). Run `python build_geology.py ../sites/bright-angel.yaml`, then `build_site.py`. First run 14 Nov: 75 polygons in 10 units | F2 |
 | `test_geology.py` | Tests for the polygon cutting in `build_geology.py`, on made-up rings | |
+| `build_orbiters.py` | Saves JPL Horizons predictions of MRO, Mars Odyssey, Mars Express and TGO (F18): the ground point every 2 minutes for the globe, and minute-by-minute elevation above each built site, 16 days ahead. Run `python build_orbiters.py` again before the submission | F18 |
+| `test_orbiters.py` | Tests for the longitude and latitude conversions and the parsing in `build_orbiters.py`, on made-up Horizons text | |
 | `build_space_weather.py` | Saves a snapshot of NASA's notices that forecast a solar eruption reaching Mars, with its fetch time. One request per run | F5 |
 | `test_space_weather.py` | Tests for `build_space_weather.py` on made-up notices | |
 | `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |

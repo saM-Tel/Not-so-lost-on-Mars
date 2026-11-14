@@ -15,6 +15,7 @@ import { SLOT } from './slots';
 const KEEP_OUT_ID = 'route-keep-out';
 const TETHER_ID = 'route-tether';
 const LINES_ID = 'route-lines';
+const GAPS_ID = 'route-link-gaps';
 /** Okabe and Ito colours: sky blue for the way out, yellow for the way home. */
 export const OUT_COLOUR = '#56b4e9';
 export const BACK_COLOUR = '#f0e442';
@@ -34,8 +35,13 @@ export interface RouteLayer {
   showTargets(targets: { name: string; lonEastDeg: number; latDeg: number }[]): void;
   /** Draw a walk, or clear it with null. */
   showRoute(route: { target: LonLat; out: LonLat[]; back: LonLat[] } | null): void;
+  /** Glow beneath the stretches of the walk with no relay link (F18), or clear it with null. */
+  showGaps(stretches: LonLat[][] | null): void;
   remove(): void;
 }
+
+/** Okabe and Ito reddish purple: clear of the route's blue and yellow and of the danger red (F18 gaps). */
+export const GAP_COLOUR = '#cc79a7';
 
 function pin(className: string, label: string): HTMLElement {
   const element = document.createElement('div');
@@ -187,14 +193,31 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
         target = new Marker({ element: pin('route-pin--target', 'Target'), anchor: 'bottom' }).setLngLat(route.target).addTo(map);
       }
     },
+    showGaps(stretches) {
+      const data: Parameters<GeoJSONSource['setData']>[0] = {
+        type: 'FeatureCollection' as const,
+        features: (stretches ?? []).map((line) => ({
+          type: 'Feature' as const, properties: {}, geometry: { type: 'LineString' as const, coordinates: line },
+        })),
+      };
+      const source = map.getSource(GAPS_ID) as GeoJSONSource | undefined;
+      if (source) { source.setData(data); return; }
+      map.addSource(GAPS_ID, { type: 'geojson', data });
+      // A wide glow beneath the route lines, so the walk stays readable and the stretches with no link stand out.
+      map.addLayer({
+        id: GAPS_ID, type: 'line', source: GAPS_ID,
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': GAP_COLOUR, 'line-width': 16, 'line-opacity': 0.55, 'line-blur': 2 },
+      }, `${LINES_ID}-edge`);
+    },
     remove() {
       home?.remove();
       target?.remove();
       for (const marker of targetPins) marker.remove();
-      for (const id of [`${LINES_ID}-back`, `${LINES_ID}-out`, `${LINES_ID}-edge`, TETHER_ID, KEEP_OUT_ID]) {
+      for (const id of [`${LINES_ID}-back`, `${LINES_ID}-out`, `${LINES_ID}-edge`, GAPS_ID, TETHER_ID, KEEP_OUT_ID]) {
         if (map.getLayer(id)) map.removeLayer(id);
       }
-      for (const id of [LINES_ID, TETHER_ID, KEEP_OUT_ID]) if (map.getSource(id)) map.removeSource(id);
+      for (const id of [LINES_ID, GAPS_ID, TETHER_ID, KEEP_OUT_ID]) if (map.getSource(id)) map.removeSource(id);
     },
   };
 }

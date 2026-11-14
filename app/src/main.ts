@@ -20,6 +20,8 @@ import { addScaleBar } from './map/scaleBar';
 import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
 import { addSlots, SLOT } from './map/slots';
+import { addOrbiters } from './map/orbiters';
+import { loadGlobeOrbiters } from './data/orbiters';
 import { watchZoomSelect } from './map/zoomSelect';
 import { setUpInstall } from './ui/install';
 import { createLayerPanel } from './ui/layerPanel';
@@ -92,6 +94,9 @@ async function start(): Promise<void> {
   addScaleBar(map);
   addWeatherBanner(container, DATA_URL);
   addEarthLink(container);
+  // The orbiters on the globe (F18), loaded after the globe so they never hold it up; absent file, no orbiters.
+  const orbitersReady = loadGlobeOrbiters(DATA_URL);
+  void orbitersReady.then((orbiters) => { if (orbiters) addOrbiters(map, orbiters); });
 
   let stopIdleTurn = (): void => {};
   /** Takes the route card, the route, the layer panel and the site's overlays away when the person leaves a site. */

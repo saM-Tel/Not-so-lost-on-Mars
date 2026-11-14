@@ -1453,3 +1453,118 @@ body.mode-helmet .map-toolbar {
 .weather-banner[open] > .weather-banner__summary::before {
   transform: rotate(90deg);
 }
+
+/* ---- F18: orbiters on the globe and link and view from orbit in the route card ---- */
+
+.orbiter-pin {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  pointer-events: auto;
+  cursor: help;
+}
+
+.orbiter-pin__dot {
+  width: 9px;
+  height: 9px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--space);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.orbiter-pin__label {
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(7, 8, 12, 0.7);
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.orbit__start {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.orbit__line {
+  font-weight: 600;
+}
+
+.orbit__line--gap {
+  border-left: 3px solid #cc79a7;
+  padding-left: 0.45rem;
+}
+
+.orbit__timeline {
+  margin: 0.4rem 0;
+}
+
+.orbit__axis {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem 4.2rem;
+  color: var(--text-dim);
+  font-size: 0.68rem;
+}
+
+.orbit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.15rem 0;
+}
+
+.orbit-row__label {
+  flex: 0 0 3.8rem;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orbit-row--summary .orbit-row__label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.orbit-row__bar {
+  position: relative;
+  flex: 1;
+  height: 0.55rem;
+  border-radius: 3px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.orbit-row--summary .orbit-row__bar {
+  height: 0.8rem;
+}
+
+.orbit-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.orbit-seg--ok {
+  background: var(--accent);
+}
+
+/* No link: the Okabe and Ito reddish purple, as on the map; not the danger red. */
+.orbit-seg--gap {
+  background: repeating-linear-gradient(135deg, rgba(204, 121, 167, 0.85) 0 4px, rgba(204, 121, 167, 0.45) 4px 8px);
+}
+
+.orbit-seg--pass {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.orbit-seg--unconfirmed {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.6);
+  box-sizing: border-box;
+}

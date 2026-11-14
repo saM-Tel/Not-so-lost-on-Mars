@@ -36,6 +36,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `loadSite.ts` | Loads one built site: site.json, layers.json, validation.json and the routing grid files | F1 to F4, F9 |
 | `photos.ts` | Loads a site's index of rover photos and picks those taken within 30 m of a route, in walking order | F6 |
 | `photos.test.ts` | Tests for choosing photos near a route, on made-up records | |
+| `orbiters.ts` | Orbiters overhead (F18): loads the saved Horizons predictions; where each orbiter is now (the point below it) and its ground track; for a walk, minute by minute, whether a confirmed relay is high enough for a link and a confirmed camera is high overhead in daylight; the stretches of route walked in a gap. Thresholds assumed (10 and 60 degrees) | F18 |
+| `orbiters.test.ts` | Tests for `orbiters.ts` on made-up tracks and passes | |
 | `feeds.ts` | Reads NASA's notices that forecast a solar eruption reaching Mars: live, or else the saved snapshot, and says which. Built | F5 |
 
 ## Known issues

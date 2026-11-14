@@ -27,6 +27,7 @@ import { OXYGEN_BASIS, oxygenForEnergy } from '../safety/oxygen';
 import { stormAdvice } from '../safety/storm';
 import { tetherPicture, walkFarthestFromHomeS } from '../safety/tether';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
+import { createOrbitPanel } from './orbitPanel';
 import { createPhotoStrip } from './photoStrip';
 import { profileChart } from './profileChart';
 import { createTimePanel } from './timeSlider';
@@ -147,6 +148,7 @@ export function startRoutePlanner(
     targets: part('Science targets', true),
     tether: part('Tether: how far you can go', true),
     walk: part('This walk: distance, time, oxygen, radiation', true),
+    orbit: part('Link and view from orbit', false),
     photos: part('What you will see: rover photos', false),
     storm: part('Storm drill', false),
     when: part('When to go: Sun and weather', false),
@@ -163,6 +165,14 @@ export function startRoutePlanner(
   map.getContainer().append(card);
 
   const layer = addRouteLayer(map);
+  // Link and view from orbit (F18): the stretches with no link glow on the map only while this part is open.
+  const orbit = createOrbitPanel({
+    dataUrl: new URL('../', loaded.folderUrl).href, siteId: loaded.site.id,
+    lonEastDeg: loaded.site.centre.lonEastDeg, latDeg: loaded.site.centre.latDeg,
+    onGaps: (stretches) => layer.showGaps(stretches),
+  });
+  fill(parts.orbit, orbit.element);
+  parts.orbit.addEventListener('toggle', () => orbit.setOpen(parts.orbit.open));
   let stopped = false;
   let stopWorker = (): void => {};
   let onClick: ((event: MapMouseEvent) => void) | null = null;
@@ -446,6 +456,19 @@ export function startRoutePlanner(
     showVerdict();
     showStorm();
     when.setWalk(answer.ok ? caseValue(answer.out, 'cautious', 'timeS') + caseValue(answer.back, 'cautious', 'timeS') : null);
+    if (answer.ok) {
+      const outMin = caseValue(answer.out, 'cautious', 'timeS') / 60;
+      const backMin = caseValue(answer.back, 'cautious', 'timeS') / 60;
+      orbit.setWalk({
+        minutes: outMin + backMin,
+        legs: [
+          { line: answer.out.line, distancesM: answer.out.stats.profile.map((p) => p.distanceM), minutes: outMin },
+          { line: answer.back.line, distancesM: answer.back.stats.profile.map((p) => p.distanceM), minutes: backMin },
+        ],
+      });
+    } else {
+      orbit.setWalk(null);
+    }
     result.replaceChildren();
     parts.walk.hidden = true;
     if (!answer.ok) {
@@ -550,6 +573,7 @@ export function startRoutePlanner(
     parts.walk.hidden = true;
     photos.show(null);
     when.setWalk(null);
+    orbit.setWalk(null);
     showVerdict();
     showStorm();
     planTo = () => {};

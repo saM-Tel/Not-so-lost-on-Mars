@@ -43,6 +43,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `toolbar.ts` | The one bar at the top right of the map that holds the display switch and "Install app", beside the zoom buttons | F17 |
 | `install.ts` | Makes the built site installable: registers the service worker (built site only) and shows "Install app" when the browser offers it | F8 |
 | `modes.ts` | Switches between the planner, the field tablet (one big status card and three glove-sized buttons: next target, go home, storm) and the helmet concept view over a real rover photo (bearing arrow, distance, tether margin bar, one alert line). Cautious values only. Built | F13 |
+| `orbitPanel.ts` | "Link and view from orbit" in the route card (F18): a start slider (now to 24 h ahead), when a relay is in view and when a camera orbiter could see the walker, a timeline per orbiter, and the stretches with no link glowing on the map while the part is open | F18 |
 | `urlState.ts` | Keeps the view in the address bar so any view can be shared: the site, the walk's target and the tether settings, as `#site=<site id>&to=<lon>,<lat>&back=<minutes>&t=<minutes>` | F7 |
 | `urlState.test.ts` | Tests for reading and writing the address bar state | |
 | `format.ts` | Turns numbers into text. Built so far: distance, height, duration, energy, dose and three-case ranges. To add: dates in Earth UTC and Mars time |  |
