@@ -15,6 +15,7 @@ import { createGlobeMap } from './map/mapView';
 import { addScaleBar } from './map/scaleBar';
 import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
+import { watchZoomSelect } from './map/zoomSelect';
 import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
 import { readUrlState, writeUrlState } from './ui/urlState';
@@ -65,6 +66,9 @@ async function start(): Promise<void> {
   let stopRoutePlanner = (): void => {};
   /** Counts choices, so a slow load for one site cannot overwrite a later choice. */
   let choice = 0;
+  /** The site now chosen, and how many camera flights the app itself has under way. */
+  let selectedId: string | null = null;
+  let flights = 0;
 
   const select = async (siteId: string | null): Promise<void> => {
     const thisChoice = ++choice;
@@ -72,6 +76,17 @@ async function start(): Promise<void> {
     stopRoutePlanner();
     stopRoutePlanner = () => {};
     const site = siteId === null ? undefined : sites.find((s) => s.id === siteId);
+    selectedId = site?.id ?? null;
+    flights++;
+    try {
+      await open(site, thisChoice);
+    } finally {
+      flights--;
+    }
+  };
+
+  /** Show a site, or the globe when there is none, and fly there. */
+  const open = async (site: (typeof sites)[number] | undefined, thisChoice: number): Promise<void> => {
     markers.setSelected(site?.id ?? null);
     picker.show(site?.id ?? null);
     writeUrlState({ siteId: site?.id ?? null });
@@ -111,6 +126,13 @@ async function start(): Promise<void> {
     onSelect: (siteId) => void select(siteId),
     onShowAll: () => void select(null),
     onOpen: (siteId) => void select(siteId),
+  });
+
+  // Zooming in on a site by hand selects it, as clicking its marker does.
+  watchZoomSelect(map, sites, {
+    isFlying: () => flights > 0,
+    selectedId: () => selectedId,
+    onSelect: (siteId) => void select(siteId),
   });
 
   if (chosenAtStart) void select(chosenAtStart.id);

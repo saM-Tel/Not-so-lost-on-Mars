@@ -8,7 +8,8 @@ Broken or risky: home is the site marker as a stand-in; the site config has no h
 Next: the tether (F4): a cost-to-home array from the worker for the cautious case, a suit budget with sources, and the boundary line on the map.
 Files: app/src/route/worker.ts, messages.ts, client.ts; map/routeLayer.ts; ui/routePanel.ts, format.ts, format.test.ts; data/loadSite.ts; main.ts; style.css; the folder guides
 Other roles need to know: two real results from Bright Angel for the story. East along the valley floor: 650 m each way, about 14 min each way. North-west up the slope: 1.15 km and 142 m of climb out in 1 h 30 min (56 min to 2 h 0 min), 28 min back.
-Checks: `npm run check` passes: types, 45 tests, build. Scripted browser: whole-grid search 1.0 to 1.3 s, route answer 0.1 s, keep-out 19% of the box, 80% reachable.
+Added at 14:55: zooming in on a site by hand selects it (`map/zoomSelect.ts`), from zoom 4 when the site is in the middle quarter of the view. Tried with scripted camera jumps only, not a real wheel or pinch.
+Checks: `npm run check` passes: types, 49 tests, build. Scripted browser: whole-grid search 1.0 to 1.3 s, route answer 0.1 s, keep-out 19% of the box, 80% reachable.
 
 ## Sat 14 Nov 13:45, role B work by Joseph, with Claude Code
 

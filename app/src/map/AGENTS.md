@@ -33,6 +33,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `mapView.ts` | Creates the MapLibre map: globe view with the global Mars image, and the corrections MapLibre needs for Mars | F14, F1 |
 | `siteMarkers.ts` | Draws a tall column, a name and a pulse at each landing site on the globe, and reports clicks | F14 |
 | `flight.ts` | Camera moves: globe to a site, a site back to the globe, and the slow idle turn of the globe | F14, F7 |
+| `zoomSelect.ts` | Selects a site when the person zooms in on it by hand: from zoom 4 inwards, the nearest site within the middle of the view | F14 |
+| `zoomSelect.test.ts` | Tests for choosing the site in focus, on made-up positions | |
 | `siteLayers.ts` | Adds a built site's image and 3D terrain to the map and takes them away again. To add: overlay layers with opacity control | F1, F2 |
 | `legend.ts` | Builds the legend for each layer from its record | F2 |
 | `scaleBar.ts` | Our own scale bar, correct for Mars; shown from zoom 7 inwards | F1 |

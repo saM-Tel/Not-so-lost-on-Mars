@@ -22,7 +22,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 
 | Feature | Owner | Status | Notes |
 |---|---|---|---|
-| F14 Mars globe and site picker | A, B | in progress | Works locally: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Not done: not deployed |
+| F14 Mars globe and site picker | A, B | in progress | Works and is public: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Zooming in on a site by hand past zoom 4 selects it (asked for by Joseph on 14 Nov; tried in a scripted browser with camera jumps, not with a real mouse wheel or touch). Not done: not deployed |
 | F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at 11:45, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
 | F2 Layer panel and information cards | B | not started | |
 | F3 Route planner | B | in progress | Works for one target at Bright Angel: click the ground and the walk out and back is drawn, with distance, climb, time and energy for three cases; keep-out ground (steeper than 20 degrees) is shaded red and never crossed. Seen in a scripted browser on the dev server with two targets. Not done: several targets, oxygen, elevation profile, route confidence, footing, smoothing; home is a stand-in (the site marker); not tried by a person; whole-grid search takes about 1.0 to 1.3 s |
