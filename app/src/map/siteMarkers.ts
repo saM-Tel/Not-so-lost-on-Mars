@@ -154,8 +154,10 @@ export function addSiteMarkers(
       else kept.push(box);
     }
   };
+  /** False while a built site is open and the markers are hidden: then there are no names to tidy (review item R20). */
+  let shown = true;
   const queueTidy = (): void => {
-    if (tidyQueued) return;
+    if (tidyQueued || !shown) return;
     tidyQueued = true;
     requestAnimationFrame(tidyNames);
   };
@@ -172,6 +174,8 @@ export function addSiteMarkers(
     setVisible(visible) {
       for (const id of layerIds) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
       for (const pin of pins.values()) pin.hidden = !visible;
+      shown = visible;
+      queueTidy();
     },
   };
 }

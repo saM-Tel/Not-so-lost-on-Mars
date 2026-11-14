@@ -1,5 +1,6 @@
-// WHAT:    Entry point. Opens the Mars globe with approach imagery round every site and a marker at each, flies to a chosen
-//          site, and opens a built site's own image and 3D terrain, its layer panel and route planning there; shows the
+// WHAT:    Entry point. Opens the Mars globe with a marker at every site and approach imagery round the site in focus, flies
+//          to a site chosen by click, link or picker (a site zoomed into by hand opens where the camera is), and opens a
+//          built site's own image and 3D terrain, its layer panel and route planning there; shows the
 //          space-weather banner and the link-to-Earth line; sets up installation as an app (F14, F1, F2, F3, F5, F7, F8, F16).
 // IN:      public/data/globe/layers.json, public/data/sites.json and a built site's folder; the site named in the address bar, if any.
 // OUT:     Nothing. Starts the app.
@@ -11,13 +12,14 @@
 import { loadLayers } from './data/layers';
 import { loadSite } from './data/loadSite';
 import { loadSites } from './data/loadSites';
-import { addApproachLayers, loadApproachLayers } from './map/approach';
+import { loadApproachLayers, watchApproachRings } from './map/approach';
 import { flyIntoSite, flyToGlobe, flyToSite, startIdleTurn } from './map/flight';
 import { createGlobeMap } from './map/mapView';
 import { addOverlays } from './map/overlays';
 import { addScaleBar } from './map/scaleBar';
 import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
+import { addSlots, SLOT } from './map/slots';
 import { watchZoomSelect } from './map/zoomSelect';
 import { setUpInstall } from './ui/install';
 import { createLayerPanel } from './ui/layerPanel';
@@ -83,8 +85,10 @@ async function start(): Promise<void> {
   });
   if (import.meta.env.DEV) (window as unknown as { tetherMap: unknown }).tetherMap = map;
   await new Promise<void>((resolve) => { void map.once('load', () => resolve()); });
-  // Sharp land around every site while zooming in. Added before the markers and the site image, so both sit on top.
-  addApproachLayers(map, approachRings, `${DATA_URL}approach/`);
+  // Fixed places in the layer order, so every later layer lands where it belongs (map/slots.ts).
+  addSlots(map);
+  // Sharp land around the site in focus while zooming in, beneath the site image and the markers.
+  watchApproachRings(map, approachRings, `${DATA_URL}approach/`, SLOT.rings);
   addScaleBar(map);
   addWeatherBanner(container, DATA_URL);
   addEarthLink(container);
@@ -98,7 +102,11 @@ async function start(): Promise<void> {
   let selectedId: string | null = null;
   let flights = 0;
 
-  const select = async (siteId: string | null): Promise<void> => {
+  /**
+   * Choose a site, or the globe for null. `camera` 'fly' moves the camera there (a click, a link, the picker);
+   * 'stay' leaves it where the person put it, for a site chosen by zooming in by hand.
+   */
+  const select = async (siteId: string | null, camera: 'fly' | 'stay' = 'fly'): Promise<void> => {
     const thisChoice = ++choice;
     stopIdleTurn();
     stopRoutePlanner();
@@ -107,14 +115,14 @@ async function start(): Promise<void> {
     selectedId = site?.id ?? null;
     flights++;
     try {
-      await open(site, thisChoice);
+      await open(site, thisChoice, camera);
     } finally {
       flights--;
     }
   };
 
-  /** Show a site, or the globe when there is none, and fly there. */
-  const open = async (site: (typeof sites)[number] | undefined, thisChoice: number): Promise<void> => {
+  /** Show a site, or the globe when there is none, and fly there unless the person is steering. */
+  const open = async (site: (typeof sites)[number] | undefined, thisChoice: number, camera: 'fly' | 'stay'): Promise<void> => {
     markers.setSelected(site?.id ?? null);
     picker.show(site?.id ?? null);
     writeUrlState({ siteId: site?.id ?? null });
@@ -123,17 +131,18 @@ async function start(): Promise<void> {
       // The globe, or a site with no map of its own: show the markers and no site layers.
       removeSiteLayers(map);
       markers.setVisible(true);
-      await (site ? flyToSite(map, site) : flyToGlobe(map));
+      if (camera === 'fly') await (site ? flyToSite(map, site) : flyToGlobe(map));
       return;
     }
     try {
       const builtSite = await loadSite(DATA_URL, site.id);
       if (thisChoice !== choice) return;
-      const notShown = showSiteLayers(map, builtSite, markers.firstLayerId);
+      const notShown = showSiteLayers(map, builtSite, SLOT.image);
       for (const message of notShown) showProblem(message);
       // The column and the name would stand in the middle of the ground the person came to see.
       markers.setVisible(false);
-      await flyIntoSite(map, builtSite.site);
+      // A camera flight started while the person is still zooming fights their hand; they keep control.
+      if (camera === 'fly') await flyIntoSite(map, builtSite.site);
       if (thisChoice !== choice) return;
       const drawn = await addOverlays(map, builtSite);
       if (thisChoice !== choice) { drawn.remove(); return; }
@@ -154,7 +163,7 @@ async function start(): Promise<void> {
     } catch (error) {
       if (thisChoice !== choice) return;
       showProblem(error instanceof Error ? error.message : String(error));
-      await flyToSite(map, site);
+      if (camera === 'fly') await flyToSite(map, site);
     }
   };
 
@@ -171,11 +180,11 @@ async function start(): Promise<void> {
     onOpen: (siteId) => void select(siteId),
   });
 
-  // Zooming in on a site by hand selects it, as clicking its marker does.
+  // Zooming in on a site by hand selects it, as clicking its marker does, but leaves the camera to the person.
   watchZoomSelect(map, sites, {
     isFlying: () => flights > 0,
     selectedId: () => selectedId,
-    onSelect: (siteId) => void select(siteId),
+    onSelect: (siteId) => void select(siteId, 'stay'),
   });
 
   if (chosenAtStart) void select(chosenAtStart.id);

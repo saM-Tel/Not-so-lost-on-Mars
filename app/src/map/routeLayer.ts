@@ -10,6 +10,7 @@
 import { Marker, type CanvasSource, type GeoJSONSource, type ImageSource, type Map as MapLibreMap } from 'maplibre-gl';
 import type { GridDefinition } from '../data/contract';
 import type { LonLat } from '../mars/geometry';
+import { SLOT } from './slots';
 
 const KEEP_OUT_ID = 'route-keep-out';
 const TETHER_ID = 'route-tether';
@@ -84,18 +85,18 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
     id: `${LINES_ID}-edge`, type: 'line', source: LINES_ID,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': '#08090e', 'line-width': 7, 'line-opacity': 0.8 },
-  });
+  }, SLOT.route);
   map.addLayer({
     id: `${LINES_ID}-out`, type: 'line', source: LINES_ID, filter: ['==', ['get', 'leg'], 'out'],
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': OUT_COLOUR, 'line-width': 4 },
-  });
+  }, SLOT.route);
   // Dashed, so both show where the way home lies on top of the way out.
   map.addLayer({
     id: `${LINES_ID}-back`, type: 'line', source: LINES_ID, filter: ['==', ['get', 'leg'], 'back'],
     layout: { 'line-join': 'round' },
     paint: { 'line-color': BACK_COLOUR, 'line-width': 4, 'line-dasharray': [1.5, 1.5] },
-  });
+  }, SLOT.route);
 
   return {
     showKeepOut(keepOut, definition) {
@@ -127,7 +128,7 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
       map.addLayer({
         id: KEEP_OUT_ID, type: 'raster', source: KEEP_OUT_ID,
         paint: { 'raster-opacity': 0.4, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 },
-      }, map.getLayer(TETHER_ID) ? TETHER_ID : `${LINES_ID}-edge`);
+      }, SLOT.keepOut);
     },
     setKeepOut(visible, opacity) {
       if (!map.getLayer(KEEP_OUT_ID)) return;
@@ -162,7 +163,7 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
       map.addLayer({
         id: TETHER_ID, type: 'raster', source: TETHER_ID,
         paint: { 'raster-opacity': 0.9, 'raster-fade-duration': 0 },
-      }, `${LINES_ID}-edge`);
+      }, SLOT.tether);
     },
     hideTether() {
       if (!map.getLayer(TETHER_ID)) return;

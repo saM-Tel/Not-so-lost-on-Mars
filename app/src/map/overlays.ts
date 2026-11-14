@@ -14,6 +14,7 @@ import type { LayerRecord } from '../data/contract';
 import type { LoadedSite } from '../data/loadSite';
 import { rampColour, SLOPE_RAMP, SLOPE_RAMP_TOP_DEG, type Legend } from './legend';
 import { SITE_IMAGE_LAYER_ID } from './siteLayers';
+import { SLOT } from './slots';
 
 /** A layer the person can switch on and off and fade. */
 export interface Overlay {
@@ -98,7 +99,7 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
       // is given a picture. The picture (a 2.4 MB grid read and a PNG to make) waits until the layer is first
       // switched on, which keeps it out of the way while the site opens (review item R18).
       map.addSource(SLOPE_ID, { type: 'image', coordinates: [[west, north], [east, north], [east, south], [west, south]] } as Parameters<MapLibreMap['addSource']>[1]);
-      map.addLayer({ id: SLOPE_ID, type: 'raster', source: SLOPE_ID, paint: { 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } });
+      map.addLayer({ id: SLOPE_ID, type: 'raster', source: SLOPE_ID, paint: { 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } }, SLOT.overlays);
       added.layers.push(SLOPE_ID);
       added.sources.push(SLOPE_ID);
       const slope = overlay(map, record, {
@@ -129,7 +130,7 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
         ...(box ? { bounds: [box.westLonDeg, box.southLatDeg, box.eastLonDeg, box.northLatDeg] as [number, number, number, number] } : {}),
         attribution: `${record.title}: ${record.credit}`,
       });
-      map.addLayer({ id, type: 'raster', source: id, paint: { 'raster-fade-duration': 0 } });
+      map.addLayer({ id, type: 'raster', source: id, paint: { 'raster-fade-duration': 0 } }, SLOT.overlays);
       added.layers.push(id);
       added.sources.push(id);
       overlays.push(overlay(map, record, record.legend ?? null, { visible: false, opacity: 0.6 }, [{ id, opacityProperties: ['raster-opacity'] }]));
@@ -137,8 +138,8 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
       // Areas coloured by the pipeline, such as geologic map units (F2). Each feature carries its own colour.
       const id = `overlay-${record.id}`;
       map.addSource(id, { type: 'geojson', data: loaded.folderUrl + record.vector.path });
-      map.addLayer({ id, type: 'fill', source: id, paint: { 'fill-color': ['get', 'colour'], 'fill-opacity': 0.35 } });
-      map.addLayer({ id: `${id}-edge`, type: 'line', source: id, paint: { 'line-color': '#08090e', 'line-width': 1, 'line-opacity': 0.6 } });
+      map.addLayer({ id, type: 'fill', source: id, paint: { 'fill-color': ['get', 'colour'], 'fill-opacity': 0.35 } }, SLOT.overlays);
+      map.addLayer({ id: `${id}-edge`, type: 'line', source: id, paint: { 'line-color': '#08090e', 'line-width': 1, 'line-opacity': 0.6 } }, SLOT.overlays);
       added.layers.push(`${id}-edge`, id);
       added.sources.push(id);
       overlays.push(overlay(map, record, record.legend ?? null, { visible: false, opacity: 0.35 },
@@ -148,13 +149,15 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
       map.addSource(id, { type: 'geojson', data: loaded.folderUrl + record.vector.path });
       added.sources.push(id);
       if (record.vector.geometry === 'line') {
-        map.addLayer({ id: `${id}-edge`, type: 'line', source: id, layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#08090e', 'line-width': 4 } });
-        map.addLayer({ id, type: 'line', source: id, layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ROVER_COLOUR, 'line-width': 2 } });
+        map.addLayer({ id: `${id}-edge`, type: 'line', source: id, layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#08090e', 'line-width': 4 } }, SLOT.overlays);
+        map.addLayer({ id, type: 'line', source: id, layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ROVER_COLOUR, 'line-width': 2 } }, SLOT.overlays);
         added.layers.push(id, `${id}-edge`);
         overlays.push(overlay(map, record, { kind: 'swatches', items: [{ colour: ROVER_COLOUR, label: 'Where the rover drove', shape: 'line' }] },
           { visible: true, opacity: 0.9 }, [{ id: `${id}-edge`, opacityProperties: ['line-opacity'] }, { id, opacityProperties: ['line-opacity'] }]));
       } else {
-        map.addLayer({ id, type: 'circle', source: id, paint: { 'circle-radius': 4, 'circle-color': ROVER_COLOUR, 'circle-stroke-color': '#08090e', 'circle-stroke-width': 1.5 } });
+        // Circles are not draped over 3D ground; in the points slot they sit above every draped layer and do not
+        // split them into two drawing passes (review item R9).
+        map.addLayer({ id, type: 'circle', source: id, paint: { 'circle-radius': 4, 'circle-color': ROVER_COLOUR, 'circle-stroke-color': '#08090e', 'circle-stroke-width': 1.5 } }, SLOT.points);
         added.layers.push(id);
         overlays.push(overlay(map, record, { kind: 'swatches', items: [{ colour: ROVER_COLOUR, label: 'Where a drive ended', shape: 'dot' }] },
           { visible: true, opacity: 0.9 }, [{ id, opacityProperties: ['circle-opacity', 'circle-stroke-opacity'] }]));

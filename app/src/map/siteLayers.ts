@@ -4,17 +4,48 @@
 // OUT:     Map sources and layers; the map's terrain setting.
 // USED BY: src/main.ts.
 // RULES:   A layer appears only if its record in layers.json is complete. Heights are scaled by the Earth to Mars radius ratio.
-// TRAPS:   PITFALLS 3, 4, 5.
+//          3D terrain is on only from zoom 12.2 inwards, past MapLibre's globe-to-flat blend (see TERRAIN_ON_FROM_ZOOM).
+// TRAPS:   PITFALLS 3, 4, 5, 10.
 // OWNER:   Role B.
 
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { LoadedSite } from '../data/loadSite';
 import { MAPLIBRE_METRES_PER_MARS_METRE } from '../mars/constants';
+import { SLOT } from './slots';
 
 const IMAGE_ID = 'site-image';
 /** The map layer that draws the ground image, for the layer panel's switch and opacity control. */
 export const SITE_IMAGE_LAYER_ID = IMAGE_ID;
 const TERRAIN_ID = 'site-terrain';
+
+/**
+ * The ground is raised into 3D only from this zoom inwards. MapLibre 6.18's globe blends into the flat map between
+ * zoom 11 and 12 (`projection_factory.ts`); with terrain on during that blend, part of the screen was left black and
+ * labels jumped away from the ground (seen by the team owner on 14 Nov). Switched on just past the blend and off just
+ * before it, a little apart, so it does not flicker at one zoom.
+ */
+const TERRAIN_ON_FROM_ZOOM = 12.2;
+const TERRAIN_OFF_BELOW_ZOOM = 12.0;
+/** Stops watching the zoom for the site now shown; nothing when no site is shown. */
+let stopTerrainWatch = (): void => {};
+
+/** Switch the site's terrain on and off with the zoom, as above. */
+function watchTerrainZoom(map: MapLibreMap): void {
+  const update = (): void => {
+    const zoom = map.getZoom();
+    const on = map.getTerrain() !== null;
+    if (!on && zoom >= TERRAIN_ON_FROM_ZOOM) {
+      // MapLibre believes the planet is Earth-sized, so horizontal distances are stretched by the
+      // radius ratio. Heights are stretched by the same ratio to keep every slope true.
+      map.setTerrain({ source: TERRAIN_ID, exaggeration: MAPLIBRE_METRES_PER_MARS_METRE });
+    } else if (on && zoom < TERRAIN_OFF_BELOW_ZOOM) {
+      map.setTerrain(null);
+    }
+  };
+  map.on('zoom', update);
+  update();
+  stopTerrainWatch = () => map.off('zoom', update);
+}
 
 /**
  * Draw the site's image on the ground and raise the ground into 3D. Returns what could not be shown, in words.
@@ -68,9 +99,7 @@ export function showSiteLayers(map: MapLibreMap, loaded: LoadedSite, beforeLayer
       baseShift: -10000 - site.terrainHeightM.lowest,
       attribution: `${terrain.title}: ${terrain.credit}`,
     });
-    // MapLibre believes the planet is Earth-sized, so horizontal distances are stretched by the
-    // radius ratio. Heights are stretched by the same ratio to keep every slope true.
-    map.setTerrain({ source: TERRAIN_ID, exaggeration: MAPLIBRE_METRES_PER_MARS_METRE });
+    watchTerrainZoom(map);
   } else {
     notShown.push('The ground is drawn flat because the terrain record is incomplete.');
   }
@@ -89,32 +118,42 @@ export function setSunShading(map: MapLibreMap, loaded: LoadedSite, sun: { azimu
   if (!terrain) return;
   if (!map.getSource(SHADE_ID)) {
     const box = terrain.bounds ?? loaded.site.box;
+    // MapLibre works out slopes for shading against Earth-sized pixels, which are wider than Mars ones by the radius
+    // ratio, so every slope came out about half as steep as it is (review item R10). Heights scaled by the same ratio
+    // give true slopes, as for the 3D ground.
+    const k = MAPLIBRE_METRES_PER_MARS_METRE;
     map.addSource(SHADE_ID, {
       type: 'raster-dem', tiles: [loaded.folderUrl + terrain.path], tileSize: terrain.tileSizePx,
       minzoom: terrain.minZoom, maxzoom: terrain.maxZoom, encoding: 'custom',
-      redFactor: 6553.6, greenFactor: 25.6, blueFactor: 0.1, baseShift: -10000,
+      redFactor: 6553.6 * k, greenFactor: 25.6 * k, blueFactor: 0.1 * k, baseShift: -10000 * k,
       bounds: [box.westLonDeg, box.southLatDeg, box.eastLonDeg, box.northLatDeg],
     });
-    // Under the site image would hide it; over it, half see-through, so the ground still shows.
-    // Beneath keep-out shading and the route lines, which must stay readable.
-    const below = ['route-keep-out', 'route-tether', 'route-lines-edge'].find((id) => map.getLayer(id));
+    // Over the site image, half see-through, so the ground still shows; beneath the analysis layers, keep-out,
+    // tether and route, which must keep their own colours (review item R9).
     map.addLayer({
       id: SHADE_ID, type: 'hillshade', source: SHADE_ID,
-      paint: { 'hillshade-illumination-anchor': 'map', 'hillshade-exaggeration': 0.7, 'hillshade-highlight-color': 'rgba(255,255,255,0)' },
-    }, below);
+      paint: {
+        // 'basic' lights each slope from the Sun's direction and height, so a low Sun darkens more ground; the
+        // default method ignores the height and fades away on gentle slopes, which made the Sun controls look dead.
+        // At an intensity of 0.5 it uses the slopes as they are.
+        'hillshade-method': 'basic',
+        'hillshade-exaggeration': 0.5,
+        'hillshade-illumination-anchor': 'map',
+        'hillshade-shadow-color': 'rgba(0,0,0,0.75)',
+        'hillshade-highlight-color': 'rgba(255,255,255,0)',
+      },
+    }, SLOT.shading);
   }
   map.setLayoutProperty(SHADE_ID, 'visibility', sun ? 'visible' : 'none');
   if (!sun) return;
   map.setPaintProperty(SHADE_ID, 'hillshade-illumination-direction', sun.azimuthDeg);
-  // Lower Sun, darker shading on slopes facing away from it. Newer MapLibre also takes the Sun's height directly.
-  map.setPaintProperty(SHADE_ID, 'hillshade-shadow-color', `rgba(0,0,0,${Math.min(0.85, 0.35 + (60 - Math.max(0, sun.elevationDeg)) / 100)})`);
-  try {
-    map.setPaintProperty(SHADE_ID, 'hillshade-illumination-altitude' as 'hillshade-exaggeration', Math.max(1, sun.elevationDeg));
-  } catch { /* older style spec: direction and darkness only */ }
+  map.setPaintProperty(SHADE_ID, 'hillshade-illumination-altitude', Math.max(0, sun.elevationDeg));
 }
 
 /** Take the site's image and terrain off the map. Safe to call when none is shown. */
 export function removeSiteLayers(map: MapLibreMap): void {
+  stopTerrainWatch();
+  stopTerrainWatch = () => {};
   if (map.getLayer(SHADE_ID)) map.removeLayer(SHADE_ID);
   if (map.getSource(SHADE_ID)) map.removeSource(SHADE_ID);
   if (map.getTerrain()) map.setTerrain(null);
