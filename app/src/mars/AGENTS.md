@@ -32,8 +32,9 @@ Add a row when you add a file. Remove it when you delete one.
 | `constants.ts` | Mars constants (radius, gravity, sol length) and the Earth radius MapLibre assumes. The only place they are defined in the app |  |
 | `geometry.ts` | Distance, bearing and cell spacing on the Mars sphere, and longitude conversion | F1, F3, F14 |
 | `geometry.test.ts` | Tests for `constants.ts` and `geometry.ts`, with expected values worked by hand | |
-| `time.ts` | Mars time from Earth time: sol number, local mean solar time and season | F11, information cards |
-| `sun.ts` | Height and direction of the Sun at a place and time, for the time-of-day view and computed shadows | F11 |
+| `time.ts` | Mars time from Earth time (NASA Mars24): season (solar longitude), equation of time, local mean and true solar time, Sun declination, Mars month. Built | F11, information cards |
+| `time.test.ts` | Tests for `time.ts` and `sun.ts` against the Mars24 worked example | |
+| `sun.ts` | Height and direction of the Sun at a place and time, and sunrise and sunset in local solar time. Built. Shadows not drawn yet | F11 |
 
 ## Known issues
 

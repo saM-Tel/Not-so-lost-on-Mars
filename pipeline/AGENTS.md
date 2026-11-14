@@ -80,7 +80,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `terrain.py` | Stage 4. Built so far: steepest slope over a baseline of at least 5 m, on the corrected cell spacing. To add: roughness and sky exposure | F2, F3, F5 |
 | `grids.py` | Stage 5. Built so far: joins 4 x 4 source cells into a routing cell and writes mean height and steepest slope as raw 32-bit floats, with the grid definition for `site.json`. To add: mask, footing, sky exposure | F3, F4 |
 | `vectors.py` | Stage 6. Built so far: the rover's stops and path inside the box as GeoJSON, each with a full layer record, and sol numbers turned into Earth dates. To add: geology and science targets | F2 |
-| `weather.py` | Stage 7: typical weather by local hour for the season, from the weather archive | F11 |
+| `weather.py` | Typical weather by Mars month at a site with its own station: Curiosity REMS daily lows, highs, pressure, ultraviolet and sky at Gale, as percentiles with sol counts. Writes `../app/public/data/weather/<site id>.json`. Run `python weather.py gale-crater` | F11 |
 | `photos.py` | Stage 7: reads NASA's raw image feed for the left navigation camera and indexes up to six photos for each rover stop in the box. Built | F6 |
 | `scenario.py` | The hero scenario: home and science targets placed at rover stops looked up by id in the waypoints file, with reasons and sources, for `site.json` | F3, F7 |
 | `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built: heights and slope at every rover stop in the box, and the reader for the rover's feeds. To add: a route against the rover's path | F1, F9 |

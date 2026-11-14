@@ -198,9 +198,10 @@ def global_ctx_record(layer_id: str, ring: Ring, level: int, zoom_min: int, zoom
         "sourceUrl": ESRI_SERVICE,
         "doi": records.NOT_FOUND,
         # The service gives no image dates. CTX has imaged Mars since 2006 (the USGS Jezero CTX metadata gives
-        # 2006 as the start of CTX coverage). The latest date in beta01 is not stated: see docs/REVIEW_QUEUE.md.
+        # 2006 as the start of CTX coverage). USGS SIM 3464 (Sun and Stack 2020) ships a copy of this mosaic named
+        # Nili_CTX_Mosaic_Beta01_Feb2018, so beta01 existed by February 2018. Exact dates: docs/REVIEW_QUEUE.md item 2.
         "acquiredFrom": "2006 at the earliest",
-        "acquiredTo": "Not stated by the service; before the beta01 mosaic was made",
+        "acquiredTo": "Before February 2018 (USGS SIM 3464 holds a copy of beta01 dated February 2018); exact dates not stated",
         "published": records.NOT_FOUND,
         "gridSpacing": f"About 5 m in the source mosaic; read at about {source_m:.0f} m; about {our_m:.0f} m in our copy at zoom {zoom_max}",
         "realDetail": f"About {max(source_m, our_m):.0f} m",

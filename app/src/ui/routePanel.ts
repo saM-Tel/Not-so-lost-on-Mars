@@ -21,11 +21,13 @@ import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
 import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS } from '../safety/budget';
 import { walkDose } from '../safety/dose';
 import { OXYGEN_BASIS, oxygenForEnergy } from '../safety/oxygen';
+import { stormAdvice } from '../safety/storm';
 import { farthestFromHomeS, tetherPicture } from '../safety/tether';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createPhotoStrip } from './photoStrip';
 import { profileChart } from './profileChart';
-import { createSuitSettings as suitSettings, createTetherControls } from './safetyPanel';
+import { createTimePanel } from './timeSlider';
+import { createStormDrill, createSuitSettings as suitSettings, createTetherControls } from './safetyPanel';
 import { updateUrlState, type UrlState } from './urlState';
 
 /**
@@ -178,9 +180,28 @@ export function startRoutePlanner(
   };
   const tether = createTetherControls(drawTether);
 
+  /** Storm mode (F10): what to do from the far end of the planned walk if a storm is coming. */
+  const showStorm = (): void => {
+    if (!lastAnswer?.ok) { storm.show(null, null); return; }
+    const answer = lastAnswer;
+    const timeHomeS = caseValue(answer.back, 'cautious', 'timeS');
+    const walkTime = (caseId: string): number => caseValue(answer.out, caseId, 'timeS') + caseValue(answer.back, caseId, 'timeS');
+    const dose = walkDose({ favourable: walkTime('favourable'), expected: walkTime('expected'), cautious: walkTime('cautious') });
+    storm.show(stormAdvice(timeHomeS, storm.warningS(), formatDuration), dose.absorbedUGy.expected);
+  };
+  const storm = createStormDrill(showStorm);
+  /** When to go (F11): Sun, daylight along the walk and, where the site has a station record, typical weather. */
+  const when = createTimePanel({
+    lonEastDeg: loaded.site.centre.lonEastDeg,
+    latDeg: loaded.site.centre.latDeg,
+    weatherUrl: new URL(`../weather/${loaded.site.id}.json`, loaded.folderUrl).href,
+  });
+
   const showAnswer = (answer: RouteAnswer): void => {
     lastAnswer = answer;
     showVerdict();
+    showStorm();
+    when.setWalk(answer.ok ? caseValue(answer.out, 'cautious', 'timeS') + caseValue(answer.back, 'cautious', 'timeS') : null);
     result.replaceChildren();
     if (!answer.ok) {
       layer.showRoute(null);
@@ -344,6 +365,9 @@ export function startRoutePlanner(
           });
         }
         if (!tether.element.isConnected) card.insertBefore(tether.element, result);
+        if (!storm.element.isConnected) card.insertBefore(storm.element, result);
+        if (!when.element.isConnected) card.insertBefore(when.element, result);
+        showStorm();
         drawTether();
       });
       if (!ready.homeUsable) {

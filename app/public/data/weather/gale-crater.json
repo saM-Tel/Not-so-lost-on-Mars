@@ -1,0 +1,584 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T15:47:58Z",
+  "siteId": "gale-crater",
+  "word": "typical",
+  "source": {
+    "mission": "Mars Science Laboratory (Curiosity)",
+    "instrument": "Rover Environmental Monitoring Station (REMS)",
+    "agency": "NASA; REMS was provided by Spain's Centro de Astrobiología (CSIC-INTA)",
+    "sourceUrl": "https://mars.nasa.gov/msl/weather/",
+    "credit": "NASA/JPL-Caltech/CAB (CSIC-INTA)",
+    "caveats": [
+      "Daily lows and highs as NASA's feed gives them, one value each per sol; not readings by the hour.",
+      "Measured at the rover, which has driven up Mount Sharp since 2012, so later years are higher up.",
+      "Typical values: the spread of past years in the same Mars month, not a forecast."
+    ],
+    "productId": "msl_curiosity_rems_weather.json",
+    "acquiredFrom": "2012-08-07 (sol 1)",
+    "acquiredTo": "2026-08-25 (sol 4995)",
+    "readFrom": "local copy in data/raw",
+    "how": "Sols grouped by Mars month (30 degrees of solar longitude each, as the feed's own 'Month 1' to 'Month 12'), then the 10th, 50th and 90th percentiles of each daily value. Values marked '--' in the feed are left out."
+  },
+  "months": [
+    {
+      "month": 1,
+      "lsFromDeg": 0,
+      "lsToDeg": 30,
+      "sols": 405,
+      "airLowC": {
+        "sols": 403,
+        "p10": -78.0,
+        "p50": -76.0,
+        "p90": -73.0
+      },
+      "airHighC": {
+        "sols": 403,
+        "p10": -22.0,
+        "p50": -15.0,
+        "p90": -11.0
+      },
+      "groundLowC": {
+        "sols": 403,
+        "p10": -93.0,
+        "p50": -83.0,
+        "p90": -78.0
+      },
+      "groundHighC": {
+        "sols": 403,
+        "p10": -4.0,
+        "p50": 0.0,
+        "p90": 6.0
+      },
+      "pressurePa": {
+        "sols": 403,
+        "p10": 810.0,
+        "p50": 842.0,
+        "p90": 874.0
+      },
+      "ultraviolet": {
+        "Moderate": 248,
+        "High": 154,
+        "Low": 1
+      },
+      "sky": {
+        "Sunny": 405
+      },
+      "sunriseLocal": "06:33",
+      "sunsetLocal": "18:28"
+    },
+    {
+      "month": 2,
+      "lsFromDeg": 30,
+      "lsToDeg": 60,
+      "sols": 432,
+      "airLowC": {
+        "sols": 428,
+        "p10": -81.0,
+        "p50": -78.5,
+        "p90": -75.0
+      },
+      "airHighC": {
+        "sols": 428,
+        "p10": -27.0,
+        "p50": -23.0,
+        "p90": -19.0
+      },
+      "groundLowC": {
+        "sols": 428,
+        "p10": -91.0,
+        "p50": -86.0,
+        "p90": -79.0
+      },
+      "groundHighC": {
+        "sols": 428,
+        "p10": -13.0,
+        "p50": -6.0,
+        "p90": 1.0
+      },
+      "pressurePa": {
+        "sols": 428,
+        "p10": 840.0,
+        "p50": 871.0,
+        "p90": 900.0
+      },
+      "ultraviolet": {
+        "Moderate": 338,
+        "High": 89,
+        "Low": 1
+      },
+      "sky": {
+        "Sunny": 432
+      },
+      "sunriseLocal": "06:14",
+      "sunsetLocal": "18:02"
+    },
+    {
+      "month": 3,
+      "lsFromDeg": 60,
+      "lsToDeg": 90,
+      "sols": 460,
+      "airLowC": {
+        "sols": 458,
+        "p10": -86.0,
+        "p50": -81.0,
+        "p90": -78.0
+      },
+      "airHighC": {
+        "sols": 458,
+        "p10": -31.0,
+        "p50": -28.0,
+        "p90": -23.0
+      },
+      "groundLowC": {
+        "sols": 458,
+        "p10": -94.0,
+        "p50": -88.0,
+        "p90": -84.0
+      },
+      "groundHighC": {
+        "sols": 458,
+        "p10": -14.0,
+        "p50": -9.0,
+        "p90": -6.0
+      },
+      "pressurePa": {
+        "sols": 458,
+        "p10": 823.7,
+        "p50": 859.0,
+        "p90": 894.0
+      },
+      "ultraviolet": {
+        "Moderate": 391,
+        "High": 63,
+        "Low": 4
+      },
+      "sky": {
+        "Sunny": 460
+      },
+      "sunriseLocal": "05:59",
+      "sunsetLocal": "17:42"
+    },
+    {
+      "month": 4,
+      "lsFromDeg": 90,
+      "lsToDeg": 120,
+      "sols": 442,
+      "airLowC": {
+        "sols": 442,
+        "p10": -85.0,
+        "p50": -80.0,
+        "p90": -78.0
+      },
+      "airHighC": {
+        "sols": 442,
+        "p10": -29.0,
+        "p50": -25.0,
+        "p90": -19.1
+      },
+      "groundLowC": {
+        "sols": 441,
+        "p10": -95.0,
+        "p50": -87.0,
+        "p90": -81.0
+      },
+      "groundHighC": {
+        "sols": 441,
+        "p10": -15.0,
+        "p50": -8.0,
+        "p90": -1.0
+      },
+      "pressurePa": {
+        "sols": 442,
+        "p10": 748.1,
+        "p50": 787.0,
+        "p90": 829.0
+      },
+      "ultraviolet": {
+        "Moderate": 372,
+        "High": 64,
+        "Low": 6
+      },
+      "sky": {
+        "Sunny": 442
+      },
+      "sunriseLocal": "05:49",
+      "sunsetLocal": "17:32"
+    },
+    {
+      "month": 5,
+      "lsFromDeg": 120,
+      "lsToDeg": 150,
+      "sols": 388,
+      "airLowC": {
+        "sols": 388,
+        "p10": -81.0,
+        "p50": -77.0,
+        "p90": -74.0
+      },
+      "airHighC": {
+        "sols": 388,
+        "p10": -21.0,
+        "p50": -14.0,
+        "p90": -8.7
+      },
+      "groundLowC": {
+        "sols": 388,
+        "p10": -93.0,
+        "p50": -83.0,
+        "p90": -77.0
+      },
+      "groundHighC": {
+        "sols": 388,
+        "p10": -8.0,
+        "p50": 1.0,
+        "p90": 6.0
+      },
+      "pressurePa": {
+        "sols": 388,
+        "p10": 697.0,
+        "p50": 727.0,
+        "p90": 756.3
+      },
+      "ultraviolet": {
+        "Moderate": 247,
+        "High": 130,
+        "Very_High": 10,
+        "Low": 1
+      },
+      "sky": {
+        "Sunny": 388
+      },
+      "sunriseLocal": "05:38",
+      "sunsetLocal": "17:25"
+    },
+    {
+      "month": 6,
+      "lsFromDeg": 150,
+      "lsToDeg": 180,
+      "sols": 411,
+      "airLowC": {
+        "sols": 405,
+        "p10": -76.0,
+        "p50": -73.0,
+        "p90": -70.0
+      },
+      "airHighC": {
+        "sols": 405,
+        "p10": -15.0,
+        "p50": -6.0,
+        "p90": 0.0
+      },
+      "groundLowC": {
+        "sols": 405,
+        "p10": -87.0,
+        "p50": -80.0,
+        "p90": -74.0
+      },
+      "groundHighC": {
+        "sols": 405,
+        "p10": 2.0,
+        "p50": 8.0,
+        "p90": 14.0
+      },
+      "pressurePa": {
+        "sols": 405,
+        "p10": 693.0,
+        "p50": 722.0,
+        "p90": 750.0
+      },
+      "ultraviolet": {
+        "Moderate": 182,
+        "High": 166,
+        "Very_High": 56,
+        "Low": 1
+      },
+      "sky": {
+        "Sunny": 411
+      },
+      "sunriseLocal": "05:24",
+      "sunsetLocal": "17:20"
+    },
+    {
+      "month": 7,
+      "lsFromDeg": 180,
+      "lsToDeg": 210,
+      "sols": 380,
+      "airLowC": {
+        "sols": 380,
+        "p10": -74.0,
+        "p50": -71.0,
+        "p90": -66.0
+      },
+      "airHighC": {
+        "sols": 380,
+        "p10": -11.0,
+        "p50": -1.0,
+        "p90": 6.0
+      },
+      "groundLowC": {
+        "sols": 380,
+        "p10": -83.0,
+        "p50": -76.0,
+        "p90": -67.0
+      },
+      "groundHighC": {
+        "sols": 380,
+        "p10": 5.0,
+        "p50": 14.0,
+        "p90": 17.0
+      },
+      "pressurePa": {
+        "sols": 380,
+        "p10": 729.9,
+        "p50": 772.0,
+        "p90": 810.0
+      },
+      "ultraviolet": {
+        "High": 208,
+        "Moderate": 73,
+        "Very_High": 66,
+        "Low": 33
+      },
+      "sky": {
+        "Sunny": 380
+      },
+      "sunriseLocal": "05:18",
+      "sunsetLocal": "17:22"
+    },
+    {
+      "month": 8,
+      "lsFromDeg": 210,
+      "lsToDeg": 240,
+      "sols": 373,
+      "airLowC": {
+        "sols": 373,
+        "p10": -71.0,
+        "p50": -68.0,
+        "p90": -65.0
+      },
+      "airHighC": {
+        "sols": 373,
+        "p10": -11.8,
+        "p50": 0.0,
+        "p90": 5.0
+      },
+      "groundLowC": {
+        "sols": 373,
+        "p10": -83.0,
+        "p50": -73.0,
+        "p90": -66.0
+      },
+      "groundHighC": {
+        "sols": 373,
+        "p10": 0.0,
+        "p50": 11.0,
+        "p90": 16.0
+      },
+      "pressurePa": {
+        "sols": 373,
+        "p10": 805.2,
+        "p50": 845.0,
+        "p90": 892.8
+      },
+      "ultraviolet": {
+        "Moderate": 204,
+        "High": 92,
+        "Low": 40,
+        "Very_High": 37
+      },
+      "sky": {
+        "Sunny": 373
+      },
+      "sunriseLocal": "05:24",
+      "sunsetLocal": "17:36"
+    },
+    {
+      "month": 9,
+      "lsFromDeg": 240,
+      "lsToDeg": 270,
+      "sols": 332,
+      "airLowC": {
+        "sols": 330,
+        "p10": -73.0,
+        "p50": -68.0,
+        "p90": -66.0
+      },
+      "airHighC": {
+        "sols": 330,
+        "p10": -10.0,
+        "p50": -2.0,
+        "p90": 1.1
+      },
+      "groundLowC": {
+        "sols": 330,
+        "p10": -86.0,
+        "p50": -74.5,
+        "p90": -70.0
+      },
+      "groundHighC": {
+        "sols": 330,
+        "p10": 3.0,
+        "p50": 8.0,
+        "p90": 14.0
+      },
+      "pressurePa": {
+        "sols": 330,
+        "p10": 850.0,
+        "p50": 887.5,
+        "p90": 919.0
+      },
+      "ultraviolet": {
+        "Moderate": 204,
+        "High": 91,
+        "Very_High": 22,
+        "Low": 13
+      },
+      "sky": {
+        "Sunny": 332
+      },
+      "sunriseLocal": "05:47",
+      "sunsetLocal": "18:04"
+    },
+    {
+      "month": 10,
+      "lsFromDeg": 270,
+      "lsToDeg": 300,
+      "sols": 346,
+      "airLowC": {
+        "sols": 342,
+        "p10": -74.0,
+        "p50": -70.0,
+        "p90": -69.0
+      },
+      "airHighC": {
+        "sols": 342,
+        "p10": -7.0,
+        "p50": -2.0,
+        "p90": 1.0
+      },
+      "groundLowC": {
+        "sols": 342,
+        "p10": -88.0,
+        "p50": -77.0,
+        "p90": -72.0
+      },
+      "groundHighC": {
+        "sols": 342,
+        "p10": 6.0,
+        "p50": 11.0,
+        "p90": 14.0
+      },
+      "pressurePa": {
+        "sols": 342,
+        "p10": 824.0,
+        "p50": 862.0,
+        "p90": 894.0
+      },
+      "ultraviolet": {
+        "Moderate": 179,
+        "High": 118,
+        "Very_High": 44,
+        "Low": 1
+      },
+      "sky": {
+        "Sunny": 345
+      },
+      "sunriseLocal": "06:21",
+      "sunsetLocal": "18:38"
+    },
+    {
+      "month": 11,
+      "lsFromDeg": 300,
+      "lsToDeg": 330,
+      "sols": 394,
+      "airLowC": {
+        "sols": 386,
+        "p10": -74.0,
+        "p50": -71.0,
+        "p90": -68.0
+      },
+      "airHighC": {
+        "sols": 386,
+        "p10": -11.0,
+        "p50": -6.0,
+        "p90": -1.0
+      },
+      "groundLowC": {
+        "sols": 386,
+        "p10": -87.0,
+        "p50": -77.0,
+        "p90": -70.0
+      },
+      "groundHighC": {
+        "sols": 386,
+        "p10": 1.0,
+        "p50": 8.0,
+        "p90": 14.0
+      },
+      "pressurePa": {
+        "sols": 387,
+        "p10": 793.0,
+        "p50": 829.0,
+        "p90": 864.0
+      },
+      "ultraviolet": {
+        "High": 188,
+        "Moderate": 150,
+        "Very_High": 48,
+        "Low": 1
+      },
+      "sky": {
+        "Sunny": 392
+      },
+      "sunriseLocal": "06:43",
+      "sunsetLocal": "18:54"
+    },
+    {
+      "month": 12,
+      "lsFromDeg": 330,
+      "lsToDeg": 360,
+      "sols": 382,
+      "airLowC": {
+        "sols": 382,
+        "p10": -76.0,
+        "p50": -73.0,
+        "p90": -71.0
+      },
+      "airHighC": {
+        "sols": 382,
+        "p10": -16.0,
+        "p50": -8.0,
+        "p90": -4.0
+      },
+      "groundLowC": {
+        "sols": 382,
+        "p10": -92.0,
+        "p50": -81.0,
+        "p90": -75.0
+      },
+      "groundHighC": {
+        "sols": 382,
+        "p10": 0.0,
+        "p50": 6.0,
+        "p90": 13.0
+      },
+      "pressurePa": {
+        "sols": 382,
+        "p10": 791.0,
+        "p50": 816.5,
+        "p90": 849.0
+      },
+      "ultraviolet": {
+        "Moderate": 224,
+        "High": 157,
+        "Very_High": 1
+      },
+      "sky": {
+        "Sunny": 382
+      },
+      "sunriseLocal": "06:46",
+      "sunsetLocal": "18:50"
+    }
+  ]
+}

@@ -10,6 +10,7 @@
 import {
   allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS, WALK_BACK_LIMITS_S, WALK_DURATION_S, type TetherSettings,
 } from '../safety/budget';
+import { MAY_2024_EVENT, type StormAdvice } from '../safety/storm';
 import { formatDuration } from './format';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -49,6 +50,72 @@ export function createSuitSettings(onChange: (slopeLimitDeg: number) => void): {
   box.append(row, el('p', 'route-card__note',
     'A limit other than 20 degrees is your own choice, not a sourced figure. Changing it works out the ways from home again, about a second.'));
   return { element: box };
+}
+
+/** Warning times offered in the storm drill, seconds. */
+const STORM_WARNINGS_S = [15 * 60, 30 * 60, 60 * 60, 2 * 3600, 4 * 3600];
+
+export interface StormDrill {
+  element: HTMLElement;
+  /** Time until the earliest arrival chosen in the drill, seconds. */
+  warningS(): number;
+  /** Show advice for the planned walk, or a note that there is no walk yet. */
+  show(advice: StormAdvice | null, walkAbsorbedUGy: number | null): void;
+}
+
+/**
+ * Storm mode (F10): "a storm is coming, what do I do?" The person picks a warning time; the card says whether to go
+ * home or shelter, and sets the 20 May 2024 event measured at Gale beside the walk's own background dose.
+ */
+export function createStormDrill(onChange: () => void): StormDrill {
+  const box = el('section', 'storm');
+  box.append(el('h3', undefined, 'Storm drill'));
+  const select = el('select');
+  select.id = 'storm-warning';
+  for (const seconds of STORM_WARNINGS_S) {
+    const option = el('option', undefined, `Storm arrives in ${formatDuration(seconds)}`);
+    option.value = String(seconds);
+    option.selected = seconds === 60 * 60;
+    select.append(option);
+  }
+  const label = el('label', undefined, 'If a forecast says ');
+  label.htmlFor = select.id;
+  const row = el('p', 'tether__row');
+  row.append(label, select);
+  const headline = el('p', 'storm__advice');
+  headline.setAttribute('role', 'status');
+  const reasons = el('ul', 'route-card__note');
+  const replay = el('p', 'route-card__note');
+  select.addEventListener('change', onChange);
+  box.append(row, headline, reasons, replay);
+  return {
+    element: box,
+    warningS: () => Number(select.value),
+    show(advice, walkAbsorbedUGy) {
+      reasons.replaceChildren();
+      if (!advice) {
+        headline.textContent = 'Plan a walk to see what to do if a storm comes.';
+        headline.className = 'storm__advice';
+        replay.textContent = '';
+        return;
+      }
+      headline.textContent = advice.headline;
+      headline.className = advice.action === 'go-home' ? 'storm__advice' : 'storm__advice storm__advice--danger';
+      for (const reason of advice.reasons) reasons.append(el('li', undefined, reason));
+      const e = MAY_2024_EVENT;
+      const times = walkAbsorbedUGy && walkAbsorbedUGy > 0 ? Math.round(e.absorbedUGy / walkAbsorbedUGy) : null;
+      replay.replaceChildren(
+        `Replay of a past event, measured at ${e.place}, not here: on ${e.date} the biggest solar storm ${e.instrument} has recorded ` +
+        `would have given an astronaut beside the rover ${e.absorbedUGy.toLocaleString('en-GB')} micrograys absorbed dose, ${e.comparison}` +
+        (times ? `, about ${times} times this walk's everyday background absorbed dose. ` : '. '),
+      );
+      const link = el('a', undefined, `NASA, ${e.published}`);
+      link.href = e.sourceUrl;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      replay.append(link, '.');
+    },
+  };
 }
 
 export interface TetherControls {

@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:40:49Z",
+  "builtUtc": "2026-11-14T15:45:54Z",
   "id": "bright-angel",
   "name": "Bright Angel",
   "place": "Neretva Vallis, Jezero crater",
@@ -126,13 +126,13 @@
   ],
   "readFrom": {
     "terrain": "local working copy, first read from the team data server",
-    "image": "team data server"
+    "image": "local working copy, first read from the team data server"
   },
   "files": [
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 8577
+      "bytes": 9099
     },
     {
       "path": "validation.json",
@@ -146,8 +146,8 @@
     },
     {
       "path": "tiles/terrain-hirise",
-      "files": 52,
-      "bytes": 1122077
+      "files": 412,
+      "bytes": 6230413
     },
     {
       "path": "grid",
@@ -162,8 +162,8 @@
     {
       "path": "photos.json",
       "files": 1,
-      "bytes": 360853
+      "bytes": 360889
     }
   ],
-  "totalBytes": 16339686
+  "totalBytes": 21448580
 }

@@ -8,14 +8,20 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 
 ## Open
 
-### 1. Site terrain floats above flat surroundings (medium, looks wrong on the fly-in)
+### 7. Geology layer blocked: no vector reader (high, F2 must-have)
+- **Where:** the Jezero geologic map (USGS SIM 3464) is an ArcGIS file geodatabase only, no shapefiles (`data/raw/geology/sim3464_database.zip`).
+- **What:** the pipeline has no package that reads vector data. Installing `fiona==1.10.1` into `pipeline/.venv` was refused by the AI tool's permission check on 14 Nov, so a person must approve or run it.
+- **Fix:** `pipeline\.venv\Scripts\python -m pip install fiona==1.10.1`, add it to `requirements.txt`, then write `build_geology.py` (read the map units in Mars Transverse Mercator, central meridian 77.5 E, reproject to degrees on the Mars sphere, keep units touching the 12 km near ring, colour them with a colour-blind-safe palette with no red, caveat the 100 to 200 m offset). Keep fiona and rasterio in separate processes on Windows: both carry their own GDAL.
+
+### 1. Site terrain floats above flat surroundings (medium, looks wrong on the fly-in) — coded 14 Nov, not yet looked at
 - **Where:** `app/src/map/siteLayers.ts` (terrain source and `baseShift`), `pipeline/tiles.py`, `pipeline/build_approach.py`.
 - **What:** only the 3 x 3 km box has terrain. Everything around it, including the new approach imagery, sits at height zero. The box is drawn relative to its own lowest point, so in 3D, and even looking straight down on the globe, its edges stand up and look skewed against the CTX imagery around it.
-- **Fix idea:** one terrain pyramid per site that uses the HiRISE heights inside the box and the USGS CTX 20 m terrain (`JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m...`, on the server) around it, both relative to the areoid, with `baseShift` taken from the wider area. Check that the two models agree at the box edge (the HiRISE mosaic sits a median 0.4 m below CTX, per its record). For sites with no CTX terrain, a MOLA-based surround or a feathered edge.
+- **Done so far:** `tiles.write_terrain_tiles_with_surround` and `approach.terrain` in `bright-angel.yaml`: a 10 km square of CTX 20 m heights round the box, eased to the box's lowest point over the last 1.5 km. Needs a look in 3D; check the step at the box edge and the slope of the easing.
+- **Fix idea (as built):** one terrain pyramid per site that uses the HiRISE heights inside the box and the USGS CTX 20 m terrain (`JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m...`, on the server) around it, both relative to the areoid, with `baseShift` taken from the wider area. Check that the two models agree at the box edge (the HiRISE mosaic sits a median 0.4 m below CTX, per its record). For sites with no CTX terrain, a MOLA-based surround or a feathered edge.
 
 ### 2. Murray Lab CTX mosaic dates not confirmed (medium, honesty rule)
 - **Where:** `pipeline/build_approach.py`, `global_ctx_record`.
-- **What:** the service gives no image dates. The record says "2006 at the earliest" and "not stated by the service" for the end. The paper is Dickson and others 2024, doi:10.1029/2024EA003555, which blocks automated reading.
+- **What:** the service gives no image dates. The record says "2006 at the earliest" and "before February 2018", from the copy of beta01 dated February 2018 that USGS SIM 3464 ships (`Nili_CTX_Mosaic_Beta01_Feb2018_MTM.tif`). The paper is Dickson and others 2024, doi:10.1029/2024EA003555, which blocks automated reading.
 - **Fix:** a person reads the paper or the Murray Lab page (https://murray-lab.caltech.edu/CTX/) and puts the image date range and the beta01 release date into the record and into REFERENCES.
 
 ### 3. Approach imagery: Esri service is flaky (low)

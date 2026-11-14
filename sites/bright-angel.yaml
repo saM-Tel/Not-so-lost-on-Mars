@@ -110,6 +110,34 @@ approach:
         - "Black and white: brightness only, not colour."
       credit: "NASA/JPL-Caltech/MSSS/USGS (Fergason, Galuszka and Hare 2020)"
 
+  # Heights round the site box, so the box no longer stands above flat ground in 3D. Same USGS product family; the
+  # HiRISE terrain was aligned to it. Covers the same area as the image above.
+  terrain:
+    file: JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.tif
+    serverPath: raw/jezero
+    originalUrl: "https://planetarymaps.usgs.gov/mosaic/mars2020_trn/CTX"
+    sizeKm: 10
+    record:
+      # From the metadata file JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.xml, read 14 Nov 2026.
+      mission: Mars Reconnaissance Orbiter
+      instrument: Context Camera (CTX), stereo
+      agency: NASA
+      productId: JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0
+      sourceUrl: "https://doi.org/10.5066/P9GV1ND3"
+      doi: "10.5066/P9GV1ND3"
+      acquiredFrom: "2006"
+      acquiredTo: "2020"
+      published: "2020-07-24"
+      gridSpacing: "20 m"
+      realDetail: "About 20 m"
+      positionAccuracy: "The individual CTX images agree with each other to an average of 9.6 m (product metadata)"
+      heightAccuracy: "The CTX terrain models agree with each other to 3.8 m vertically, after the mosaic was shifted 183.3 m to match HRSC (product metadata)"
+      grade: B
+      caveats:
+        - "Only for the 3D shape of the land round the site. Routes and slopes use the 1 m HiRISE terrain inside the box."
+        - "Hills and hollows smaller than about 20 m are not in it."
+      credit: "NASA/JPL-Caltech/MSSS/USGS (Fergason, Galuszka and Hare 2020)"
+
 # ---- What the pipeline builds --------------------------------------------------------------
 
 box:

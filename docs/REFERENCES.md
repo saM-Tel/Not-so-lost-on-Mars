@@ -23,6 +23,8 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Mars 2020 Jezero landing site terrain and image mosaics, USGS | https://astrogeology.usgs.gov/search/map/mars-2020-jezero-crater-landing-site-products |
 | Fergason, Galuszka and Hare 2020, Context Camera orthorectified image mosaic for Mars 2020 Terrain Relative Navigation (`JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0`), USGS, doi 10.5066/P9GV1ND3. The near approach ring at Bright Angel. Dates (2006 to 2020), the 9.6 m image agreement and the source image pairs read from its metadata file on 14 Nov | https://planetarymaps.usgs.gov/mosaic/mars2020_trn/CTX/ |
 | CTX global mosaic, beta01, Murray Lab, Caltech; served as tiles by Esri (OnMars CTX) and listed in Mars Trek as `CTX_beta01_uncontrolled_5m_Caltech`. The approach rings at every site. Credit "NASA/JPL/MSSS/The Murray Lab". Service description read 14 Nov; image dates not read (see Dickson 2024 below) | https://astro.arcgis.com/arcgis/rest/services/OnMars/CTX/MapServer |
+| Curiosity REMS daily weather feed, NASA/JPL-Caltech/CAB (CSIC-INTA), 4,745 sols from 7 Aug 2012 to 25 Aug 2026. Typical weather at Gale by Mars month (`pipeline/weather.py`) | https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json |
+| NASA/JPL news, 10 June 2024, "NASA Watches Mars Light Up During Epic Solar Storm": 20 May 2024 event, 8,100 micrograys beside Curiosity, about 30 chest X-rays; cliffsides would give extra shielding. Read 14 Nov | https://www.jpl.nasa.gov/news/nasa-watches-mars-light-up-during-epic-solar-storm/ |
 | Dickson and others 2024, the global CTX mosaic of Mars, Earth and Space Science, doi 10.1029/2024EA003555. Describes the final Murray Lab mosaic. **Not read**: the publisher blocks automated reading; a person should read it for the image dates | https://doi.org/10.1029/2024EA003555 |
 | HiRISE LPL PDS archive, 1 m terrain models and ortho images for the seven landing sites (Viking 1, Viking 2, Pathfinder, Spirit, Opportunity, Phoenix, InSight) | https://hirise.lpl.arizona.edu/PDS/DTM/ |
 | MRO CRISM targeted products (Jezero mineral observations, 6 products, 10.94 GB), PDS Geosciences Node | https://pds-geosciences.wustl.edu/mro/mro-m-crism-5-rdr-mptargeted-v1/ |
@@ -41,6 +43,11 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Deep Space Network Now | https://eyes.nasa.gov/dsn/dsn.html |
 
 ## Science
+
+| Source | Address |
+|---|---|
+| Allison and McEwen 2000, A post-Pathfinder evaluation of areocentric solar coordinates, Planetary and Space Science 48, 215-235; the Mars24 algorithm on NASA GISS's pages. Season, Mars time and Sun position (`app/src/mars/time.ts`); checked against the Mars24 worked example | https://www.giss.nasa.gov/tools/mars24/help/algorithm.html |
+| Weir 1949, New methods for calculating metabolic rate with special reference to protein metabolism, Journal of Physiology 109, 1-9. Oxygen from energy (`app/src/safety/oxygen.ts`). Not re-read on 14 Nov; the equation is widely reproduced | https://doi.org/10.1113/jphysiol.1949.sp004363 |
 
 | Source | Used for | Read |
 |---|---|---|

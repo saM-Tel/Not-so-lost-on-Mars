@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:40:48Z",
+  "builtUtc": "2026-11-14T15:45:53Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -54,21 +54,28 @@
       "caveats": [
         "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model.",
         "Made from images taken between 2007 and 2017, before the rover landed. Sand may have moved since.",
-        "Where two source models meet there can be a small step that is not real."
+        "Where two source models meet there can be a small step that is not real.",
+        "Round the box the 3D shape comes from a 20 m CTX terrain model and is eased flat at its outer edge; it is not this layer's 1 m data."
       ],
       "credit": "NASA/JPL-Caltech/University of Arizona/USGS (Fergason and others 2020)",
       "id": "terrain-hirise",
       "title": "Terrain height",
       "dataType": "topographic",
-      "processing": "Cut to the site's box and stored as height tiles for zoom 11 to 15, to the nearest 0.1 m. One tile pixel at zoom 15 is 2.4 m on the ground, so the 3D view is smoother than the 1 m grid. Past the edge of the box the edge height is repeated so the surface has no cliff; that is not data.",
+      "processing": "Height tiles for zoom 9 to 15, to the nearest 0.1 m: this 1 m terrain inside the 3 km box, and round it, out to a 10 km square, JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0 (20 m, NASA/JPL-Caltech/MSSS/USGS (Fergason, Galuszka and Hare 2020)). Over the last 1.5 km of the square the heights are eased to the box's lowest point, because the map has no terrain beyond it; that easing is for the picture only and is not data. Routes and slopes use only the 1 m terrain.",
       "tiles": {
         "path": "tiles/terrain-hirise/{z}/{x}/{y}.png",
-        "minZoom": 11,
+        "minZoom": 9,
         "maxZoom": 15,
         "tileSizePx": 256,
-        "count": 52,
-        "bytes": 1122077,
-        "encoding": "mapbox"
+        "count": 412,
+        "bytes": 6230413,
+        "encoding": "mapbox",
+        "bounds": {
+          "westLonDeg": 77.2162427,
+          "eastLonDeg": 77.3941393,
+          "southLatDeg": 18.413131,
+          "northLatDeg": 18.581837
+        }
       }
     },
     {

@@ -851,3 +851,109 @@ body.map-full #map {
   }
   #map { inset: 0 0 45% 0; }
 }
+
+/* ---- Elevation profile in the route card (F3) ---- */
+
+.profile {
+  margin: 0.5rem 0 0;
+}
+
+.profile__chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.profile__grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.profile__tick {
+  fill: var(--text-dim);
+  font-size: 9px;
+}
+
+.profile__turn {
+  stroke: var(--text-dim);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.profile__edge {
+  fill: none;
+  stroke: #08090e;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.profile__line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.profile__line--back {
+  stroke-dasharray: 5 3;
+}
+
+.suit h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.85rem;
+}
+
+/* ---- Storm drill (F10) ---- */
+
+.storm h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.85rem;
+}
+
+.storm__advice {
+  margin: 0.3rem 0;
+  padding: 0.35rem 0.5rem;
+  border-left: 3px solid var(--level-1);
+  font-weight: 600;
+}
+
+/* Red: there may not be time to get home, which is danger. */
+.storm__advice--danger {
+  border-left-color: var(--danger);
+}
+
+.storm ul {
+  margin: 0.2rem 0 0.3rem;
+  padding-left: 1.1rem;
+}
+
+/* ---- When to go (F11) ---- */
+
+.when h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.85rem;
+}
+
+.when h4 {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 0.8rem;
+}
+
+.when input[type='range'] {
+  flex: 1;
+}
+
+.when__sun,
+.when__walk {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+.when__walk--warn {
+  color: var(--caution);
+  font-weight: 600;
+}
+
+.when ul {
+  margin: 0.2rem 0;
+  padding-left: 1.1rem;
+}

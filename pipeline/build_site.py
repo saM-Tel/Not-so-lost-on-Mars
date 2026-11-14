@@ -36,6 +36,10 @@ WORK = REPO / "data" / "work"
 # One pixel of a zoom 15 terrain tile is about 2.4 m, finer than the terrain's real detail of 3 to 5 m.
 IMAGE_ZOOMS = (12, 18)
 TERRAIN_ZOOMS = (11, 15)
+# Terrain round the box, when the config names a coarser model for it: from this zoom, eased flat over this distance
+# at its outer edge.
+SURROUND_MIN_ZOOM = 9
+SURROUND_FEATHER_M = 1500.0
 # Size budget from data/AGENTS.md, in megabytes, by readiness level.
 BUDGET_MB = {1: 120, 2: 50}
 
@@ -106,6 +110,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
               f"{len(hero.get('targets', []))} targets: {', '.join(t['name'] for t in hero.get('targets', []))}")
 
     layers = []
+    surround = (site.get("approach") or {}).get("terrain")
     for name, layer_id, title, data_type, zooms in (
         ("image", "image-hirise", "Ground from orbit", "optical", IMAGE_ZOOMS),
         ("terrain", "terrain-hirise", "Terrain height", "topographic", TERRAIN_ZOOMS),
@@ -117,6 +122,22 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
             extension = "webp"
             processing = (f"Cut to the site's box and redrawn as map tiles for zoom {zooms[0]} to {zooms[1]}. "
                           f"One tile pixel at zoom {zooms[1]} is {pixel_m:.2f} m on the ground. Places with no data are transparent.")
+        elif surround:
+            # Heights round the box from a coarser model, so the box does not stand above flat ground in 3D.
+            outer = sources.Box.around(position["lonEastDeg"], position["latDeg"], surround["sizeKm"], surround["sizeKm"])
+            coarse = sources.read_box(surround["file"], surround["serverPath"], surround["originalUrl"], outer, work / "surround")
+            reference = float(grids["terrain"].values.min())
+            zooms = (SURROUND_MIN_ZOOM, zooms[1])
+            count, size = tiles.write_terrain_tiles_with_surround(grids[name], box, coarse, outer, zooms[0], zooms[1], folder,
+                                                                  reference, SURROUND_FEATHER_M)
+            extension = "png"
+            processing = (f"Height tiles for zoom {zooms[0]} to {zooms[1]}, to the nearest 0.1 m: this 1 m terrain inside the "
+                          f"{site['box']['widthKm']} km box, and round it, out to a {surround['sizeKm']} km square, "
+                          f"{surround['record']['productId']} ({surround['record']['gridSpacing']}, {surround['record']['credit']}). "
+                          f"Over the last {SURROUND_FEATHER_M / 1000:.1f} km of the square the heights are eased to the box's lowest point, "
+                          "because the map has no terrain beyond it; that easing is for the picture only and is not data. "
+                          "Routes and slopes use only the 1 m terrain.")
+            print(f"Terrain round the box: {surround['file']} over {surround['sizeKm']} km, from the {coarse.origin}")
         else:
             count, size = tiles.write_site_terrain_tiles(grids[name], box, zooms[0], zooms[1], folder)
             extension = "png"
@@ -134,6 +155,11 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
         })
         if name == "terrain":
             record["tiles"]["encoding"] = "mapbox"
+            if surround:
+                record["tiles"]["bounds"] = {key: round(value, 7) for key, value in outer.as_dict().items()}
+                record["caveats"] = [*record["caveats"],
+                                     f"Round the box the 3D shape comes from a {surround['record']['gridSpacing']} CTX terrain model and "
+                                     "is eased flat at its outer edge; it is not this layer's 1 m data."]
         layers.append(record)
         print(f"Wrote {count} {name} tiles, {size / 1e6:.1f} MB")
 

@@ -11,6 +11,7 @@ import pathlib
 import numpy as np
 from PIL import Image
 
+import mars
 from mars import MERCATOR_MAX_LAT_DEG, TILE_SIZE_PX, mercator_fraction, mercator_y_to_lat_deg, tile_pixel_size_m
 
 
@@ -168,6 +169,48 @@ def decode_terrain(rgb: np.ndarray) -> np.ndarray:
     """The reverse of encode_terrain. Used by the tests, and it is what MapLibre does."""
     rgb = rgb.astype(np.int64)
     return TERRAIN_BASE_M + (rgb[..., 0] * 65536 + rgb[..., 1] * 256 + rgb[..., 2]) * TERRAIN_STEP_M
+
+
+def write_terrain_tiles_with_surround(fine, fine_box, coarse, outer_box, zoom_min: int, zoom_max: int, folder: pathlib.Path,
+                                      reference_m: float, feather_m: float) -> tuple[int, int]:
+    """Terrain tiles over a wider box: the fine grid inside its own box, the coarse grid round it.
+
+    Display only. Towards the outer edge the coarse heights are eased to `reference_m` over `feather_m`, because past
+    the outer box the map has no terrain at all; that easing is not data, and the layer record says so. Missing
+    coarse cells take the reference height. Returns (number of tiles, total bytes).
+    """
+    if fine.nodata is not None and (fine.values == fine.nodata).any():
+        raise NotImplementedError("the terrain block has missing cells; masking them is not built yet")
+    centre_lat = (outer_box.south_lat_deg + outer_box.north_lat_deg) / 2
+    fine_levels = detail_levels(fine, zoom_min, zoom_max, centre_lat)
+    coarse_levels = detail_levels(coarse, zoom_min, zoom_max, centre_lat)
+    metres_per_deg_lat = mars.METRES_PER_DEGREE
+    metres_per_deg_lon = mars.METRES_PER_DEGREE * np.cos(np.radians(centre_lat))
+    count = size = 0
+    for zoom in range(zoom_min, zoom_max + 1):
+        columns, rows = tile_range(outer_box, zoom)
+        for x in columns:
+            for y in rows:
+                lon, lat = tile_pixel_positions(zoom, x, y)
+                inside_fine = ((lon >= fine_box.west_lon_deg) & (lon <= fine_box.east_lon_deg)
+                               & (lat >= fine_box.south_lat_deg) & (lat <= fine_box.north_lat_deg))
+                heights = coarse_levels[zoom].sample(lon, lat, clamp=True)
+                heights = np.where(np.isfinite(heights), heights, reference_m)
+                edge_m = np.minimum.reduce([
+                    (lon - outer_box.west_lon_deg) * metres_per_deg_lon, (outer_box.east_lon_deg - lon) * metres_per_deg_lon,
+                    (lat - outer_box.south_lat_deg) * metres_per_deg_lat, (outer_box.north_lat_deg - lat) * metres_per_deg_lat,
+                ])
+                weight = np.clip(edge_m / feather_m, 0.0, 1.0)
+                heights = reference_m + (heights - reference_m) * weight
+                if inside_fine.any():
+                    fine_heights = fine_levels[zoom].sample(lon, lat, clamp=True)
+                    heights = np.where(inside_fine & np.isfinite(fine_heights), fine_heights, heights)
+                path = folder / str(zoom) / str(x) / f"{y}.png"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                Image.fromarray(encode_terrain(heights), mode="RGB").save(path, format="PNG", optimize=True)
+                count += 1
+                size += path.stat().st_size
+    return count, size
 
 
 def write_site_terrain_tiles(grid, box, zoom_min: int, zoom_max: int, folder: pathlib.Path) -> tuple[int, int]:

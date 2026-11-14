@@ -48,13 +48,18 @@ export function showSiteLayers(map: MapLibreMap, loaded: LoadedSite, beforeLayer
     // would lie at the bottom of a square pit. The lowest height in the box is subtracted at draw
     // time only: the terrain is drawn relative to its own lowest point, and every height shown to
     // the user is still the true one from the file.
+    // Terrain may reach past the box: the pipeline can add a coarser model round it so the box does not stand
+    // above flat ground (tiles.bounds). Its outer edge is eased to the box's lowest point, which is drawn at zero.
+    const terrainBox = terrain.tiles.bounds;
     map.addSource(TERRAIN_ID, {
       type: 'raster-dem',
       tiles: [folderUrl + terrain.tiles.path],
       tileSize: terrain.tiles.tileSizePx,
       minzoom: terrain.tiles.minZoom,
       maxzoom: terrain.tiles.maxZoom,
-      bounds,
+      bounds: terrainBox
+        ? [terrainBox.westLonDeg, terrainBox.southLatDeg, terrainBox.eastLonDeg, terrainBox.northLatDeg]
+        : bounds,
       encoding: 'custom',
       redFactor: 6553.6,
       greenFactor: 25.6,

@@ -38,7 +38,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `photoStrip.ts` | Real rover photos taken near the route, in the route card, each with sol, date, local time, camera, distance and credit. Built. To add: preferring the direction of travel | F6 |
 | `weatherBanner.ts` | Space-weather banner on the map: NASA's latest forecast of an eruption reaching Mars, with issue time, arrival window, and whether it is live or a snapshot. Built | F5 |
 | `weatherBanner.test.ts` | Tests for the forecast parsing and the banner's wording, on made-up notices | |
-| `timeSlider.ts` | Local-time slider: typical temperature, pressure, ultraviolet and dust-devil likelihood, Sun height and shadows | F11 |
+| `timeSlider.ts` | "When to go": start-time slider in local solar time, Sun height, sunrise and sunset for today's season, whether the walk ends in daylight, and typical weather where the site has a station record. Built. To add: dust devils, shadows | F11 |
 | `install.ts` | Makes the built site installable: registers the service worker (built site only) and shows "Install app" when the browser offers it | F8 |
 | `modes.ts` | Switches between the habitat planner, field tablet and helmet display layouts | F13 |
 | `urlState.ts` | Keeps the view in the address bar so any view can be shared: the site, the walk's target and the tether settings, as `#site=<site id>&to=<lon>,<lat>&back=<minutes>&t=<minutes>` | F7 |

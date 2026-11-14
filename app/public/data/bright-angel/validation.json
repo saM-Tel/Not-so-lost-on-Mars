@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:40:48Z",
+  "builtUtc": "2026-11-14T15:45:53Z",
   "heights": {
     "what": "Terrain height minus the height the rover logged at the same position",
     "heightReference": "metres relative to the areoid, in both",

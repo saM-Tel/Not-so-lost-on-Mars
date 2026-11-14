@@ -35,7 +35,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `dose.ts` | Radiation dose for a planned walk: dose equivalent and absorbed dose, each from its own measured rate, with a range. To add: terrain shielding | F5 |
 | `dose.test.ts` | Tests for `dose.ts` | |
 | `oxygen.ts` | Oxygen breathed on a walk from its metabolic energy (Weir 1949, respiratory quotient 0.85 assumed), for each case | F3 |
-| `storm.ts` | Storm mode: compares going home with sheltering against terrain, and replays the 20 May 2024 event | F10 |
+| `storm.ts` | Storm mode: go home if the cautious walk home beats the warning time, otherwise start home and shelter under steep ground if caught (a small reduction); the 20 May 2024 event at Gale (8,100 micrograys, NASA) for the replay. Built | F10 |
 
 ## Known issues
 
