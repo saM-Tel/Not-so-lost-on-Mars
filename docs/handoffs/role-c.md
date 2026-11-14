@@ -1,5 +1,15 @@
 # Role C handoff
 
+## Sat 14 Nov 21:55, team owner with Claude Code, end of the evening session. START HERE
+
+Done since 21:35 (all pushed): F19 first person under a helmet visor (`ui/visor.ts`, `ui/walkThrough.ts`); F3 walks through several stops with time at each stop, the verdict counting it, and the tightest point and a margin chart in "This walk" (`route/worker.ts`, `ui/routePanel.ts`, `safety/tether.ts`, `safety/walker.ts`).
+Not done: styles for the new Several stops list (`.stops`, `.stops__item`, `.stops__button`, `.stops__stay`, `.route-pin--stop`) and the margin chart (`.margin-chart__trace`, `__zero`, `__stop`, `__dot`, `__line--outside`): the chart's SVG may draw as a filled black shape until styled. Item 12 (way home from here) not started. Nothing from tonight has been seen in a browser except the zoom fix, the Sun shading and the level 2 edges.
+Broken or risky: walking the planned route in the walk-through does not pause at stops. Stops are not kept in the shareable link. First person changes pitch and zoom limits, drawing density and sky; all are put back on leaving, but this was not tried in a browser.
+Next, Sunday morning: (1) open the dev server at Bright Angel and try Targets and stops, the margin chart, Link and view from orbit, Walk-through (map view and First person) and the orbiters on the globe; (2) add the missing styles; (3) rerun `pipeline/build_orbiters.py` before submitting (predictions end 30 Nov); (4) the backup video.
+Files: app/src/ui (routePanel, walkThrough, visor, orbitPanel), app/src/route (worker, search, messages, client), app/src/safety (tether, walker), app/src/map/routeLayer.ts, app/src/style.css.
+Other roles need to know: Joseph, role B's files changed a lot tonight; pull before editing. The plan with every item's status is in STATUS.md, "Evening work plan".
+Checks: `npm run check` passes (types, 90 tests, build) at 21:52. `pytest -q` passed (54) at 21:23; the pipeline has not changed since.
+
 ## Sat 14 Nov 21:35, team owner with Claude Code (app and pipeline work for the evening plan). START HERE
 
 Done (all pushed; plan and statuses in STATUS.md, "Evening work plan"): zoom 12 glitch; R9 to R12 and R20; sun shading; geology at Bright Angel; level 2 terrain edges eased; globe as one overview picture; F17 two passes; F18 orbiters (globe, and link and view timeline in the route card); F19 walk-through astronaut.
