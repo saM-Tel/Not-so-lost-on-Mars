@@ -44,9 +44,15 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   return node;
 }
 
-export function createModeSwitch(actions: { onNextTarget(): void; onGoHome(): void; onStorm(): void }): ModeSwitch {
+export function createModeSwitch(actions: {
+  onNextTarget(): void; onGoHome(): void; onStorm(): void;
+  /** Called after the layout changes, so the map can take its new size. */
+  onLayoutChange?(): void;
+}): ModeSwitch {
   let mode: Mode = 'planner';
   let state: FieldState | null = null;
+  /** The helmet view is offered only once a real rover photo near the target has loaded: it has nothing else to show. */
+  let helmetReady = false;
 
   // ---- The switch ----
   const bar = el('nav', 'mode-switch');
@@ -81,6 +87,13 @@ export function createModeSwitch(actions: { onNextTarget(): void; onGoHome(): vo
   helmet.setAttribute('aria-label', 'Helmet display, concept');
   const photo = el('img', 'helmet__photo');
   photo.alt = '';
+  photo.referrerPolicy = 'no-referrer';
+  photo.addEventListener('load', () => { helmetReady = true; render(); });
+  photo.addEventListener('error', () => {
+    helmetReady = false;
+    if (mode === 'helmet') mode = 'planner';
+    render();
+  });
   const arrow = el('div', 'helmet__arrow', '↑');
   arrow.setAttribute('aria-hidden', 'true');
   const readout = el('div', 'helmet__readout');
@@ -96,13 +109,16 @@ export function createModeSwitch(actions: { onNextTarget(): void; onGoHome(): vo
   document.body.append(bar, tablet, helmet);
 
   const render = (): void => {
+    if (mode === 'helmet' && !helmetReady) mode = 'planner';
+    buttons.get('helmet')!.hidden = !helmetReady;
     for (const [id, button] of buttons) button.setAttribute('aria-pressed', String(id === mode));
     document.body.classList.toggle('mode-tablet', mode === 'tablet');
     document.body.classList.toggle('mode-helmet', mode === 'helmet');
     tablet.hidden = mode !== 'tablet';
     helmet.hidden = mode !== 'helmet';
     if (!state) {
-      tabletStatus.replaceChildren(el('p', 'field-card__big', 'Choose a target in the planner first.'));
+      tabletStatus.replaceChildren(el('p', 'field-card__big', 'Working out the walk…'),
+        el('p', 'field-card__row', 'Press Next target, or choose one in the planner.'));
       readout.textContent = 'No walk planned.';
       alertLine.textContent = '';
       return;
@@ -126,15 +142,23 @@ export function createModeSwitch(actions: { onNextTarget(): void; onGoHome(): vo
     marginBar.title = `Tether margin ${formatDuration(Math.max(0, s.tetherMarginS))}`;
     alertLine.textContent = s.alert ?? '';
     if (s.photo) {
-      photo.src = s.photo.url;
+      // Loaded even while another view is shown, so the helmet option can appear as soon as the photo is ready.
+      if (photo.getAttribute('src') !== s.photo.url) { helmetReady = false; photo.src = s.photo.url; }
       credit.textContent = s.photo.caption;
-    } else {
+    } else if (photo.getAttribute('src')) {
       photo.removeAttribute('src');
-      credit.textContent = 'No rover photo near this target, so the view has no background.';
+      helmetReady = false;
+      if (mode === 'helmet') { mode = 'planner'; render(); return; }
+      buttons.get('helmet')!.hidden = true;
     }
   };
 
-  const setMode = (next: Mode): void => { mode = next; render(); };
+  const setMode = (next: Mode): void => {
+    mode = next;
+    render();
+    // The map's box changes size when panels are hidden; MapLibre must be told after the page has laid out again.
+    requestAnimationFrame(() => actions.onLayoutChange?.());
+  };
   render();
   return {
     setState(next) { state = next; render(); },

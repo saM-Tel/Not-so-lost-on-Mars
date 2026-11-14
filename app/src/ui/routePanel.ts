@@ -170,6 +170,8 @@ export function startRoutePlanner(
   let stormAlert: string | null = null;
   const photoIndex = loadPhotoIndex(loaded.folderUrl);
   let fieldRequest = 0;
+  /** The photo found for the current target, kept so slider moves do not look it up and reload it again. */
+  let fieldPhoto: { key: string; photo: FieldState['photo'] } | null = null;
   const updateField = (
     answer: Extract<RouteAnswer, { ok: true }>, elapsedS: number, outS: number, backS: number, allowedThereS: number, farthestS: number,
   ): void => {
@@ -186,17 +188,24 @@ export function startRoutePlanner(
       alert: stormAlert ?? (farthestS > allowedThereS ? 'This walk leaves the tether. Choose a nearer target.' : null),
       photo: null,
     };
+    const key = `${answer.target[0].toFixed(6)},${answer.target[1].toFixed(6)}`;
+    if (fieldPhoto?.key === key) {
+      modes.setState({ ...state, photo: fieldPhoto.photo });
+      return;
+    }
     modes.setState(state);
     const mine = ++fieldRequest;
     void photoIndex.then((index) => {
       if (!index || mine !== fieldRequest) return;
       const near = photosNearRoute(index.photos, [answer.target], 60, 1, 1)[0];
-      if (!near) return;
-      const p = near.photo;
-      modes.setState({ ...state, photo: { url: p.mediumUrl, caption: `${p.camera}, sol ${p.sol}, ${Math.round(near.distanceM)} m from the target. ${p.credit}` } });
+      const p = near?.photo;
+      const photo = p ? { url: p.mediumUrl, caption: `${p.camera}, sol ${p.sol}, ${Math.round(near!.distanceM)} m from the target. ${p.credit}` } : null;
+      fieldPhoto = { key, photo };
+      modes.setState({ ...state, photo });
     });
   };
   const modes = createModeSwitch({
+    onLayoutChange: () => map.resize(),
     onNextTarget: () => {
       const targets = loaded.site.targets ?? [];
       if (targets.length === 0) return;
