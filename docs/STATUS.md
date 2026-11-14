@@ -25,12 +25,12 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F14 Mars globe and site picker | A, B | in progress | Works locally: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Not done: not deployed |
 | F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at 11:45, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
 | F2 Layer panel and information cards | B | not started | |
-| F3 Route planner | B | in progress | Pipeline half only: routing grids of height and steepest slope on 4 m cells are built for Bright Angel. No slope limit chosen (DECISIONS). Nothing in the app yet |
+| F3 Route planner | B | in progress | Pipeline half only: routing grids of height and steepest slope on 4 m cells are built for Bright Angel. Default slope limit 20 degrees, decided (DECISIONS). Nothing in the app yet |
 | F4 Tether | A, B | not started | |
 | F5 Dose and space weather | A, B | not started | |
 | F6 Photos along the route | C, B | not started | |
 | F7 Opening state and shareable link | B | not started | |
-| F8 Public site and repository | B | in progress | `.github/workflows/deploy.yml` checks and publishes the app on every push to main. Waiting: a repository admin must switch GitHub Pages on (Settings, Pages, Source: "GitHub Actions"); until then the deploy step fails. No README yet |
+| F8 Public site and repository | B | in progress | `.github/workflows/deploy.yml` checks and publishes the app on every push to main. GitHub Pages was switched on by the team owner at about 13:00. No README yet |
 | F9 Validation panel | A | not started | |
 | F10 Storm mode | A, B | not started | |
 | F11 Time of day | A, B | not started | |
@@ -73,6 +73,5 @@ The first run of the new batch stopped at 02:37 UTC on 14 Nov with 12 problems, 
 
 ## Waiting on someone
 
-- Team owner or another repository admin: switch GitHub Pages on. Settings, Pages, Source: "GitHub Actions". Then re-run the "Deploy to GitHub Pages" workflow.
 - The third teammate: install Tailscale, accept the share of the data server, put the address in `.env`, and confirm a file listing loads. Joseph has done this.
 - The team: confirm or change the two open proposals in DECISIONS.md (what each link opens on; how AI-written code is acknowledged).
