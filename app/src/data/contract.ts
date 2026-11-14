@@ -50,6 +50,10 @@ export interface LayerRecord {
   caveats: string[];
   credit: string;
   tiles?: TileSet;
+  /** For a layer drawn from a routing grid: the name of the grid file in site.json's `grid.files`. */
+  grid?: string;
+  /** For a layer of points or lines: where its GeoJSON file is, relative to the folder that holds layers.json. */
+  vector?: { path: string; geometry: 'point' | 'line'; count: number; bytes: number };
 }
 
 export interface LayersFile {

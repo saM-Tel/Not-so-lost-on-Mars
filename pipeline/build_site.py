@@ -24,6 +24,7 @@ import sources
 import terrain
 import tiles
 import validate
+import vectors
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 DATA = REPO / "app" / "public" / "data"
@@ -139,6 +140,32 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
           f"{grid_definition['cellNorthSouthM']} m north to south by {grid_definition['cellEastWestM']} m east to west, "
           f"{sum(entry['bytes'] for entry in grid_definition['files']) / 1e6:.1f} MB")
 
+    # Slope as a layer of its own. It is drawn by the app from the routing grid, so it has no tiles.
+    slope_record = dict(site["sources"]["terrain"]["record"])
+    slope_record.update({
+        "id": "slope-hirise", "title": "Slope", "dataType": "topographic",
+        "gridSpacing": f"{grid_definition['cellNorthSouthM']:g} m cells, each holding the steepest of "
+                       f"{routing_grids.CELLS_PER_ROUTING_CELL ** 2} slopes measured on the 1 m terrain",
+        "realDetail": f"About 6 m: each slope is measured over {slope_baseline['northSouthM']} m north to south "
+                      f"and {slope_baseline['eastWestM']} m east to west",
+        "processing": "Steepest slope at each 1 m cell of the terrain, then the steepest of those in each routing cell. "
+                      "Cells are narrower east to west at this latitude and the spacing is corrected for it.",
+        "caveats": [*slope_record["caveats"],
+                    "Slope has not yet been checked against the tilt the rover measured, so nothing independent confirms it.",
+                    "A short steep step, such as a ledge under about 3 m, can be missed."],
+        "grid": "slopeMaxDeg",
+    })
+    layers.append(slope_record)
+
+    if rover and rover.get("pathFile"):
+        stop_features, _ = validate.read_feed_features(rover["file"], rover["serverPath"], rover["originalUrl"])
+        path_features, path_origin = validate.read_feed_features(rover["pathFile"], rover["serverPath"], rover["pathOriginalUrl"])
+        rover_layers = vectors.write_rover_layers(temporary / "vectors", stop_features, path_features, box, rover)
+        layers.extend(rover_layers)
+        for layer in rover_layers:
+            print(f"Wrote {layer['title'].lower()}: {layer['vector']['count']} features, "
+                  f"{layer['acquiredFrom']} to {layer['acquiredTo']}; path file from the {path_origin}")
+
     records.write_layers(temporary, layers)
     records.write_json(temporary / "validation.json", {
         "contractVersion": records.CONTRACT_VERSION, "builtUtc": records.utc_now_iso(), **checks,
@@ -146,8 +173,9 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
     files = [
         {"path": "layers.json", "files": 1, "bytes": (temporary / "layers.json").stat().st_size},
         {"path": "validation.json", "files": 1, "bytes": (temporary / "validation.json").stat().st_size},
-        *[folder_summary(temporary, f"tiles/{layer['id']}") for layer in layers],
+        *[folder_summary(temporary, f"tiles/{layer['id']}") for layer in layers if "tiles" in layer],
         folder_summary(temporary, "grid"),
+        *([folder_summary(temporary, "vectors")] if (temporary / "vectors").exists() else []),
     ]
     total = sum(entry["bytes"] for entry in files)
     records.write_json(temporary / "site.json", {

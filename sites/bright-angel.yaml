@@ -55,6 +55,18 @@ rover:
   serverPath: raw/feeds
   originalUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
   heightField: elev_geoid   # metres relative to the areoid, like the terrain mosaic
+  # The rover's drives as lines, for the rover path layer.
+  pathFile: m20_perseverance_traverse.json
+  pathOriginalUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
+  # Sol 0. Used only to turn sol numbers into Earth dates, which can be a day out.
+  landingDate: "2021-02-18"
+  landingDateSourceUrl: "https://science.nasa.gov/mission/mars-2020-perseverance/"
+  record:
+    mission: Mars 2020
+    instrument: "Perseverance rover: the rover team's own position for each drive"
+    agency: NASA
+    sourceUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+    credit: "NASA/JPL-Caltech"
 
 sources:
   terrain:

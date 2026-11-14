@@ -19,6 +19,12 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 
 def read_rover_stops(file_name: str, server_path: str, original_url: str) -> tuple[list[dict], str]:
     """The rover's logged stops, from the team data server, a local copy, or the mission's own address."""
+    features, origin = read_feed_features(file_name, server_path, original_url)
+    return [feature["properties"] for feature in features], origin
+
+
+def read_feed_features(file_name: str, server_path: str, original_url: str) -> tuple[list[dict], str]:
+    """Every feature of one of the rover's GeoJSON feeds, with which source it came from."""
     local = REPO / "data" / "raw" / pathlib.PurePosixPath(server_path.strip("/")).name / file_name
     candidates = []
     server = sources.data_server_url()
@@ -42,8 +48,7 @@ def read_rover_stops(file_name: str, server_path: str, original_url: str) -> tup
                 errors.append(f"{name}: {error}")
         if text is None:
             raise RuntimeError(f"could not read {file_name}: " + " | ".join(errors))
-    features = json.loads(text)["features"]
-    return [feature["properties"] for feature in features], origin
+    return json.loads(text)["features"], origin
 
 
 def height_check(terrain: sources.Grid, stops: list[dict], height_field: str) -> dict:

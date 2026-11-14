@@ -60,7 +60,7 @@ Add a row when you add a file. Remove it when you delete one.
 | File | What it does | Feature |
 |---|---|---|
 | `requirements.txt` | Pinned Python packages | |
-| `build_site.py` | One command that builds one site from its config. Built so far: reads the box, checks terrain against the rover, cuts image and terrain tiles, measures slope, writes the routing grids, writes `layers.json`, `validation.json` and `site.json`. To add: stage 2, the rest of stages 4 and 5, stages 6 and 7 | F1 to F6, F9 |
+| `build_site.py` | One command that builds one site from its config. Built so far: reads the box, checks terrain against the rover, cuts image and terrain tiles, measures slope, writes the routing grids, the slope layer record and the rover layers, writes `layers.json`, `validation.json` and `site.json`. To add: stage 2, the rest of stages 4 and 5, stages 6 and 7 | F1 to F6, F9 |
 | `build_globe.py` | Builds what the globe needs: Web Mercator tiles of the Viking colour mosaic with its layer record, and `sites.json` from every site config | F14 |
 | `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |
 | `test_mars.py` | Tests for `mars.py`, with expected values worked by hand | |
@@ -71,10 +71,10 @@ Add a row when you add a file. Remove it when you delete one.
 | `mask.py` | Stage 2: finds missing data and seams between source terrain models | F1, F3 |
 | `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads: whole-planet image pyramids, and a site's image (WebP) and terrain (PNG) tiles | F1, F14 |
 | `test_tiles.py` | Tests for `tiles.py` on small made-up fixtures that stay in the test file | |
-| `test_terrain.py` | Tests for `terrain.py` and `grids.py` on made-up fixtures, with expected values worked by hand | |
+| `test_terrain.py` | Tests for `terrain.py`, `grids.py` and `vectors.py` on made-up fixtures, with expected values worked by hand | |
 | `terrain.py` | Stage 4. Built so far: steepest slope over a baseline of at least 5 m, on the corrected cell spacing. To add: roughness and sky exposure | F2, F3, F5 |
 | `grids.py` | Stage 5. Built so far: joins 4 x 4 source cells into a routing cell and writes mean height and steepest slope as raw 32-bit floats, with the grid definition for `site.json`. To add: mask, footing, sky exposure | F3, F4 |
-| `vectors.py` | Stage 6: converts geology, the rover path, rover stops and science targets to GeoJSON | F2 |
+| `vectors.py` | Stage 6. Built so far: the rover's stops and path inside the box as GeoJSON, each with a full layer record, and sol numbers turned into Earth dates. To add: geology and science targets | F2 |
 | `weather.py` | Stage 7: typical weather by local hour for the season, from the weather archive | F11 |
 | `photos.py` | Stage 7: index of real rover photos near the route area | F6 |
 | `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built so far: heights at every rover stop in the box. To add: slope against rover tilt | F1, F9 |

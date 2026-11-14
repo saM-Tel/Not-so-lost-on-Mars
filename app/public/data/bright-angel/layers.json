@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T11:47:49Z",
+  "builtUtc": "2026-11-14T13:25:49Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -69,6 +69,99 @@
         "count": 52,
         "bytes": 1122077,
         "encoding": "mapbox"
+      }
+    },
+    {
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "agency": "NASA",
+      "productId": "JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic",
+      "doi": "not found",
+      "acquiredFrom": "2007-01-29",
+      "acquiredTo": "2017-01-01",
+      "published": "2020-07-24",
+      "gridSpacing": "4 m cells, each holding the steepest of 16 slopes measured on the 1 m terrain",
+      "realDetail": "About 6 m: each slope is measured over 6.0 m north to south and 5.69 m east to west",
+      "positionAccuracy": "Source images agree with each other to better than 3 m (99th percentile) and sit a median 2.1 m from the CTX base map, 95.4% within 6 m (Fergason and others 2020)",
+      "heightAccuracy": "Median 0.4 m below the CTX terrain mosaic it was aligned to (Fergason and others 2020)",
+      "grade": "B",
+      "caveats": [
+        "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model.",
+        "Made from images taken between 2007 and 2017, before the rover landed. Sand may have moved since.",
+        "Where two source models meet there can be a small step that is not real.",
+        "Slope has not yet been checked against the tilt the rover measured, so nothing independent confirms it.",
+        "A short steep step, such as a ledge under about 3 m, can be missed."
+      ],
+      "credit": "NASA/JPL-Caltech/University of Arizona/USGS (Fergason and others 2020)",
+      "id": "slope-hirise",
+      "title": "Slope",
+      "dataType": "topographic",
+      "processing": "Steepest slope at each 1 m cell of the terrain, then the steepest of those in each routing cell. Cells are narrower east to west at this latitude and the spacing is corrected for it.",
+      "grid": "slopeMaxDeg"
+    },
+    {
+      "id": "rover-stops-m20",
+      "title": "Rover stops",
+      "dataType": "in-situ",
+      "mission": "Mars 2020",
+      "instrument": "Perseverance rover: the rover team's own position for each drive",
+      "agency": "NASA",
+      "productId": "m20_perseverance_waypoints.json",
+      "sourceUrl": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+      "doi": "not found",
+      "acquiredFrom": "2024-01-28 (sol 1046)",
+      "acquiredTo": "2024-09-26 (sol 1281)",
+      "published": "A live file that grows as the rover drives; our copy ends at sol 2022",
+      "gridSpacing": "One point where each drive ended",
+      "realDetail": "A single position for each stop",
+      "positionAccuracy": "not found",
+      "heightAccuracy": "not found",
+      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are counted from the landing date and can be a day out.",
+      "grade": "A",
+      "caveats": [
+        "The file does not say how accurate these positions are.",
+        "Where a rover drove is not proof that a person on foot can walk there, and the reverse.",
+        "Only the part inside this site's box is shown."
+      ],
+      "credit": "NASA/JPL-Caltech",
+      "vector": {
+        "path": "vectors/rover-stops.geojson",
+        "geometry": "point",
+        "count": 116,
+        "bytes": 38518
+      }
+    },
+    {
+      "id": "rover-path-m20",
+      "title": "Rover path",
+      "dataType": "in-situ",
+      "mission": "Mars 2020",
+      "instrument": "Perseverance rover: the rover team's own position for each drive",
+      "agency": "NASA",
+      "productId": "m20_perseverance_traverse.json",
+      "sourceUrl": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+      "doi": "not found",
+      "acquiredFrom": "2024-01-28 (sol 1046)",
+      "acquiredTo": "2024-09-28 (sol 1283)",
+      "published": "A live file that grows as the rover drives; our copy ends at sol 2022",
+      "gridSpacing": "A line along each drive, with a point every few metres",
+      "realDetail": "The line the rover logged as it drove",
+      "positionAccuracy": "not found",
+      "heightAccuracy": "not found",
+      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are counted from the landing date and can be a day out.",
+      "grade": "A",
+      "caveats": [
+        "The file does not say how accurate these positions are.",
+        "Where a rover drove is not proof that a person on foot can walk there, and the reverse.",
+        "Only the part inside this site's box is shown."
+      ],
+      "credit": "NASA/JPL-Caltech",
+      "vector": {
+        "path": "vectors/rover-path.geojson",
+        "geometry": "line",
+        "count": 90,
+        "bytes": 359845
       }
     }
   ]

@@ -1,5 +1,5 @@
 // WHAT:    Entry point. Opens the Mars globe with a marker at every site, flies to a chosen site, and opens a built site's
-//          own image and 3D terrain, and starts route planning there (F14, F1, F3, F7). Still to add: the layer and safety panels.
+//          own image and 3D terrain, its layer panel and route planning there (F14, F1, F2, F3, F7).
 // IN:      public/data/globe/layers.json, public/data/sites.json and a built site's folder; the site named in the address bar, if any.
 // OUT:     Nothing. Starts the app.
 // USED BY: index.html.
@@ -12,10 +12,12 @@ import { loadSite } from './data/loadSite';
 import { loadSites } from './data/loadSites';
 import { flyIntoSite, flyToGlobe, flyToSite, startIdleTurn } from './map/flight';
 import { createGlobeMap } from './map/mapView';
+import { addOverlays } from './map/overlays';
 import { addScaleBar } from './map/scaleBar';
 import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
 import { watchZoomSelect } from './map/zoomSelect';
+import { createLayerPanel } from './ui/layerPanel';
 import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
 import { readUrlState, writeUrlState } from './ui/urlState';
@@ -62,7 +64,7 @@ async function start(): Promise<void> {
   addScaleBar(map);
 
   let stopIdleTurn = (): void => {};
-  /** Takes the route card and the route off the map when the person leaves a site. */
+  /** Takes the route card, the route, the layer panel and the site's overlays away when the person leaves a site. */
   let stopRoutePlanner = (): void => {};
   /** Counts choices, so a slow load for one site cannot overwrite a later choice. */
   let choice = 0;
@@ -107,7 +109,17 @@ async function start(): Promise<void> {
       markers.setVisible(false);
       await flyIntoSite(map, builtSite.site);
       if (thisChoice !== choice) return;
-      if (builtSite.site.grid) stopRoutePlanner = startRoutePlanner(map, builtSite);
+      const drawn = await addOverlays(map, builtSite);
+      if (thisChoice !== choice) { drawn.remove(); return; }
+      const layerPanel = createLayerPanel(picker.slot, drawn.overlays, builtSite.layers.rejected);
+      const stopRoute = builtSite.site.grid
+        ? startRoutePlanner(map, builtSite, { onOverlay: (overlay) => layerPanel.add(overlay) })
+        : (): void => {};
+      stopRoutePlanner = () => {
+        stopRoute();
+        layerPanel.remove();
+        drawn.remove();
+      };
     } catch (error) {
       if (thisChoice !== choice) return;
       showProblem(error instanceof Error ? error.message : String(error));

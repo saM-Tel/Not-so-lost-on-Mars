@@ -22,6 +22,8 @@ const DANGER_RGB = [229, 72, 77] as const;
 
 export interface RouteLayer {
   showKeepOut(keepOut: Uint8Array, definition: GridDefinition): void;
+  /** Switch the keep-out shading on or off and set how strong it is, 0 to 1. */
+  setKeepOut(visible: boolean, opacity: number): void;
   /** Draw the tether from a picture with four bytes per grid cell (src/safety/tether.ts). */
   showTether(picture: Uint8ClampedArray, definition: GridDefinition): void;
   showHome(position: LonLat): void;
@@ -104,6 +106,11 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
         id: KEEP_OUT_ID, type: 'raster', source: KEEP_OUT_ID,
         paint: { 'raster-opacity': 0.4, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 },
       }, `${LINES_ID}-edge`);
+    },
+    setKeepOut(visible, opacity) {
+      if (!map.getLayer(KEEP_OUT_ID)) return;
+      map.setLayoutProperty(KEEP_OUT_ID, 'visibility', visible ? 'visible' : 'none');
+      map.setPaintProperty(KEEP_OUT_ID, 'raster-opacity', opacity);
     },
     showTether(picture, definition) {
       const canvas = document.createElement('canvas');

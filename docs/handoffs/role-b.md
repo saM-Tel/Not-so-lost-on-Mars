@@ -2,6 +2,16 @@
 
 Note, 14 Nov 13:25: the entry times from 11:41 to 13:15 below were first written from estimates that ran up to two and a half hours ahead of the clock. They now show the commit times.
 
+## Sat 14 Nov 14:05, role B work by Joseph, with Claude Code
+
+Done: the layer panel (F2). Opening a built site adds a "Layers" section under the site's name with a row for each layer: switch, opacity, legend, and a card built from the layer's record. Slope is drawn from the routing grid with the viridis ramp, off at first; the rover's path and stops are bluish green; keep-out ground has its own row and record, grade C.
+Not done: geology; cards for predictions; the layer choices in the address bar.
+Broken or risky: slope and keep-out shading mix to brown when both are on. Seen in a scripted browser on the built app, not by a person.
+Next: F7, the route and settings in the address bar.
+Files: app/src/map/overlays.ts, legend.ts, siteLayers.ts, routeLayer.ts; ui/layerPanel.ts, infoCard.ts, sitePicker.ts, routePanel.ts; data/contract.ts; main.ts; style.css; the folder guides
+Other roles need to know: Joseph asked at 13:45 for work to carry on task by task without waiting for replies, with each task committed and pushed.
+Checks: `npm run check` passes: types, 56 tests, build.
+
 ## Sat 14 Nov 13:15, role B work by Joseph, with Claude Code
 
 Added at 13:30: a "Full map" button under the zoom buttons hides the side panel so the map has the whole screen, asked for by Joseph because the phone layout leaves too little map. Tried in a scripted browser at 390 x 800: the map grows from 390 x 440 to 390 x 800 and back. Not tried on a real phone.

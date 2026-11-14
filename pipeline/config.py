@@ -128,6 +128,14 @@ def _check_build_settings(config: dict, problems: list[str]) -> bool:
         for field in ("file", "serverPath", "originalUrl", "heightField"):
             if not isinstance(rover, dict) or not rover.get(field):
                 problems.append(f"rover.{field} is missing")
+        # The rover's path and stops are drawn as layers only when all of these are given too.
+        if isinstance(rover, dict) and rover.get("pathFile"):
+            for field in ("pathOriginalUrl", "landingDate", "landingDateSourceUrl", "record"):
+                if not rover.get(field):
+                    problems.append(f"rover.{field} is missing; it is needed to draw the rover's path and stops")
+            for field in ("mission", "instrument", "agency", "sourceUrl", "credit"):
+                if not (rover.get("record") or {}).get(field):
+                    problems.append(f"rover.record.{field} is missing")
     return True
 
 

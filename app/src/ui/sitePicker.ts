@@ -26,6 +26,8 @@ export interface SitePickerOptions {
 export interface SitePicker {
   /** Show one site's details, or the list of all sites when null. */
   show(siteId: string | null): void;
+  /** An empty place in a site's details, just under its name, for that site's own tools such as the layer panel. */
+  slot: HTMLElement;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -83,6 +85,8 @@ export function createSitePicker(options: SitePickerOptions): SitePicker {
   const body = el('div', 'panel__body');
   panel.append(header, body);
   parent.append(panel);
+
+  const slot = el('div', 'panel__slot');
 
   function showList(): void {
     body.replaceChildren();
@@ -164,6 +168,7 @@ export function createSitePicker(options: SitePickerOptions): SitePicker {
       body.append(open);
     }
 
+    body.append(slot);
     if (level) body.append(section('What the app offers at this level', el('p', undefined, level.offers)));
     if (site.data.length > 0) body.append(section('Data that exists here', list(site.data)));
 
@@ -200,6 +205,7 @@ export function createSitePicker(options: SitePickerOptions): SitePicker {
 
   showList();
   return {
+    slot,
     show(siteId) {
       const site = siteId === null ? undefined : sites.find((s) => s.id === siteId);
       if (site) showSite(site);

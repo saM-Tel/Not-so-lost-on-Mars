@@ -11,6 +11,8 @@ import type { LoadedSite } from '../data/loadSite';
 import { MAPLIBRE_METRES_PER_MARS_METRE } from '../mars/constants';
 
 const IMAGE_ID = 'site-image';
+/** The map layer that draws the ground image, for the layer panel's switch and opacity control. */
+export const SITE_IMAGE_LAYER_ID = IMAGE_ID;
 const TERRAIN_ID = 'site-terrain';
 
 /**

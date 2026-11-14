@@ -10,6 +10,7 @@
 
 import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 import { loadRoutingGridFiles, type LoadedSite } from '../data/loadSite';
+import type { Overlay } from '../map/overlays';
 import { addRouteLayer, BACK_COLOUR, OUT_COLOUR } from '../map/routeLayer';
 import { startRouteWorker } from '../route/client';
 import { WALK_CASES } from '../route/cost';
@@ -70,7 +71,9 @@ const REFUSALS: Record<string, string> = {
 };
 
 /** Start route planning for an open site. Returns a function that takes everything away again. */
-export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => void {
+export function startRoutePlanner(
+  map: MapLibreMap, loaded: LoadedSite, options: { onOverlay?: (overlay: Overlay) => void } = {},
+): () => void {
   const card = el('section', 'route-card');
   card.setAttribute('aria-label', 'Plan a walk');
   const status = el('p', 'route-card__status', 'Reading the ground and working out the ways from home…');
@@ -189,6 +192,31 @@ export function startRoutePlanner(map: MapLibreMap, loaded: LoadedSite): () => v
       const ready = await client.ready;
       if (stopped) return;
       layer.showKeepOut(ready.keepOut, definition);
+      // Keep-out ground is a layer like any other in the layer panel. Its record is the slope layer's, with what
+      // we did to it and the lower grade that the walking limit brings.
+      const slope = loaded.layers.usable.find((record) => record.grid === 'slopeMaxDeg');
+      if (slope && options.onOverlay) {
+        const keepOut: Overlay = {
+          record: {
+            ...slope,
+            id: 'keep-out',
+            title: 'Keep-out ground',
+            processing: `Cells whose steepest slope is over ${SLOPE_LIMIT_DEG} degrees. The limit is NASA's Artemis III requirement for walking on the Moon (Ortiz 2025), applied to Mars. Routes never cross these cells.`,
+            grade: 'C',
+            caveats: [
+              `The ${SLOPE_LIMIT_DEG} degree limit is a lunar requirement applied to Mars, and its source does not say over what distance slope is measured.`,
+              'Ground that is not shaded is not proven safe: rocks, loose sand and ledges under about 3 m are not seen.',
+              ...slope.caveats,
+            ],
+          },
+          legend: { kind: 'swatches', items: [{ colour: '#e5484d', label: `Steeper than ${SLOPE_LIMIT_DEG}°: do not walk here` }] },
+          visible: true,
+          opacity: 0.4,
+          setVisible(visible) { keepOut.visible = visible; layer.setKeepOut(keepOut.visible, keepOut.opacity); },
+          setOpacity(opacity) { keepOut.opacity = opacity; layer.setKeepOut(keepOut.visible, keepOut.opacity); },
+        };
+        options.onOverlay(keepOut);
+      }
       if (ready.homeCentre) layer.showHome(ready.homeCentre);
       const about = el('p', 'route-card__note');
       about.textContent =

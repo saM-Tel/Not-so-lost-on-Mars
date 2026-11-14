@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 13:25. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 14:05. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
-| A: data and science | Joseph, covering for the team owner | Slope and routing grids built; next a slope map layer and the rover path | Sat 11:00 |
-| B: app | Joseph, covering for the team owner | Route and tether on screen; next the layer panel (F2) | Sat 11:00 |
+| A: data and science | Joseph, covering for the team owner | Slope layer and rover layers built; next checking slope against rover tilt | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Layer panel built; next the shareable link, then dose | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
@@ -24,7 +24,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 |---|---|---|---|
 | F14 Mars globe and site picker | A, B | in progress | Works and is public: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Zooming in on a site by hand past zoom 4 selects it (asked for by Joseph on 14 Nov; tried in a scripted browser with camera jumps, not with a real mouse wheel or touch). Not done: not deployed |
 | F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at about 11:36, who reported it looks good. A scripted browser that waits for the fly-in shows the site centred with visible relief. Not checked: load time from the public link; heights at three rover stops shown in the app |
-| F2 Layer panel and information cards | B | not started | |
+| F2 Layer panel and information cards | B | works with issues | At Bright Angel the side panel lists five layers: ground image, slope, rover stops, rover path, keep-out ground. Each has a switch, an opacity control, a legend and a card built from its record (who measured it, when, detail, accuracy, grade, caveats). Seen in a scripted browser on the built app. Issues: no geology layer; not tried by a person |
 | F3 Route planner | B | in progress | Works for one target at Bright Angel: click the ground and the walk out and back is drawn, with distance, climb, time and energy for three cases; keep-out ground (steeper than 20 degrees) is shaded red and never crossed. Seen in a scripted browser on the dev server with two targets. Not done: several targets, oxygen, elevation profile, route confidence, footing, smoothing; home is a stand-in (the site marker); not tried by a person; whole-grid search takes about 1.0 to 1.3 s |
 | F4 Tether | A, B | works with issues | At Bright Angel a white line shows how far you can go and still walk home in time (cautious case), a fainter line the expected case, and ground outside is dimmed. Controls: walk-back limit (1 hour or 30 minutes) and time since leaving home; the line shrinks as time rises; a walk that leaves it, or that there is no time for, gets a red warning. Seen in a scripted browser. Issues: time only, no energy or oxygen budget and no reserve; judged at the walk's far end only; not tried by a person |
 | F5 Dose and space weather | A, B | not started | |
@@ -43,7 +43,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 
 | Site | Level | Data built | Reviewed by a person |
 |---|---|---|---|
-| bright-angel | 1 | image and terrain tiles, routing grids (height, slope) | no |
+| bright-angel | 1 | image and terrain tiles, routing grids (height, slope), rover stops and path | no |
 | gale-crater | 1 | no | no |
 | columbia-hills, meridiani, elysium-planitia, arctic-plain, ares-vallis, chryse-planitia, utopia-planitia | 2 | no | no |
 

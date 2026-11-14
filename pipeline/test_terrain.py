@@ -78,3 +78,32 @@ def test_routing_grids_are_written_as_the_definition_says(tmp_path):
     assert by_name["slopeMaxDeg"]["cellsWithNoData"] == 0
     # The plane rises 0.2 per metre east; the fixture's 0.948 m cells are within 0.1% of the grid's own spacing.
     assert slopes[5, 5] == pytest.approx(math.degrees(math.atan(0.2)), abs=0.05)
+
+
+def test_rover_stops_and_path_are_cut_to_the_box():
+    import vectors
+    box = sources.Box(77.0, 77.1, 18.0, 18.1)
+    stops = [
+        {"properties": {"RMC": "1_0", "sol": 10, "lon": 77.05, "lat": 18.05, "elev_geoid": -2500.123, "tilt": 3.26, "dist_total_m": 120.4}},
+        {"properties": {"RMC": "1_1", "sol": 11, "lon": 77.20, "lat": 18.05, "elev_geoid": -2400.0, "tilt": 1.0, "dist_total_m": 300.0}},
+        {"properties": {"RMC": "1_2", "sol": 12, "lon": 77.06, "lat": 18.06, "elev_geoid": -9999, "tilt": 2.0, "dist_total_m": 400.0}},
+    ]
+    found = vectors.rover_stops(stops, box, "elev_geoid")["features"]
+    assert [f["properties"]["stop"] for f in found] == ["1_0", "1_2"]       # the middle stop is outside the box
+    assert found[0]["properties"] == {"stop": "1_0", "sol": 10, "heightM": -2500.12, "tiltDeg": 3.3, "drivenTotalM": 120.0}
+    assert "heightM" not in found[1]["properties"]                          # -9999 means the file has no value
+
+    # A drive that leaves the box twice gives two lines; a lone point inside gives none.
+    drive = {"properties": {"sol": 10}, "geometry": {"type": "LineString", "coordinates": [
+        [77.01, 18.05, 0], [77.02, 18.05, 0], [77.2, 18.05, 0], [77.03, 18.05, 0], [77.04, 18.05, 0], [77.3, 18.05, 0], [77.05, 18.05, 0]]}}
+    lines = vectors.rover_path([drive], box)["features"]
+    assert [len(f["geometry"]["coordinates"]) for f in lines] == [2, 2]
+    assert lines[0]["geometry"]["coordinates"][0] == [77.01, 18.05]
+
+
+def test_a_sol_is_turned_into_an_earth_date_from_the_landing_date():
+    import vectors
+    # One sol is 88,775.244 s, so 1215 sols are 1,248.4 Earth days after 18 February 2021: 20 July 2024.
+    # NASA dates the rock core taken on that sol to 21 July 2024, which is the "day out" the layer record states.
+    assert vectors.sol_to_earth_date(0, "2021-02-18") == "2021-02-18"
+    assert vectors.sol_to_earth_date(1215, "2021-02-18") == "2024-07-20"

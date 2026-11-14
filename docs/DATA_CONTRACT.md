@@ -42,7 +42,7 @@ app/public/data/
     tiles/image-viking/{z}/{x}/{y}.jpg
 ```
 
-**`layers.json`** holds `contractVersion`, `builtUtc` and `layers`. Each layer record has every field of [CONFIDENCE.md](CONFIDENCE.md) section 1, in camelCase: `id`, `title`, `dataType`, `mission`, `instrument`, `agency`, `productId`, `sourceUrl`, `doi`, `acquiredFrom`, `acquiredTo`, `published`, `gridSpacing`, `realDetail`, `positionAccuracy`, `heightAccuracy`, `processing`, `grade`, `caveats` (a list) and `credit`. A value that was looked for and not found is the text `not found`; one that does not apply is `not applicable`. The app leaves out any layer whose mission, instrument, dates, detail, grade, caveats or credit is absent or `not found`. A layer with map tiles also has `tiles`: `path` (a pattern with `{z}`, `{x}`, `{y}`, relative to the folder holding `layers.json`), `minZoom`, `maxZoom`, `tileSizePx`, `count` and `bytes`.
+**`layers.json`** holds `contractVersion`, `builtUtc` and `layers`. Each layer record has every field of [CONFIDENCE.md](CONFIDENCE.md) section 1, in camelCase: `id`, `title`, `dataType`, `mission`, `instrument`, `agency`, `productId`, `sourceUrl`, `doi`, `acquiredFrom`, `acquiredTo`, `published`, `gridSpacing`, `realDetail`, `positionAccuracy`, `heightAccuracy`, `processing`, `grade`, `caveats` (a list) and `credit`. A value that was looked for and not found is the text `not found`; one that does not apply is `not applicable`. The app leaves out any layer whose mission, instrument, dates, detail, grade, caveats or credit is absent or `not found`. A layer drawn from a routing grid has `grid`, the name of the grid file (so far only `slopeMaxDeg`, for the layer `slope-hirise`). A layer of points or lines has `vector`: `path` (relative to the folder holding `layers.json`), `geometry` (`point` or `line`), `count` and `bytes`. A layer with map tiles also has `tiles`: `path` (a pattern with `{z}`, `{x}`, `{y}`, relative to the folder holding `layers.json`), `minZoom`, `maxZoom`, `tileSizePx`, `count` and `bytes`.
 
 **Image tiles** are 256-pixel JPEG files on the Web Mercator square, addressed zoom, then column counted east, then row counted south.
 
@@ -57,6 +57,8 @@ validation.json    terrain checked against the rover: sample size and typical di
 tiles/image-hirise/{z}/{x}/{y}.webp     zoom 12 to 18; transparent where there is no data
 tiles/terrain-hirise/{z}/{x}/{y}.png    zoom 11 to 15
 grid/heightM.f32, grid/slopeMaxDeg.f32  routing grids; see "Grid definition"
+vectors/rover-stops.geojson             the rover's stops in the box: points with stop, sol, heightM, tiltDeg, drivenTotalM
+vectors/rover-path.geojson              the rover's drives in the box: lines with sol
 ```
 
 **`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `grid`, `readFrom`, `files` and `totalBytes`.

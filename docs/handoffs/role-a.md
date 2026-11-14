@@ -1,5 +1,15 @@
 # Role A handoff
 
+## Sat 14 Nov 14:05, role A work by Joseph, with Claude Code
+
+Done: `vectors.py` writes the rover's stops (116) and the parts of its drives inside the box (90 lines) as GeoJSON, each with a full layer record. `build_site.py` also writes a record for slope as a layer, drawn by the app from the routing grid. Bright Angel rebuilt: 16.0 MB.
+Not done: geology (the Jezero geologic map is on the server, unread); science targets; mask, roughness, sky exposure; slope against rover tilt.
+Broken or risky: the landing date used to turn sols into Earth dates (18 February 2021) is from memory, not re-read from NASA's page today; it agrees to a day with NASA's date for the sol 1215 rock core. The rover files do not state position accuracy, and the records say so.
+Next: slope against rover tilt at the 116 stops (F9), which also gives a slope error for the "possibly too steep" band.
+Files: pipeline/vectors.py, build_site.py, config.py, validate.py, test_terrain.py, pipeline/AGENTS.md, sites/bright-angel.yaml, app/public/data/bright-angel/, docs/DATA_CONTRACT.md, docs/REFERENCES.md
+Other roles need to know: B, a layer record may now carry `grid` or `vector` (DATA_CONTRACT). The rover was inside this box from sol 1046 to sol 1283, about 28 January to 28 September 2024.
+Checks: `pytest -q` passes, 39 tests; full build with real data, exit 0.
+
 Note, 14 Nov 13:25: the 11:49 entry below was first headed 12:30, from an estimate that ran ahead of the clock. It now shows the commit time.
 
 ## Sat 14 Nov 11:49, role A work by Joseph, with Claude Code
