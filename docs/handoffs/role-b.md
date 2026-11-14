@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 13:56, role C work by Joseph, with Claude Code
+
+Done: `README.md` at the top of the repository, for judges and visitors: what Tether is, what you can do at Bright Angel, the three promises and the grades, the check against the rover, a table of data sources, an open list of what it does not do yet, how to run the app and the pipeline, and how AI was used.
+Not done: a licence file; the project page text, the video and the rest of SUBMISSION_CHECKLIST.
+Broken or risky: the README says AI wrote most of the code and that not every line has been reviewed by a person. That is true today; the team should read it and decide whether to say more. It does not say where the idea came from, because this session does not know.
+Next: open the public site after this push and confirm it matches; then the should-haves.
+Files: README.md
+Other roles need to know: C, the README is a first draft in your area. Change it freely.
+Checks: every number in it was copied from this session's build and test output.
+
 ## Sat 14 Nov 13:53, roles A and B work by Joseph, with Claude Code
 
 Done: photos along the route (F6). `pipeline/photos.py` reads NASA's raw image feed and indexes 401 left navigation camera photos at 111 of the 116 rover stops in the box. The route card shows up to six taken within 30 m of the walk, with full captions and a link to NASA's page. Sol numbers now turn into Earth dates from the moment sol 0 began, worked out from the feed itself, in place of a landing date taken from memory.
