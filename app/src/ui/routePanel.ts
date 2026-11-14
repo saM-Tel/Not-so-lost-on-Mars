@@ -173,7 +173,7 @@ export function startRoutePlanner(
   const updateField = (
     answer: Extract<RouteAnswer, { ok: true }>, elapsedS: number, outS: number, backS: number, allowedThereS: number, farthestS: number,
   ): void => {
-    const homeAt: [number, number] = loaded.site.home ? [loaded.site.home.lonEastDeg, loaded.site.home.latDeg] : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg];
+    const homeAt: [number, number] = homeOverride ?? (loaded.site.home ? [loaded.site.home.lonEastDeg, loaded.site.home.latDeg] : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg]);
     const named = (loaded.site.targets ?? []).find((t) => Math.abs(t.lonEastDeg - answer.target[0]) < 1e-4 && Math.abs(t.latDeg - answer.target[1]) < 1e-4);
     const state: FieldState = {
       targetName: named?.name ?? 'Chosen point',
@@ -303,6 +303,52 @@ export function startRoutePlanner(
     return line;
   };
 
+  /**
+   * Route export (F16): the walk as GeoJSON, with the Mars frame written into the file so nobody loads it into an
+   * Earth GPS tool by mistake. No GPX: GPX means Earth coordinates.
+   */
+  const exportButton = (answer: Extract<RouteAnswer, { ok: true }>): HTMLElement => {
+    const button = el('button', 'route-card__target', 'Download this walk (GeoJSON)');
+    button.type = 'button';
+    button.addEventListener('click', () => {
+      const leg = (name: string, line: [number, number][], stats: RouteLeg['stats']) => ({
+        type: 'Feature',
+        properties: {
+          leg: name, distanceM: Math.round(stats.distanceM), climbM: Math.round(stats.climbM),
+          timeS: Object.fromEntries(stats.cases.map((c) => [c.caseId, Math.round(c.timeS)])),
+          energyJ: Object.fromEntries(stats.cases.map((c) => [c.caseId, Math.round(c.energyJ)])),
+        },
+        geometry: { type: 'LineString', coordinates: line },
+      });
+      const file = {
+        type: 'FeatureCollection',
+        frame: 'Mars: planetocentric latitude and east-positive longitude in degrees on the Mars 2000 sphere (radius 3,396,190 m). Not Earth coordinates.',
+        site: loaded.site.id,
+        slopeLimitDeg,
+        madeUtc: new Date().toISOString(),
+        modelled: 'Times and energy are modelled for three cases (favourable, expected, cautious); see the app for sources.',
+        features: [leg('out', answer.out.line, answer.out.stats), leg('back', answer.back.line, answer.back.stats)],
+      };
+      const url = URL.createObjectURL(new Blob([JSON.stringify(file, null, 1)], { type: 'application/geo+json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `tether-${loaded.site.id}-walk.geojson`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    });
+    return button;
+  };
+
+  /** Rover drop-off (F16): the crew rover can drive to a new spot, which becomes home for the tether and every walk. */
+  let homeOverride: [number, number] | null = null;
+  let placingHome = false;
+  const moveRover = el('button', 'route-card__target', 'Move the rover: click a new spot');
+  moveRover.type = 'button';
+  moveRover.addEventListener('click', () => {
+    placingHome = !placingHome;
+    moveRover.textContent = placingHome ? 'Click the map where the rover should park…' : 'Move the rover: click a new spot';
+  });
+
   /** Storm mode (F10): what to do from the far end of the planned walk if a storm is coming. */
   const showStorm = (): void => {
     if (!lastAnswer?.ok) { storm.show(null, null); return; }
@@ -391,6 +437,7 @@ export function startRoutePlanner(
       profileChart(answer.out.stats.profile, answer.back.stats.profile, OUT_COLOUR, BACK_COLOUR, heightNote),
       confidenceLine(answer),
       roverComparison(answer),
+      exportButton(answer),
       el('p', 'route-card__note', `Steepest step along the route: ${steepest.toFixed(0)} degrees. Out and back differ because uphill and downhill cost differently.`),
       oxygenLine,
       el('p', 'route-card__note', OXYGEN_BASIS),
@@ -425,9 +472,9 @@ export function startRoutePlanner(
       if (stopped) return;
       // The scenario's home when the site has one (pipeline/scenario.py); otherwise the site marker stands in.
       const scenarioHome = loaded.site.home;
-      const home: [number, number] = scenarioHome
+      const home: [number, number] = homeOverride ?? (scenarioHome
         ? [scenarioHome.lonEastDeg, scenarioHome.latDeg]
-        : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg];
+        : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg]);
       // The worker takes ownership of the arrays it is given, so it gets copies and the originals stay for a restart.
       const client = startRouteWorker({
         definition, heightM: gridFiles.heightM.slice(), slopeMaxDeg: gridFiles.slopeMaxDeg.slice(), home, slopeLimitDeg,
@@ -464,9 +511,11 @@ export function startRoutePlanner(
         options.onOverlay(keepOut);
       }
       if (ready.homeCentre) layer.showHome(ready.homeCentre);
-      const homeText = scenarioHome
-        ? `Home: ${scenarioHome.name}${scenarioHome.assumed ? ' (assumed)' : ''}. ${scenarioHome.why} `
-        : `Home is the site's marker, a stand-in until the team chooses where the crew's rover parks. `;
+      const homeText = homeOverride
+        ? 'Home: the crew rover, moved to the spot you chose (your choice, not a sourced position). '
+        : scenarioHome
+          ? `Home: ${scenarioHome.name}${scenarioHome.assumed ? ' (assumed)' : ''}. ${scenarioHome.why} `
+          : `Home is the site's marker, a stand-in until the team chooses where the crew's rover parks. `;
       about.textContent =
         homeText +
         `Red is keep-out ground, steeper than ${slopeLimitDeg} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
@@ -474,6 +523,7 @@ export function startRoutePlanner(
       const targets = loaded.site.targets ?? [];
       if (first) {
         card.insertBefore(about, result);
+        card.insertBefore(moveRover, result);
         card.insertBefore(suit.element, result);
         if (targets.length > 0) {
           card.insertBefore(targetList(targets, (target) => planTo([target.lonEastDeg, target.latDeg])), result);
@@ -510,7 +560,22 @@ export function startRoutePlanner(
         });
       };
       if (first) {
-        onClick = (event) => planTo([event.lngLat.lng, event.lngLat.lat]);
+        onClick = (event) => {
+          if (placingHome) {
+            // Drop-off: the rover drives here; the ways home are worked out again from the new spot.
+            placingHome = false;
+            moveRover.textContent = 'Move the rover: click a new spot';
+            homeOverride = [event.lngLat.lng, event.lngLat.lat];
+            stopWorker();
+            tetherFields = null;
+            lastAnswer = null;
+            layer.showRoute(null);
+            planTo = () => {};
+            void begin();
+            return;
+          }
+          planTo([event.lngLat.lng, event.lngLat.lat]);
+        };
         map.on('click', onClick);
         map.getCanvas().style.cursor = 'crosshair';
       }

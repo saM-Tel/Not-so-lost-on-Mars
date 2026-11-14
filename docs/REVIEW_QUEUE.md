@@ -14,6 +14,9 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 - **F11 dust devils:** no published dust-devil rate for Jezero has been read. Leave out until one is.
 - **F4 energy and oxygen budgets and a reserve:** need sourced suit capacities; oxygen used on a walk is shown (Weir 1949) but not compared with a supply.
 - **F7 layer choices in the link:** not built.
+- **F16 rover models in 3D:** not started: needs a NASA 3D model file and a 3D library (a new dependency), so it waits for a decision.
+- **F16 two walkers:** not built; the rover drop-off (move home) is.
+- **Optional, orbiter passes overhead:** DSN Now (the link-to-Earth line) shows which orbiters are talking to Earth, not whether one is above the site. Passes need orbit predictions (for example NASA's SPICE kernels for MRO and Odyssey); none is in DATA_CATALOG yet.
 - **F9:** one route against the rover is now shown in the route card as distance driven against distance walked between home and a target (both rover stops). A path-shape comparison is not built.
 
 

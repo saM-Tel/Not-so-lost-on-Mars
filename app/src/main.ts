@@ -24,6 +24,7 @@ import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
 import { readUrlState, writeUrlState, type UrlState } from './ui/urlState';
 import { addWeatherBanner } from './ui/weatherBanner';
+import { addEarthLink } from './ui/earthLink';
 
 /** Everything the pipeline wrote is under this address. Relative, so it works under the repository name. */
 const DATA_URL = new URL('data/', document.baseURI).href;
@@ -71,6 +72,7 @@ async function start(): Promise<void> {
   addApproachLayers(map, approachRings, `${DATA_URL}approach/`);
   addScaleBar(map);
   addWeatherBanner(container, DATA_URL);
+  addEarthLink(container);
 
   let stopIdleTurn = (): void => {};
   /** Takes the route card, the route, the layer panel and the site's overlays away when the person leaves a site. */

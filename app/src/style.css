@@ -1163,3 +1163,28 @@ body.mode-tablet #map {
     font-size: 0.72rem;
   }
 }
+
+/* ---- Link to Earth (F16) ---- */
+
+.earth-link {
+  position: absolute;
+  left: 12px;
+  bottom: 64px;
+  z-index: 2;
+  max-width: min(26rem, calc(100% - 24px));
+  padding: 0.35rem 0.6rem;
+  border-left: 3px solid var(--level-1);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.earth-link--none {
+  border-left-color: var(--text-dim);
+}
+
+body.mode-helmet .earth-link {
+  display: none;
+}
