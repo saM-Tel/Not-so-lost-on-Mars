@@ -35,9 +35,9 @@ A larger model (Claude Fable) read the app's map, route, safety, time and displa
 - **R15, FIXED in 2af8745 (low): widgets overlap:** the link-to-Earth line sits on the scale bar (move it to `bottom: 96px`); below about 1,120 px the mode switch covers the route card's Hide button (move it to the bottom right there).
 
 **Group 5, `flight.ts`, `tether.ts`, `overlays.ts`**
-- **R16 (low to medium, suspected): a flight promise can resolve at the start of a flight** when a second site is clicked mid-flight (`moveend` from the stopped flight). Call `flyTo` first, then wait for `moveend`; return at once on the `jumpTo` path.
-- **R17 (speed): `tetherPicture` allocates per cell.** Inline the four neighbours, write through a `Uint32Array`, reuse buffers; time it with `performance.now()`.
-- **R18 (speed): the slope picture is built at site open though it starts hidden** (2.4 MB fetch and a PNG encode). Build it when first switched on.
+- **R16, FIXED in 3668b44 (low to medium, suspected): a flight promise can resolve at the start of a flight** when a second site is clicked mid-flight (`moveend` from the stopped flight). Call `flyTo` first, then wait for `moveend`; return at once on the `jumpTo` path.
+- **R17, FIXED in 3668b44 (speed): `tetherPicture` allocates per cell.** Inline the four neighbours, write through a `Uint32Array`, reuse buffers; time it with `performance.now()`.
+- **R18, FIXED in 3668b44 (speed): the slope picture is built at site open though it starts hidden** (2.4 MB fetch and a PNG encode). Build it when first switched on.
 
 **Small items**
 - **R19, FIXED in 2af8745 (low):** problem boxes in `main.ts` never go away, stack, and use a red border for non-danger messages; keep-out also marks no-data cells but its text says only "steeper than"; "before sunset" is printed as a clock, not a duration (`timeSlider.ts`); the tablet's Storm button is outlined red all the time; headers of `routePanel.ts` and `style.css` still say "Still to add" for built things.
@@ -105,6 +105,13 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **Check:** record a performance profile while spinning the globe and while zooming in. If it shows, add rings only for the site in focus.
 
 ## Done
+
+### R16, R17, R18: fixed Sat 14 Nov 19:42, commit 3668b44
+
+- R16: travel() in map/flight.ts.
+- R17: packed colours and a Uint32Array view in safety/tether.ts.
+- R18: empty image source, filled by updateImage on first show, in map/overlays.ts.
+- How checked: types, 77 unit tests and the production build pass; the tether picture's six existing tests cover R17's rewrite. R17 was not timed. R18 relies on MapLibre 6.18 accepting an image source with no address, which its source says it does (source/image_source.ts) but which was not tried in a browser: switch Slope on and check it appears.
 
 ### R13, R14, R15, R19: fixed Sat 14 Nov 19:39, commit 2af8745
 
