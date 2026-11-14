@@ -38,6 +38,8 @@ function levelColour(level: number): string {
 }
 
 export interface SiteMarkers {
+  /** The lowest of the column layers. A site's ground image is added beneath it. */
+  firstLayerId: string | undefined;
   /** Mark one site as chosen, or none. */
   setSelected(siteId: string | null): void;
   /** Hide every column and name, for when a site's own map is open. */
@@ -161,6 +163,7 @@ export function addSiteMarkers(
   queueTidy();
 
   return {
+    firstLayerId: layerIds[0],
     setSelected(siteId) {
       selectedId = siteId;
       for (const [id, pin] of pins) pin.classList.toggle('is-selected', id === siteId);

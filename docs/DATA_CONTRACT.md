@@ -48,6 +48,20 @@ app/public/data/
 
 **`sites.json`** holds `contractVersion`, `builtUtc`, `convention`, `levels` (name and offer for each readiness level) and `sites`. Each site has `id`, `name`, `place`, `mission`, `missionYears`, `level`, `built`, `reviewedByPerson`, `lonEastDeg`, `latDeg`, `position` (what the point is, its source and address), `landing` (the landing position as its source prints it, or null), `data` and `problems` (lists of sentences), and `terrainFootprint` when the position came from a terrain model. `built` is true when `<site id>/site.json` exists.
 
+**A built site's folder**, `<site id>/`, so far holds:
+
+```
+site.json          identity, box, centre, terrain height range, which source each input was read from, file sizes
+layers.json        one record per layer, as above
+validation.json    terrain checked against the rover: sample size and typical difference
+tiles/image-hirise/{z}/{x}/{y}.webp     zoom 12 to 18; transparent where there is no data
+tiles/terrain-hirise/{z}/{x}/{y}.png    zoom 11 to 15
+```
+
+**`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `readFrom`, `files` and `totalBytes`.
+
+**Terrain tiles** are 256-pixel PNG files. A height in metres relative to the areoid is `-10000 + (red * 65536 + green * 256 + blue) * 0.1`, which MapLibre calls the "mapbox" encoding; the record says `"encoding": "mapbox"`. Heights are true Mars metres. The app scales them by the Earth to Mars radius ratio when drawing, and subtracts `terrainHeightM.lowest` at draw time only. Past the edge of the box a tile repeats the edge height; that is not data.
+
 ## Grid definition
 
 To settle on Saturday. The app needs all of these from `site.json` to read a grid correctly:

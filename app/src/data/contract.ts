@@ -1,4 +1,4 @@
-// WHAT:    Types that mirror docs/DATA_CONTRACT.md: layers.json and sites.json so far. Still to add: site.json and the grid definition.
+// WHAT:    Types that mirror docs/DATA_CONTRACT.md: layers.json, sites.json and site.json so far. Still to add: the routing grid definition.
 // IN:      Nothing.
 // OUT:     Types only.
 // USED BY: src/data loaders and everything that reads site files.
@@ -22,6 +22,8 @@ export interface TileSet {
   tileSizePx: number;
   count?: number;
   bytes?: number;
+  /** For terrain tiles: how heights are stored. 'mapbox' means -10000 + (red * 65536 + green * 256 + blue) * 0.1 metres. */
+  encoding?: string;
 }
 
 /** One layer's record: the fields of docs/CONFIDENCE.md section 1. Every field is always present. */
@@ -119,4 +121,34 @@ export interface SitesFile {
   convention: string;
   levels: Record<string, ReadinessLevel>;
   sites: SiteEntry[];
+}
+
+/** A box in the app's convention: east-positive longitude -180 to 180, planetocentric latitude, degrees. */
+export interface BoxDeg {
+  westLonDeg: number;
+  eastLonDeg: number;
+  southLatDeg: number;
+  northLatDeg: number;
+}
+
+/** A built site's own file, site.json. */
+export interface SiteFile {
+  contractVersion: number;
+  builtUtc: string;
+  id: string;
+  name: string;
+  place: string;
+  mission: string;
+  level: number;
+  reviewedByPerson: boolean;
+  convention: string;
+  box: BoxDeg;
+  boxSizeKm: { eastWest: number; northSouth: number };
+  centre: { lonEastDeg: number; latDeg: number };
+  /** Heights in the box, metres relative to the areoid. */
+  terrainHeightM: { lowest: number; highest: number; atCentre: number };
+  /** Which source each input was read from when the site was built, in words. */
+  readFrom: Record<string, string>;
+  files: { path: string; files: number; bytes: number }[];
+  totalBytes: number;
 }

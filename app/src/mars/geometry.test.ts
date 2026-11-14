@@ -14,7 +14,7 @@ import {
   METRES_PER_DEGREE,
   SOL_S,
 } from './constants';
-import { bearingDeg, destination, distanceM, eastWestSpacingM, lonTo180, metresPerPixel } from './geometry';
+import { bearingDeg, destination, distanceM, eastWestSpacingM, lonTo180, metresPerPixel, zoomForMetresPerPixel } from './geometry';
 
 describe('constants', () => {
   it('match the brief and the pipeline', () => {
@@ -94,5 +94,12 @@ describe('metresPerPixel', () => {
     // 2 * pi * 3,396,190 / 256 = 83,355.0 m at zoom 0 on the equator. Earth would give 156,543 m.
     expect(metresPerPixel(0, 0)).toBeCloseTo(83_355.0, 0);
     expect(metresPerPixel(5, 0)).toBeCloseTo(83_355.05 / 32, 1);
+  });
+
+  it('is undone by zoomForMetresPerPixel', () => {
+    for (const [zoom, lat] of [[0, 0], [13.5, 18.5], [17, -4.6], [5, 68.2]] as const) {
+      expect(zoomForMetresPerPixel(metresPerPixel(zoom, lat), lat)).toBeCloseTo(zoom, 9);
+      expect(zoomForMetresPerPixel(metresPerPixel(zoom, lat, 512), lat, 512)).toBeCloseTo(zoom, 9);
+    }
   });
 });

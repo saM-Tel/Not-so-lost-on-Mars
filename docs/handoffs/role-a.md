@@ -35,3 +35,12 @@ Other roles need to know:
 
 Checks:
 - Manifest sizes computed from PDS KBytes; not yet downloaded.
+## Sat 14 Nov 10:16, role A work by the team owner, with Claude Code
+
+Done: F1 pipeline code written (uncommitted): `sources.py` (3x3 km `/vsicurl/` window reader + `.npy` cache), `tiles.py` (site WebP z12-18 + Mapbox PNG z11-15), `validate.py` (rover `elev_geoid` check), `config.py`, `build_site.py`, and `sites/bright-angel.yaml`.
+Not done: Bright Angel site build (`app/public/data/bright-angel/` does not exist yet); `mask.py`, `terrain.py` (slope/roughness/sky), `grids.py`, `vectors.py`, `weather.py`, `photos.py`; `docs/STATUS.md` and `docs/AI_USE.md` updates.
+Broken or risky: a background `build_site.py` started at 10:11 was using older code without `terrainHeightM` in `site.json` or the `halved()` memory fix, and had not finished reading the 25 cm ortho image. Terrain heights match 116 rover stops to 0.03 m median, likely meaning rover heights came from this same DTM (checks position, not accuracy).
+Next: check/kill any running `build_site.py` process, run `.venv\Scripts\python -u build_site.py ../sites/bright-angel.yaml` (terrain is already cached in `data/work/bright-angel/`), then commit pipeline + `sites/bright-angel.yaml` + `docs/DATA_CONTRACT.md` updates.
+Files: pipeline/sources.py, tiles.py, validate.py, config.py, build_site.py, test_sources.py, pipeline/AGENTS.md, sites/bright-angel.yaml, sites/AGENTS.md, docs/DATA_CONTRACT.md
+Other roles need to know: `site.json` now includes `terrainHeightM` (`lowest`, `highest`, `atCentre`). Rover waypoint feeds are cached locally in `data/raw/feeds/`.
+Checks: `.venv\Scripts\python -m pytest -q` passes (32 tests); `build_site.py ../sites/bright-angel.yaml --dry-run` passes. Full site build incomplete.

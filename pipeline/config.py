@@ -1,4 +1,4 @@
-# WHAT:    Reads and checks a site config. So far: identity, position and what data exists, which is what the globe needs (F14).
+# WHAT:    Reads and checks a site config: identity, position and what data exists (F14), and the box and sources of a site that can be built (F1).
 # IN:      A YAML file from ../sites/.
 # OUT:     A checked config as a dictionary, with the site's position worked out in the app's convention; or an error listing every problem.
 # USED BY: build_globe.py. build_site.py will use it too.
@@ -90,6 +90,47 @@ def _position(config: dict, problems: list[str]) -> dict | None:
     return result
 
 
+# Facts about a source that the config must state, because the pipeline cannot know them: who made
+# it, when it was measured, how detailed and how accurate it is. The pipeline adds the rest.
+SOURCE_RECORD_FIELDS = [
+    "mission", "instrument", "agency", "productId", "sourceUrl", "doi", "acquiredFrom", "acquiredTo",
+    "published", "gridSpacing", "realDetail", "positionAccuracy", "heightAccuracy", "grade", "caveats", "credit",
+]
+
+
+def _check_build_settings(config: dict, problems: list[str]) -> bool:
+    """Check the parts a site needs before it can be built. Returns whether the site has them at all."""
+    box, source_list = config.get("box"), config.get("sources")
+    if box is None and source_list is None:
+        return False
+    if not isinstance(box, dict) or not all(isinstance(box.get(k), (int, float)) and box[k] > 0 for k in ("widthKm", "heightKm")):
+        problems.append("'box' needs widthKm and heightKm as positive numbers")
+    if not isinstance(source_list, dict):
+        problems.append("'sources' is missing")
+        return True
+    for name in ("terrain", "image"):
+        source = source_list.get(name)
+        if not isinstance(source, dict):
+            problems.append(f"sources.{name} is missing")
+            continue
+        for field in ("file", "serverPath", "originalUrl"):
+            if not source.get(field):
+                problems.append(f"sources.{name}.{field} is missing")
+        record = source.get("record")
+        if not isinstance(record, dict):
+            problems.append(f"sources.{name}.record is missing: dates, accuracy and credit must be stated")
+            continue
+        for field in SOURCE_RECORD_FIELDS:
+            if record.get(field) in (None, "", []):
+                problems.append(f"sources.{name}.record.{field} is missing; write a value, 'not found' or 'not applicable'")
+    rover = config.get("rover")
+    if rover is not None:
+        for field in ("file", "serverPath", "originalUrl", "heightField"):
+            if not isinstance(rover, dict) or not rover.get(field):
+                problems.append(f"rover.{field} is missing")
+    return True
+
+
 def load_site_config(path: pathlib.Path) -> dict:
     """Read one site config and check it. Raises ConfigError naming every problem."""
     config = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -121,6 +162,7 @@ def load_site_config(path: pathlib.Path) -> dict:
                 problems.append(f"landing.{field} is missing")
 
     position = _position(config, problems)
+    config["buildable"] = _check_build_settings(config, problems)
     if problems:
         raise ConfigError(f"{path.name}: " + "; ".join(problems))
     config["positionChecked"] = position

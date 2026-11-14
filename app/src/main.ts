@@ -1,6 +1,6 @@
-// WHAT:    Entry point. Opens the Mars globe with a marker at every site, and flies to a site when one is chosen (F14, F7).
-//          Still to add: opening a built site's own map, the other panels and the route worker.
-// IN:      public/data/globe/layers.json and public/data/sites.json; the site named in the address bar, if any.
+// WHAT:    Entry point. Opens the Mars globe with a marker at every site, flies to a chosen site, and opens a built site's
+//          own image and 3D terrain (F14, F1, F7). Still to add: the layer, route and safety panels and the route worker.
+// IN:      public/data/globe/layers.json, public/data/sites.json and a built site's folder; the site named in the address bar, if any.
 // OUT:     Nothing. Starts the app.
 // USED BY: index.html.
 // RULES:   Wiring only, no logic of its own. A site's files load only when that site is opened.
@@ -8,9 +8,12 @@
 // OWNER:   Role B.
 
 import { loadLayers } from './data/layers';
+import { loadSite } from './data/loadSite';
 import { loadSites } from './data/loadSites';
-import { flyToGlobe, flyToSite, startIdleTurn } from './map/flight';
+import { flyIntoSite, flyToGlobe, flyToSite, startIdleTurn } from './map/flight';
 import { createGlobeMap } from './map/mapView';
+import { addScaleBar } from './map/scaleBar';
+import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
 import { createSitePicker } from './ui/sitePicker';
 import { readUrlState, writeUrlState } from './ui/urlState';
@@ -54,19 +57,43 @@ async function start(): Promise<void> {
   });
   if (import.meta.env.DEV) (window as unknown as { tetherMap: unknown }).tetherMap = map;
   await new Promise<void>((resolve) => { void map.once('load', () => resolve()); });
+  addScaleBar(map);
 
   let stopIdleTurn = (): void => {};
+  /** Counts choices, so a slow load for one site cannot overwrite a later choice. */
+  let choice = 0;
 
-  const select = (siteId: string | null): void => {
+  const select = async (siteId: string | null): Promise<void> => {
+    const thisChoice = ++choice;
     stopIdleTurn();
     const site = siteId === null ? undefined : sites.find((s) => s.id === siteId);
     markers.setSelected(site?.id ?? null);
     picker.show(site?.id ?? null);
     writeUrlState({ siteId: site?.id ?? null });
-    void (site ? flyToSite(map, site) : flyToGlobe(map));
+
+    if (!site?.built) {
+      // The globe, or a site with no map of its own: show the markers and no site layers.
+      removeSiteLayers(map);
+      markers.setVisible(true);
+      await (site ? flyToSite(map, site) : flyToGlobe(map));
+      return;
+    }
+    try {
+      const builtSite = await loadSite(DATA_URL, site.id);
+      if (thisChoice !== choice) return;
+      const notShown = showSiteLayers(map, builtSite, markers.firstLayerId);
+      for (const message of notShown) showProblem(message);
+      // The column and the name would stand in the middle of the ground the person came to see.
+      markers.setVisible(false);
+      await flyIntoSite(map, builtSite.site);
+    } catch (error) {
+      if (thisChoice !== choice) return;
+      showProblem(error instanceof Error ? error.message : String(error));
+      await flyToSite(map, site);
+    }
   };
 
-  const markers = addSiteMarkers(map, sites, file.levels, (siteId) => select(siteId));
+  const markers = addSiteMarkers(map, sites, file.levels, (siteId) => void select(siteId));
   const picker = createSitePicker({
     parent: document.body,
     sites,
@@ -74,15 +101,13 @@ async function start(): Promise<void> {
     rejected,
     image,
     startSiteId: startSite?.id ?? null,
-    onSelect: (siteId) => select(siteId),
-    onShowAll: () => select(null),
-    // Opening a built site's own map comes with F1. Until then no site is built, so this is never offered.
-    onOpen: (siteId) => select(siteId),
+    onSelect: (siteId) => void select(siteId),
+    onShowAll: () => void select(null),
+    onOpen: (siteId) => void select(siteId),
   });
 
-  if (chosenAtStart) select(chosenAtStart.id);
+  if (chosenAtStart) void select(chosenAtStart.id);
   else stopIdleTurn = startIdleTurn(map);
-
 }
 
 start().catch((error: unknown) => {

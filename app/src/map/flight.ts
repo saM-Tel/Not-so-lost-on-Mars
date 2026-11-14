@@ -1,5 +1,5 @@
 // WHAT:    Camera moves: globe to a site, a site back to the globe, and the slow idle turn of the globe (F14, F7).
-// IN:      The map; a site's position in degrees.
+// IN:      The map; a site's position in degrees, or a built site's box.
 // OUT:     Nothing. Moves the camera and resolves when it has arrived.
 // USED BY: src/main.ts.
 // RULES:   The idle turn stops on the first touch and respects the reduced-motion setting.
@@ -7,7 +7,9 @@
 // OWNER:   Role B.
 
 import type { Map as MapLibreMap } from 'maplibre-gl';
-import type { SiteEntry } from '../data/contract';
+import type { SiteEntry, SiteFile } from '../data/contract';
+import { METRES_PER_DEGREE } from '../mars/constants';
+import { zoomForMetresPerPixel } from '../mars/geometry';
 
 /** The whole planet in view. */
 export const GLOBE_ZOOM = 1.6;
@@ -34,6 +36,23 @@ export function flyToSite(map: MapLibreMap, site: SiteEntry, zoom: number = REGI
   const view = { center: [site.lonEastDeg, site.latDeg] as [number, number], zoom, pitch: REGION_PITCH_DEG, bearing: 0 };
   if (reducedMotion()) map.jumpTo(view);
   else map.flyTo({ ...view, duration: 3200, essential: true });
+  return done;
+}
+
+/** Camera tilt from straight down inside a built site, in degrees. */
+export const SITE_PITCH_DEG = 55;
+
+/** Descend into a built site so that its box fills most of the view, tilted to show the relief. */
+export function flyIntoSite(map: MapLibreMap, site: SiteFile): Promise<void> {
+  const done = arrived(map);
+  const lat = site.centre.latDeg;
+  // Width of the box on the ground, from the Mars radius; then the zoom at which it spans most of the view.
+  const widthM = (site.box.eastLonDeg - site.box.westLonDeg) * METRES_PER_DEGREE * Math.cos((lat * Math.PI) / 180);
+  const viewPx = Math.max(200, map.getContainer().clientWidth * 0.8);
+  const zoom = zoomForMetresPerPixel(widthM / viewPx, lat, 512); // MapLibre counts zoom on 512-pixel tiles
+  const view = { center: [site.centre.lonEastDeg, lat] as [number, number], zoom, pitch: SITE_PITCH_DEG, bearing: 0 };
+  if (reducedMotion()) map.jumpTo(view);
+  else map.flyTo({ ...view, duration: 5000, essential: true });
   return done;
 }
 

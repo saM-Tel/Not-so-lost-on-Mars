@@ -15,9 +15,9 @@ Role A.
 Run these inside `pipeline/`. Use a standard Python 3.12 from python.org. The Python that comes with MSYS2 cannot install rasterio.
 
 - Create the Python environment and install: `py -3.12 -m venv .venv`, then `.venv\Scripts\python -m pip install -r requirements.txt`. On macOS or Linux: `python3.12 -m venv .venv`, then `.venv/bin/python -m pip install -r requirements.txt`
-- Build a site: `.venv\Scripts\python build_site.py ../sites/<site id>.yaml` (not built yet)
+- Build a site: `.venv\Scripts\python build_site.py ../sites/<site id>.yaml`. Add `--dry-run` to check the config and print the box without reading or writing. The first build of Bright Angel reads about 190 MB from the team data server in three to four minutes; the cells are then kept in `../data/work/<site id>/` and a rebuild takes about a minute
 - Build the globe image and site list: `.venv\Scripts\python build_globe.py` Add `--only image` or `--only sites` to build one of the two. The image step fetches 512 tiles from Mars Trek on the first run and keeps them in `../data/work/globe/`. Run the sites step after changing any file in `../sites/`
-- Check, the one command that must pass before any push: `.venv\Scripts\python -m pytest -q`. A dry run of a site build will be added to it when `build_site.py` exists
+- Check, the one command that must pass before any push: `.venv\Scripts\python -m pytest -q`, then `.venv\Scripts\python build_site.py ../sites/bright-angel.yaml --dry-run`
 
 ## Reads and writes
 
@@ -60,24 +60,27 @@ Add a row when you add a file. Remove it when you delete one.
 | File | What it does | Feature |
 |---|---|---|
 | `requirements.txt` | Pinned Python packages | |
-| `build_site.py` | One command that builds one site from its config: runs every stage in order and writes the site folder | F1 to F6, F9 |
+| `build_site.py` | One command that builds one site from its config. Built so far: reads the box, checks terrain against the rover, cuts image and terrain tiles, writes `layers.json`, `validation.json` and `site.json`. To add: stages 2 and 4 to 7 | F1 to F6, F9 |
 | `build_globe.py` | Builds what the globe needs: Web Mercator tiles of the Viking colour mosaic with its layer record, and `sites.json` from every site config | F14 |
 | `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |
 | `test_mars.py` | Tests for `mars.py`, with expected values worked by hand | |
-| `config.py` | Reads and checks a site config. Built so far: identity, position and what data exists. To add: the box, source files, home and targets | all |
+| `config.py` | Reads and checks a site config: identity, position, what data exists, and for a site that can be built its box and sources with their dates and accuracy. To add: home and targets | all |
 | `test_config.py` | Tests for `config.py`; also loads every real config in `../sites/` | |
-| `sources.py` | Finds each source file and reads only the site's box from it | F1 |
+| `sources.py` | Finds each source file (team data server, then local copy, then original address) and reads only the site's box from it. Refuses a file on a projection it does not understand | F1 |
+| `test_sources.py` | Tests for `sources.py` and for the site tile cutting in `tiles.py`, on made-up fixtures | |
 | `mask.py` | Stage 2: finds missing data and seams between source terrain models | F1, F3 |
-| `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads. Built so far: whole-planet image pyramids | F1, F14 |
+| `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads: whole-planet image pyramids, and a site's image (WebP) and terrain (PNG) tiles | F1, F14 |
 | `test_tiles.py` | Tests for `tiles.py` on small made-up fixtures that stay in the test file | |
 | `terrain.py` | Stage 4: slope, roughness and sky exposure from terrain heights | F2, F3, F5 |
 | `grids.py` | Stage 5: writes the routing grids as raw binary arrays | F3, F4 |
 | `vectors.py` | Stage 6: converts geology, the rover path, rover stops and science targets to GeoJSON | F2 |
 | `weather.py` | Stage 7: typical weather by local hour for the season, from the weather archive | F11 |
 | `photos.py` | Stage 7: index of real rover photos near the route area | F6 |
-| `validate.py` | Stage 8: checks our terrain against the rover's own measurements | F1, F9 |
+| `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built so far: heights at every rover stop in the box. To add: slope against rover tilt | F1, F9 |
 | `records.py` | Stage 9: writes `layers.json` and `site.json`, including file sizes. Built so far: the layer record check and `layers.json` | F2, F14 |
 
 ## Known issues
 
-None recorded.
+- Only files on the Jezero grid can be read: equirectangular, true to scale at the equator, radius 3,396,190 m. The landing-site terrain models use other projections and are refused with a clear message.
+- Missing terrain cells stop a build, because the mask stage is not built. Bright Angel has none.
+- The rover's logged heights agree with the terrain to a few centimetres, which suggests they were read from this same terrain model. Treat the height check as a check of position, not of terrain accuracy. Slope against rover tilt will be the independent check.

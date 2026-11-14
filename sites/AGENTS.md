@@ -41,7 +41,7 @@ Role A, with role C supplying science targets and their reasons.
 | `chryse-planitia.yaml` | Chryse Planitia (Viking 1) | 2 | No |
 | `utopia-planitia.yaml` | Utopia Planitia (Viking 2) | 2 | No |
 
-So far each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. None is built. The box, source files, home and targets are added when a site is built.
+Each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. `bright-angel.yaml` also holds what a build needs: the box (a size, centred on the marker position), the terrain and image files with their dates, accuracy and credit, and the rover's stops. It is the only site built. Home and science targets are still to be added to it.
 
 A position is given in one of two ways, both copied digit for digit from the source: `from: point` with a longitude and latitude, or `from: terrain-footprint` with the four edges of a terrain model, in which case the marker stands at the footprint's centre. `pipeline/config.py` converts the longitude and refuses a position with no source.
 

@@ -60,6 +60,11 @@ export function eastWestSpacingM(northSouthSpacingM: number, latDeg: number): nu
   return northSouthSpacingM * Math.cos(latDeg * RAD);
 }
 
+/** The zoom at which one screen pixel covers `metresPerPx` of Mars ground at this latitude. The reverse of metresPerPixel. */
+export function zoomForMetresPerPixel(metresPerPx: number, latDeg: number, tileSizePx = 256): number {
+  return Math.log2((2 * Math.PI * MARS_RADIUS_M * Math.cos(latDeg * RAD)) / (tileSizePx * metresPerPx));
+}
+
 /** Ground size on Mars of one screen pixel of a 256-pixel-tile map at this zoom and latitude, in metres. */
 export function metresPerPixel(zoom: number, latDeg: number, tileSizePx = 256): number {
   return (2 * Math.PI * MARS_RADIUS_M * Math.cos(latDeg * RAD)) / (tileSizePx * 2 ** zoom);

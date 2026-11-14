@@ -33,9 +33,10 @@ Add a row when you add a file. Remove it when you delete one.
 | `mapView.ts` | Creates the MapLibre map: globe view with the global Mars image, and the corrections MapLibre needs for Mars | F14, F1 |
 | `siteMarkers.ts` | Draws a tall column, a name and a pulse at each landing site on the globe, and reports clicks | F14 |
 | `flight.ts` | Camera moves: globe to a site, a site back to the globe, and the slow idle turn of the globe | F14, F7 |
-| `siteLayers.ts` | Adds a site's image, 3D terrain and overlay layers from layers.json, with opacity control | F1, F2 |
+| `siteLayers.ts` | Adds a built site's image and 3D terrain to the map and takes them away again. To add: overlay layers with opacity control | F1, F2 |
 | `legend.ts` | Builds the legend for each layer from its record | F2 |
-| `scaleBar.ts` | Our own scale bar, correct for Mars | F1 |
+| `scaleBar.ts` | Our own scale bar, correct for Mars; shown from zoom 7 inwards | F1 |
+| `scaleBar.test.ts` | Tests for the scale bar's arithmetic | |
 | `routeLayer.ts` | Draws targets, the route, and the cautious and expected tether lines on the map | F3, F4 |
 
 ## Known issues
@@ -43,4 +44,5 @@ Add a row when you add a file. Remove it when you delete one.
 - MapLibre 6 looks for its worker file beside its own module. Under Vite that address is wrong, so `mapView.ts` sets it with `setWorkerUrl`. Without it the map stays blank.
 - MapLibre 6 has no default export. Import names: `import { Map } from 'maplibre-gl'`.
 - A polygon cannot change size with zoom, so `siteMarkers.ts` keeps one set of columns for each half step of zoom. Column heights are scaled by the Earth to Mars radius ratio like every other height.
+- Terrain files hold true heights relative to the areoid. `siteLayers.ts` subtracts the box's lowest height at draw time only, because outside the box the map has no terrain and sits at zero; without that the site would lie at the bottom of a pit about 2.3 km deep. The box still stands apart from its surroundings at its edges until context terrain is added.
 - A browser screenshot taken with a "virtual time" budget does not show the columns while the globe is turning. Use a scripted browser that waits in real time.
