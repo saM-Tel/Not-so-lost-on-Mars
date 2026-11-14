@@ -77,6 +77,9 @@ All nine have a config in `sites/` with a cited position, and appear on the glob
 
 ## Broken right now
 
+- **Sat 14 Nov 21:55, seen by the team owner:** opening a site shows 'Source "overlay-thermal-themis" already exists.' Not investigated; suspected cause and a fix to try are in [handoffs/role-c.md](handoffs/role-c.md), newest entry. Fix first on Sunday.
+- The Several stops list and the margin chart (F3, items 10 and 11 of the evening plan) have no styles yet.
+
 Nothing known broken, but most of the afternoon's work has not been opened in a browser. Large items for review are in [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
 
 ## Team data server
