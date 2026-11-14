@@ -1,4 +1,4 @@
-// WHAT:    Space-weather banner: the latest NASA forecast that names Mars, with issue time and arrival window (F5).
+// WHAT:    Space-weather banner (one line that opens for the full forecast; open by itself while a window is ahead, F17): the latest NASA forecast that names Mars, with issue time and arrival window (F5).
 // IN:      Forecasts from src/data/feeds.ts; the time now.
 // OUT:     A banner element over the map, and the sentence it shows.
 // USED BY: src/main.ts.
@@ -55,20 +55,28 @@ export function bannerText(weather: SpaceWeather, now: Date): BannerText {
 
 /** Add the banner to the map's container and fill it once the forecasts are read. Returns nothing: it stays for the session. */
 export function addWeatherBanner(parent: HTMLElement, dataUrl: string): void {
-  const banner = document.createElement('aside');
+  // One line that opens for the full forecast and its source (F17: the full text covered the map all the time). It
+  // opens by itself only while a forecast window is still ahead or open, which is when it matters.
+  const banner = document.createElement('details');
   banner.className = 'weather-banner';
   banner.setAttribute('aria-label', 'Space weather forecast');
+  const summary = document.createElement('summary');
+  summary.className = 'weather-banner__summary';
+  summary.textContent = 'Space weather: reading NASA\'s forecast…';
   const headline = document.createElement('p');
   headline.className = 'weather-banner__headline';
-  headline.textContent = 'Reading NASA\'s space-weather forecast…';
   const source = document.createElement('p');
   source.className = 'weather-banner__source';
-  banner.append(headline, source);
+  banner.append(summary, headline, source);
   parent.append(banner);
 
   loadSpaceWeather(dataUrl).then((weather) => {
     const text = bannerText(weather, new Date());
     headline.textContent = text.headline;
+    summary.textContent = weather.forecasts.length === 0
+      ? 'Space weather: no forecast for Mars'
+      : text.ahead ? 'Space weather forecast: a solar eruption may reach Mars' : 'Space weather: the latest forecast window for Mars has passed';
+    banner.open = text.ahead;
     banner.classList.toggle('weather-banner--ahead', text.ahead);
     source.textContent = `${text.source} A forecast, not a measurement. NASA calls these notices experimental; arrival times at Earth are typically wrong by about 10 hours. `;
     const latest = weather.forecasts[0];
@@ -81,6 +89,7 @@ export function addWeatherBanner(parent: HTMLElement, dataUrl: string): void {
       source.append(link);
     }
   }).catch((error: unknown) => {
+    summary.textContent = 'Space weather: no data';
     headline.textContent = 'Space weather: no data. ' + (error instanceof Error ? error.message : String(error));
   });
 }

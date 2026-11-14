@@ -484,14 +484,18 @@ export function startRoutePlanner(
     doseLine.textContent =
       `Radiation on this walk: ${formatRange(dose.equivalentUSv.expected, dose.equivalentUSv.lowest, dose.equivalentUSv.highest, (v) => formatDose(v, 'Sv'))} dose equivalent; ` +
       `${formatRange(dose.absorbedUGy.expected, dose.absorbedUGy.lowest, dose.absorbedUGy.highest, (v) => formatDose(v, 'Gy'))} absorbed dose.`;
-    const doseBasis = el('p', 'route-card__note',
-      'Modelled from the everyday background Curiosity measured at Gale crater, applied here (grade C), for the walking time only. The range covers the solar cycle and the three walking cases. A solar storm can add far more in hours and is not included.');
+    const doseBasis =
+      'Radiation: modelled from the everyday background Curiosity measured at Gale crater, applied here (grade C), for the walking time only. The range covers the solar cycle and the three walking cases. A solar storm can add far more in hours and is not included.';
     const details = el('details', 'route-card__basis');
     details.append(el('summary', undefined, 'What these numbers rest on'));
     const basis = el('ul');
+    // F17: the notes that explain each number live here, one click away, so the card shows the numbers first.
     for (const text of [
       'Modelled, not measured. Nobody has walked on Mars. Time and energy come from a walking model built on Apollo lunar data and load-carrying tests on Earth, with Mars gravity (grade C).',
       'Each number is the expected case, with the favourable and cautious cases in brackets. The route is chosen for least energy in the expected case; walking time only, with no stops.',
+      'Out and back differ because uphill and downhill cost differently.',
+      `Oxygen: ${OXYGEN_BASIS}`,
+      doseBasis,
       ...WALK_CASES.map((c) => `${c.id[0]!.toUpperCase()}${c.id.slice(1)}: ${c.basis}`),
       `Ground steeper than ${slopeLimitDeg} degrees is keep-out${slopeLimitDeg === SLOPE_LIMIT_DEG ? ", from NASA's Artemis requirement for walking on the Moon (grade C)" : ', a limit chosen in the suit settings (assumed); the NASA figure is 20 degrees'}. Slope is measured from orbit over about 6 m, so rocks and ledges smaller than about 3 to 5 m are not seen.`,
       'The route follows 4 m grid cells, so its distance can be up to about 8% longer than a smooth path.',
@@ -508,18 +512,19 @@ export function startRoutePlanner(
     const heightNote = terrainRecord
       ? `Heights from ${terrainRecord.mission} ${terrainRecord.instrument}; real detail ${terrainRecord.realDetail.toLowerCase()}; each point is the mean of a 4 m cell.`
       : 'Each point is the mean height of a 4 m cell.';
+    // Numbers first (table, then oxygen, radiation and the steepest step), then the profile, the checks, what the
+    // numbers rest on, and last the action of taking the walk away as a file.
+    const steepLine = el('p', 'route-card__dose', `Steepest step along the route: ${steepest.toFixed(0)} degrees.`);
     result.append(
       table,
+      oxygenLine,
+      doseLine,
+      steepLine,
       profileChart(answer.out.stats.profile, answer.back.stats.profile, OUT_COLOUR, BACK_COLOUR, heightNote),
       confidenceLine(answer),
       roverComparison(answer),
-      exportButton(answer),
-      el('p', 'route-card__note', `Steepest step along the route: ${steepest.toFixed(0)} degrees. Out and back differ because uphill and downhill cost differently.`),
-      oxygenLine,
-      el('p', 'route-card__note', OXYGEN_BASIS),
-      doseLine,
-      doseBasis,
       details,
+      exportButton(answer),
     );
     parts.walk.hidden = false;
   };
