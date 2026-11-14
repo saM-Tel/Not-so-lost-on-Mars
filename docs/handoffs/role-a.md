@@ -4,8 +4,8 @@
 
 Done: `terrain.py` measures steepest slope over 6.0 m north to south and 5.69 m east to west (the smallest spans of at least 5 m). `grids.py` writes `grid/heightM.f32` and `grid/slopeMaxDeg.f32` on 4 m cells, 791 x 750, 2.4 MB each, and the grid definition in `site.json`. Bright Angel rebuilt: 15.6 MB.
 Not done: mask, roughness, sky exposure, vectors, weather, photos; slope as a map layer with its own record; home and targets in the site config.
-Broken or risky: the grid layout was a proposal when built; Joseph confirmed it at 12:40 (DECISIONS). No slope limit is chosen and none may be invented: it needs a source. Slope has not been checked against rover tilt yet (F9), so nothing independent confirms it.
-Next: a slope map layer for F2 (tiles and a full record), then `vectors.py` for the rover path and stops. Find a published slope limit for suited walking.
+Broken or risky: the grid layout was a proposal when built; Joseph confirmed it at 12:40 (DECISIONS). A slope limit of 20 degrees is now proposed with a NASA source (DECISIONS, REFERENCES); a person has not confirmed it. Slope has not been checked against rover tilt yet (F9), so nothing independent confirms it.
+Next: a slope map layer for F2 (tiles and a full record), then `vectors.py` for the rover path and stops.
 Files: pipeline/terrain.py, grids.py, test_terrain.py, build_site.py, pipeline/AGENTS.md, app/public/data/bright-angel/, docs/DATA_CONTRACT.md, docs/DECISIONS.md, docs/PITFALLS.md
 Other roles need to know: B, read grids exactly as DATA_CONTRACT "Grid definition" says; NaN is no data. Stop `npm run dev` before a site build on Windows or the build fails at its last step. Slope at Bright Angel: median 10.4 degrees, 95% of 1 m cells under 23.9, steepest 53.6.
 Checks: `pytest -q` passes, 37 tests; full build with real data, exit 0. Grid files read back and matched their definition (size, no missing cells, height range equal to the terrain's).
