@@ -9,7 +9,7 @@
 // TRAPS:   PITFALLS 4, 11.
 // OWNER:   Role B.
 
-import type { ImageSource, Map as MapLibreMap } from 'maplibre-gl';
+import type { GeoJSONSource, ImageSource, Map as MapLibreMap } from 'maplibre-gl';
 import type { LayerRecord } from '../data/contract';
 import type { LoadedSite } from '../data/loadSite';
 import { rampColour, SLOPE_RAMP, SLOPE_RAMP_TOP_DEG, type Legend } from './legend';
@@ -137,13 +137,26 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
     } else if (record.vector?.geometry === 'polygon') {
       // Areas coloured by the pipeline, such as geologic map units (F2). Each feature carries its own colour.
       const id = `overlay-${record.id}`;
-      map.addSource(id, { type: 'geojson', data: loaded.folderUrl + record.vector.path });
+      // Starts hidden and empty: the file (1.2 MB of geology at Bright Angel) is fetched and indexed by MapLibre's
+      // workers only when the layer is first switched on. Loaded at site open, it held up the image tiles.
+      const url = loaded.folderUrl + record.vector.path;
+      map.addSource(id, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id, type: 'fill', source: id, paint: { 'fill-color': ['get', 'colour'], 'fill-opacity': 0.35 } }, SLOT.overlays);
       map.addLayer({ id: `${id}-edge`, type: 'line', source: id, paint: { 'line-color': '#08090e', 'line-width': 1, 'line-opacity': 0.6 } }, SLOT.overlays);
       added.layers.push(`${id}-edge`, id);
       added.sources.push(id);
-      overlays.push(overlay(map, record, record.legend ?? null, { visible: false, opacity: 0.35 },
-        [{ id, opacityProperties: ['fill-opacity'] }, { id: `${id}-edge`, opacityProperties: ['line-opacity'] }]));
+      const areas = overlay(map, record, record.legend ?? null, { visible: false, opacity: 0.35 },
+        [{ id, opacityProperties: ['fill-opacity'] }, { id: `${id}-edge`, opacityProperties: ['line-opacity'] }]);
+      let fetched = false;
+      const show = areas.setVisible;
+      areas.setVisible = (visible) => {
+        show(visible);
+        if (!visible || fetched) return;
+        fetched = true;
+        // The site may have been left in the meantime; then the source is gone and there is nothing to fill.
+        (map.getSource(id) as GeoJSONSource | undefined)?.setData(url);
+      };
+      overlays.push(areas);
     } else if (record.vector) {
       const id = `overlay-${record.id}`;
       map.addSource(id, { type: 'geojson', data: loaded.folderUrl + record.vector.path });
