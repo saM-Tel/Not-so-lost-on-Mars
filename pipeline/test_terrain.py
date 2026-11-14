@@ -101,12 +101,44 @@ def test_rover_stops_and_path_are_cut_to_the_box():
     assert lines[0]["geometry"]["coordinates"][0] == [77.01, 18.05]
 
 
-def test_a_sol_is_turned_into_an_earth_date_from_the_landing_date():
+def test_a_sol_is_turned_into_the_earth_date_of_its_local_midday():
     import vectors
-    # One sol is 88,775.244 s, so 1215 sols are 1,248.4 Earth days after 18 February 2021: 20 July 2024.
-    # NASA dates the rock core taken on that sol to 21 July 2024, which is the "day out" the layer record states.
-    assert vectors.sol_to_earth_date(0, "2021-02-18") == "2021-02-18"
-    assert vectors.sol_to_earth_date(1215, "2021-02-18") == "2024-07-20"
+    # Sol 0 began at 2021-02-18T04:24:20Z. Midday on sol 1215 is 1215.5 sols of 88,775.244 s later: 1,248.92 days,
+    # which is 2024-07-21 at about 02:30 UTC. NASA's image feed dates frames from sol 1215 to 21 July 2024.
+    assert vectors.sol_to_earth_date(0, "2021-02-18T04:24:20Z") == "2021-02-18"
+    assert vectors.sol_to_earth_date(1215, "2021-02-18T04:24:20Z") == "2024-07-21"
+    # Sol 1046: 1,075.27 days later, 2024-01-29. The feed dates sol 1046 frames to 29 January 2024.
+    assert vectors.sol_to_earth_date(1046, "2021-02-18T04:24:20Z") == "2024-01-29"
+
+
+def test_photos_are_placed_only_at_matching_stops_and_spread_around_the_mast():
+    import photos
+
+    def frame(image_id, site, drive, azimuth, elevation, size="(1296,976)", sample="Full"):
+        """Test fixture: one record in the shape of NASA's raw image feed."""
+        return {"imageid": image_id, "site": site, "drive": str(drive), "sol": 1215, "sample_type": sample,
+                "date_taken_utc": "2024-07-21T10:49:14.311", "date_taken_mars": "Sol-01215M13:05:10.000",
+                "credit": "NASA/JPL-Caltech", "link": "https://example.invalid/" + image_id,
+                "extended": {"mastAz": str(azimuth), "mastEl": str(elevation), "dimension": size},
+                "image_files": {"small": "https://example.invalid/s.jpg", "medium": "https://example.invalid/m.jpg"}}
+
+    stops = {"56_0": {"RMC": "56_0", "lon": 77.305191, "lat": 18.497484}}
+    images = [frame(f"A{i}", 56, 0, azimuth, -10) for i, azimuth in enumerate(range(0, 360, 30))]   # 12 around the mast
+    images += [
+        frame("OTHER-STOP", 57, 0, 10, -10),             # a stop that is not in the box
+        frame("DECK", 56, 0, 15, -60),                   # looking down at the rover
+        frame("STRIP", 56, 0, 45, -10, size="(1280,256)"),
+        frame("THUMB", 56, 0, 75, -10, sample="Thumbnail"),
+        frame("NO-POINTING", 56, 0, "UNK", "UNK"),
+    ]
+    chosen = photos.choose(images, stops)
+    assert len(chosen) == photos.MAX_PER_STOP
+    assert {p["stop"] for p in chosen} == {"56_0"}
+    assert [p["mastAzimuthDeg"] for p in chosen] == [0.0, 60.0, 120.0, 180.0, 240.0, 300.0]
+    first = chosen[0]
+    assert (first["lonEastDeg"], first["latDeg"], first["sol"]) == (77.305191, 18.497484, 1215)
+    assert first["takenUtc"] == "2024-07-21T10:49:14Z" and first["localMeanSolarTime"] == "13:05"
+    assert first["credit"] == "NASA/JPL-Caltech"
 
 
 def test_slope_is_compared_with_rover_tilt_at_each_stop():

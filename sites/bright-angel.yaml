@@ -58,9 +58,11 @@ rover:
   # The rover's drives as lines, for the rover path layer.
   pathFile: m20_perseverance_traverse.json
   pathOriginalUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
-  # Sol 0. Used only to turn sol numbers into Earth dates, which can be a day out.
-  landingDate: "2021-02-18"
-  landingDateSourceUrl: "https://science.nasa.gov/mission/mars-2020-perseverance/"
+  # When sol 0 began at the rover (local mean solar midnight), used to turn sol numbers into Earth dates.
+  # Worked out on 14 Nov 2026 from one record of NASA's raw image feed, which gives the same instant three ways:
+  # image CCF_1215_0774830009_119ECMUN0560000CACH00200_01_295J was taken on sol 1215 at local mean solar time
+  # 20:12:55.968 and at 2024-07-21T10:49:14.311 UTC. 1215.842314 sols of 88,775.244 s before that is this time.
+  solZeroStartUtc: "2021-02-18T04:24:20Z"
   record:
     mission: Mars 2020
     instrument: "Perseverance rover: the rover team's own position for each drive"

@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 13:53, roles A and B work by Joseph, with Claude Code
+
+Done: photos along the route (F6). `pipeline/photos.py` reads NASA's raw image feed and indexes 401 left navigation camera photos at 111 of the 116 rover stops in the box. The route card shows up to six taken within 30 m of the walk, with full captions and a link to NASA's page. Sol numbers now turn into Earth dates from the moment sol 0 began, worked out from the feed itself, in place of a landing date taken from memory.
+Not done: choosing photos by direction of travel; a larger view on click (the link opens NASA's page).
+Broken or risky: the mast azimuth's reference frame is not confirmed, so no photo is labelled with a compass direction. Some frames still show part of the rover. Pictures load from mars.nasa.gov at view time.
+Next: the README (F8), then a hero scenario for the Bright Angel link.
+Files: pipeline/photos.py, vectors.py, config.py, build_site.py, test_terrain.py; sites/bright-angel.yaml; app/src/data/photos.ts, photos.test.ts; ui/photoStrip.ts, routePanel.ts; style.css; app/public/data/bright-angel/
+Other roles need to know: C, the walk east along the valley floor (`#site=bright-angel&to=77.31589,18.49948`) passes four rover stops and shows six photos from 20 to 24 June 2024. Every must-have feature now has a first working version.
+Checks: `npm run check` passes: types, 72 tests, build. `pytest -q` passes, 44 tests. Full site build with real data, exit 0, 16.3 MB.
+
 ## Sat 14 Nov 13:43, roles A and B work by Joseph, with Claude Code
 
 Done: dose and space weather (F5). `safety/dose.ts` gives the dose on a walk from two rates Curiosity measured at Gale; the route card shows it. `pipeline/build_space_weather.py` saves a snapshot of NASA's forecasts for Mars; `data/feeds.ts` reads NASA live and falls back to the snapshot; `ui/weatherBanner.ts` shows the latest forecast with its window.

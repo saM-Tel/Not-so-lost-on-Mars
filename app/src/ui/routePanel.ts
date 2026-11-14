@@ -1,5 +1,6 @@
 // WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3),
-//          the tether with its settings and whether the walk stays inside it (F4), and the radiation dose on the walk (F5).
+//          the tether with its settings and whether the walk stays inside it (F4), the radiation dose on the walk (F5),
+//          and real rover photos taken near it (F6).
 //          Still to add: several targets, oxygen, the route's confidence line, the elevation profile.
 // IN:      A loaded site with routing grids; clicks on the map; results from src/route/client.ts.
 // OUT:     A card over the map, and the route drawn through src/map/routeLayer.ts. Returns a function that removes both.
@@ -19,6 +20,7 @@ import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS } from '../safet
 import { walkDose } from '../safety/dose';
 import { farthestFromHomeS, tetherPicture } from '../safety/tether';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
+import { createPhotoStrip } from './photoStrip';
 import { createTetherControls } from './safetyPanel';
 import { updateUrlState, type UrlState } from './urlState';
 
@@ -82,6 +84,7 @@ export function startRoutePlanner(
   const status = el('p', 'route-card__status', 'Reading the ground and working out the ways from home…');
   status.setAttribute('role', 'status');
   const result = el('div');
+  const photos = createPhotoStrip(loaded.folderUrl);
   // The card can be folded away so the map is clear; the status line stays in view.
   const fold = el('button', 'route-card__fold', 'Hide');
   fold.type = 'button';
@@ -93,7 +96,7 @@ export function startRoutePlanner(
   });
   const heading = el('header', 'route-card__header');
   heading.append(el('h2', undefined, 'Plan a walk'), fold);
-  card.append(heading, status, result);
+  card.append(heading, status, result, photos.element);
   map.getContainer().append(card);
 
   const layer = addRouteLayer(map);
@@ -149,12 +152,15 @@ export function startRoutePlanner(
     result.replaceChildren();
     if (!answer.ok) {
       layer.showRoute(null);
+      photos.show(null);
       updateUrlState({ target: null });
       status.textContent = REFUSALS[answer.reason] ?? 'No route was found.';
       return;
     }
     layer.showRoute({ target: answer.target, out: answer.out.line, back: answer.back.line });
     updateUrlState({ target: answer.target });
+    // Photos the rover took near the way out and the way back.
+    photos.show([...answer.out.line, ...answer.back.line]);
     status.textContent = 'Click another point to change the target.';
     const table = el('table', 'route-card__table');
     const head = el('tr');

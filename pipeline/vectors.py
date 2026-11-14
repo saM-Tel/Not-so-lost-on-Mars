@@ -16,10 +16,10 @@ import records
 import sources
 
 
-def sol_to_earth_date(sol: int, landing_date: str) -> str:
-    """The Earth date a sol falls on, counted from the landing date as sol 0. Good to about a day."""
-    landed = datetime.date.fromisoformat(landing_date)
-    return (landed + datetime.timedelta(seconds=sol * mars.SOL_S)).isoformat()
+def sol_to_earth_date(sol: int, sol_zero_start_utc: str) -> str:
+    """The Earth date, in UTC, of local midday on a sol, counted from the moment sol 0 began at the rover."""
+    start = datetime.datetime.fromisoformat(sol_zero_start_utc.replace("Z", "+00:00"))
+    return (start + datetime.timedelta(seconds=(sol + 0.5) * mars.SOL_S)).date().isoformat()
 
 
 def _inside(box: sources.Box, lon: float, lat: float) -> bool:
@@ -92,13 +92,13 @@ def write_rover_layers(folder: pathlib.Path, stop_features: list[dict], path_fea
             "id": layer_id, "title": title, "dataType": "in-situ",
             "mission": base["mission"], "instrument": base["instrument"], "agency": base["agency"],
             "productId": product, "sourceUrl": base["sourceUrl"], "doi": records.NOT_FOUND,
-            "acquiredFrom": f"{sol_to_earth_date(first, rover['landingDate'])} (sol {first})",
-            "acquiredTo": f"{sol_to_earth_date(last, rover['landingDate'])} (sol {last})",
+            "acquiredFrom": f"{sol_to_earth_date(first, rover['solZeroStartUtc'])} (sol {first})",
+            "acquiredTo": f"{sol_to_earth_date(last, rover['solZeroStartUtc'])} (sol {last})",
             "published": f"A live file that grows as the rover drives; our copy ends at sol {last_sol}",
             "gridSpacing": spacing, "realDetail": detail,
             "positionAccuracy": records.NOT_FOUND, "heightAccuracy": records.NOT_FOUND,
             "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. "
-                          "Earth dates are counted from the landing date and can be a day out.",
+                          "Earth dates are the UTC date of local midday on each sol.",
             "grade": "A",
             "caveats": [
                 "The file does not say how accurate these positions are.",

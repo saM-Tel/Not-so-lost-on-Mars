@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 13:43. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 13:53. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
-| A: data and science | Joseph, covering for the team owner | Space-weather snapshot built; next photos (F6) | Sat 11:00 |
-| B: app | Joseph, covering for the team owner | Dose and space-weather banner built; next photos (F6), then the README | Sat 11:00 |
+| A: data and science | Joseph, covering for the team owner | Photo index built; next geology or science targets | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Photos along the route built; next the README (F8) | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
@@ -28,7 +28,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F3 Route planner | B | in progress | Works for one target at Bright Angel: click the ground and the walk out and back is drawn, with distance, climb, time and energy for three cases; keep-out ground (steeper than 20 degrees) is shaded red and never crossed. Seen in a scripted browser on the dev server with two targets. Not done: several targets, oxygen, elevation profile, route confidence, footing, smoothing; home is a stand-in (the site marker); not tried by a person; whole-grid search takes about 1.0 to 1.3 s |
 | F4 Tether | A, B | works with issues | At Bright Angel a white line shows how far you can go and still walk home in time (cautious case), a fainter line the expected case, and ground outside is dimmed. Controls: walk-back limit (1 hour or 30 minutes) and time since leaving home; the line shrinks as time rises; a walk that leaves it, or that there is no time for, gets a red warning. Seen in a scripted browser. Issues: time only, no energy or oxygen budget and no reserve; judged at the walk's far end only; not tried by a person |
 | F5 Dose and space weather | A, B | works with issues | The route card gives the radiation picked up on the walk, as dose equivalent in microsieverts and absorbed dose in micrograys, each with a range, from rates Curiosity measured at Gale (grade C). A banner on the map shows NASA's latest forecast of a solar eruption reaching Mars, with issue time and arrival window, live when NASA's feed answers and otherwise from a saved snapshot, labelled. Seen in a scripted browser, live. Issues: the absorbed-dose rate is from the 2014 paper as recorded in DATA_CATALOG, not re-read; terrain shielding is not included; the snapshot fallback was tested in unit tests, not by blocking the feed in a browser |
-| F6 Photos along the route | C, B | not started | |
+| F6 Photos along the route | C, B | works with issues | The route card shows up to six real Perseverance navigation camera photos taken within 30 m of the planned walk, in walking order, each with sol, Earth date, local time, camera, distance from the route, stop and credit, and a link to NASA's page. The index holds 401 photos at 111 of the 116 rover stops in the box. Seen in a scripted browser: six photos loaded on the walk east along the valley. Issues: photos are not chosen by direction of travel, because we have not confirmed what the mast azimuth is measured from; the pictures load from NASA's server, so they need the network |
 | F7 Opening state and shareable link | B | works with issues | The address bar holds the site, the walk's target and the tether settings, for example `#site=bright-angel&to=77.29271,18.50596&back=30&t=60`; opening that link restores the walk, the settings and the verdict. The plain link opens on the globe with Bright Angel marked "Start here". Issues: no chosen hero scenario yet, so the Bright Angel link without a target opens with no route; layer choices are not in the link; the 10-second test with a first-time visitor has not been done |
 | F8 Public site and repository | B | works with issues | Live. Opened in a scripted browser at 12:45: Bright Angel loaded in 1.6 s with 128 requests and none failed. Not done: README; a person opening it in a private window |
 | F9 Validation panel | A | works with issues | At Bright Angel, terrain slope against rover tilt and terrain height against rover height at all 116 stops in the box. Slope: typical difference 1.4 degrees, 9 in 10 within 4.0 degrees, largest in `validation.json`, correlation 0.89. Shown in the side panel under the layers, and in the slope layer's caveats. Not done: one route compared with the rover's actual path |
@@ -43,7 +43,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 
 | Site | Level | Data built | Reviewed by a person |
 |---|---|---|---|
-| bright-angel | 1 | image and terrain tiles, routing grids (height, slope), rover stops and path | no |
+| bright-angel | 1 | image and terrain tiles, routing grids (height, slope), rover stops and path, photo index, terrain checks | no |
 | gale-crater | 1 | no | no |
 | columbia-hills, meridiani, elysium-planitia, arctic-plain, ares-vallis, chryse-planitia, utopia-planitia | 2 | no | no |
 

@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T13:34:45Z",
+  "builtUtc": "2026-11-14T13:55:22Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -110,14 +110,14 @@
       "productId": "m20_perseverance_waypoints.json",
       "sourceUrl": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
       "doi": "not found",
-      "acquiredFrom": "2024-01-28 (sol 1046)",
+      "acquiredFrom": "2024-01-29 (sol 1046)",
       "acquiredTo": "2024-09-26 (sol 1281)",
       "published": "A live file that grows as the rover drives; our copy ends at sol 2022",
       "gridSpacing": "One point where each drive ended",
       "realDetail": "A single position for each stop",
       "positionAccuracy": "not found",
       "heightAccuracy": "not found",
-      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are counted from the landing date and can be a day out.",
+      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are the UTC date of local midday on each sol.",
       "grade": "A",
       "caveats": [
         "The file does not say how accurate these positions are.",
@@ -142,14 +142,14 @@
       "productId": "m20_perseverance_traverse.json",
       "sourceUrl": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
       "doi": "not found",
-      "acquiredFrom": "2024-01-28 (sol 1046)",
+      "acquiredFrom": "2024-01-29 (sol 1046)",
       "acquiredTo": "2024-09-28 (sol 1283)",
       "published": "A live file that grows as the rover drives; our copy ends at sol 2022",
       "gridSpacing": "A line along each drive, with a point every few metres",
       "realDetail": "The line the rover logged as it drove",
       "positionAccuracy": "not found",
       "heightAccuracy": "not found",
-      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are counted from the landing date and can be a day out.",
+      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are the UTC date of local midday on each sol.",
       "grade": "A",
       "caveats": [
         "The file does not say how accurate these positions are.",

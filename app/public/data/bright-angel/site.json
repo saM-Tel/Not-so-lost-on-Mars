@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T13:34:45Z",
+  "builtUtc": "2026-11-14T13:55:23Z",
   "id": "bright-angel",
   "name": "Bright Angel",
   "place": "Neretva Vallis, Jezero crater",
@@ -79,7 +79,7 @@
     {
       "path": "layers.json",
       "files": 1,
-      "bytes": 8597
+      "bytes": 8577
     },
     {
       "path": "validation.json",
@@ -105,7 +105,12 @@
       "path": "vectors",
       "files": 2,
       "bytes": 398363
+    },
+    {
+      "path": "photos.json",
+      "files": 1,
+      "bytes": 360889
     }
   ],
-  "totalBytes": 15978853
+  "totalBytes": 16339722
 }

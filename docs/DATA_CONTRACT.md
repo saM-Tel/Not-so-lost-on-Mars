@@ -47,6 +47,8 @@ app/public/data/
 
 **`space-weather.json`** holds `contractVersion`, `fetchedUtc`, `periodFromUtc`, `periodToUtc`, `noticesRead`, `source` (`name`, `url`, `credit`, `disclaimer`) and `forecasts`, newest notice first. Each forecast has `arrivalUtc`, `windowHours` (the uncertainty the notice states, or null), `kind` (the notice's own words, or null), `issuedUtc`, `messageId` and `messageUrl`. Written by `pipeline/build_space_weather.py`; the app reads it only when NASA's live feed cannot be read.
 
+**`photos.json`** holds `contractVersion`, `builtUtc`, `source`, `how`, `caveats` and `photos`. Each photo has `id`, `stop` (the rover stop, "site_drive"), `lonEastDeg`, `latDeg` (the stop's position), `sol`, `takenUtc`, `localMeanSolarTime`, `camera`, `mastAzimuthDeg`, `mastElevationDeg` (as NASA's feed gives them; the frame of the azimuth is not confirmed), `smallUrl`, `mediumUrl`, `pageUrl` and `credit`. The pictures stay on NASA's server.
+
 **Image tiles** are 256-pixel JPEG files on the Web Mercator square, addressed zoom, then column counted east, then row counted south.
 
 **`sites.json`** holds `contractVersion`, `builtUtc`, `convention`, `levels` (name and offer for each readiness level) and `sites`. Each site has `id`, `name`, `place`, `mission`, `missionYears`, `level`, `built`, `reviewedByPerson`, `lonEastDeg`, `latDeg`, `position` (what the point is, its source and address), `landing` (the landing position as its source prints it, or null), `data` and `problems` (lists of sentences), and `terrainFootprint` when the position came from a terrain model. `built` is true when `<site id>/site.json` exists.
@@ -62,6 +64,7 @@ tiles/terrain-hirise/{z}/{x}/{y}.png    zoom 11 to 15
 grid/heightM.f32, grid/slopeMaxDeg.f32  routing grids; see "Grid definition"
 vectors/rover-stops.geojson             the rover's stops in the box: points with stop, sol, heightM, tiltDeg, drivenTotalM
 vectors/rover-path.geojson              the rover's drives in the box: lines with sol
+photos.json                             real rover photos at the stops in the box; optional
 ```
 
 **`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `grid`, `readFrom`, `files` and `totalBytes`.

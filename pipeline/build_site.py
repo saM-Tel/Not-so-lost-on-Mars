@@ -19,6 +19,7 @@ import build_globe
 import config
 import grids as routing_grids
 import mars
+import photos
 import records
 import sources
 import terrain
@@ -185,6 +186,20 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
             print(f"Wrote {layer['title'].lower()}: {layer['vector']['count']} features, "
                   f"{layer['acquiredFrom']} to {layer['acquiredTo']}; path file from the {path_origin}")
 
+    # Real rover photos at the stops in the box. Optional: without them the app simply shows none.
+    if rover:
+        in_box = [stop for stop in stops if box.west_lon_deg <= mars.lon_to_180(float(stop["lon"])) <= box.east_lon_deg
+                  and box.south_lat_deg <= float(stop["lat"]) <= box.north_lat_deg]
+        if in_box:
+            try:
+                sols = [int(stop["sol"]) for stop in in_box]
+                frames, photo_origin = photos.fetch_feed(min(sols), max(sols), work / "photo_feed.json")
+                summary = photos.write_photo_index(temporary, frames, in_box, photo_origin)
+                print(f"Wrote photos.json: {summary['photos']} photos at {summary['stopsWithPhotos']} of {summary['stopsInBox']} "
+                      f"stops, from {len(frames)} frames; source: {photo_origin}")
+            except OSError as error:
+                print(f"No photos.json: the rover's image feed could not be read ({error}).")
+
     records.write_layers(temporary, layers)
     records.write_json(temporary / "validation.json", {
         "contractVersion": records.CONTRACT_VERSION, "builtUtc": records.utc_now_iso(), **checks,
@@ -195,6 +210,8 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
         *[folder_summary(temporary, f"tiles/{layer['id']}") for layer in layers if "tiles" in layer],
         folder_summary(temporary, "grid"),
         *([folder_summary(temporary, "vectors")] if (temporary / "vectors").exists() else []),
+        *([{"path": "photos.json", "files": 1, "bytes": (temporary / "photos.json").stat().st_size}]
+          if (temporary / "photos.json").exists() else []),
     ]
     total = sum(entry["bytes"] for entry in files)
     records.write_json(temporary / "site.json", {

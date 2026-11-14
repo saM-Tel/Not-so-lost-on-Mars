@@ -639,6 +639,45 @@ body.map-full #map {
   background: var(--level-1);
 }
 
+/* ---- Rover photos near the route (F6) ---- */
+
+.photo-strip {
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.photo-strip h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+}
+
+.photo-strip__list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.photo-strip figure {
+  margin: 0;
+}
+
+.photo-strip img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #000;
+}
+
+.photo-strip figcaption {
+  margin-top: 0.15rem;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
 /* ---- Tether controls (F4) ---- */
 
 .tether {

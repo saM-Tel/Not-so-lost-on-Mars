@@ -35,7 +35,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `routePanel.ts` | Route card over the map: click a target, see the walk out and back with distance, climb, time and energy for three cases, and what the numbers rest on; draws the tether and judges the walk against it. Can be folded away. Holds the default slope limit. To add: several targets, oxygen, confidence, the profile | F3 |
 | `safetyPanel.ts` | Built so far: the tether's controls (walk-back limit, time since leaving home) and the line saying whether the planned walk stays inside it. To add: suit settings, dose and storm advice | F4, F5, F10 |
 | `profileChart.ts` | Elevation profile along the route, with the confidence line under it | F3 |
-| `photoStrip.ts` | Real rover photos taken near points on the route | F6 |
+| `photoStrip.ts` | Real rover photos taken near the route, in the route card, each with sol, date, local time, camera, distance and credit. Built. To add: preferring the direction of travel | F6 |
 | `weatherBanner.ts` | Space-weather banner on the map: NASA's latest forecast of an eruption reaching Mars, with issue time, arrival window, and whether it is live or a snapshot. Built | F5 |
 | `weatherBanner.test.ts` | Tests for the forecast parsing and the banner's wording, on made-up notices | |
 | `timeSlider.ts` | Local-time slider: typical temperature, pressure, ultraviolet and dust-devil likelihood, Sun height and shadows | F11 |
