@@ -1,0 +1,47 @@
+# app/src/ui: guide
+
+## Purpose
+
+Panels, cards and the three display modes. Shows results; computes nothing beyond formatting.
+
+## Owner
+
+Role B.
+
+## Commands
+
+Run from `app/`. They are listed in [../AGENTS.md](../AGENTS.md).
+
+## Reads and writes
+
+Reads results from the other folders. Writes only to the page and the address bar.
+
+## Rules for this folder
+
+- English, plain words, SI units. Every number comes with its range and source.
+- Use the fixed words in `docs/CONFIDENCE.md` section 4: measured, typical, forecast, modelled, assumed, live.
+- Tablet and helmet layouts show cautious values only.
+- Every file starts with the header from [../../docs/WORKFLOW.md](../../docs/WORKFLOW.md). A file with only its header is not built yet.
+
+## File index
+
+Add a row when you add a file. Remove it when you delete one.
+
+| File | What it does | Feature |
+|---|---|---|
+| `sitePicker.ts` | The list of sites beside the globe and the details card for a chosen site | F14 |
+| `layerPanel.ts` | Layer panel: one row per layer with a switch, opacity control and legend | F2 |
+| `infoCard.ts` | Information card for a layer or a prediction: mission, instrument, dates, detail, grade and caveats | F2 |
+| `routePanel.ts` | Route panel: pick targets, show distance, time, energy and oxygen for three cases, and the route's confidence | F3 |
+| `safetyPanel.ts` | Safety panel: suit settings, tether margin, turnaround warning, dose and storm advice | F4, F5, F10 |
+| `profileChart.ts` | Elevation profile along the route, with the confidence line under it | F3 |
+| `photoStrip.ts` | Real rover photos taken near points on the route | F6 |
+| `weatherBanner.ts` | Space-weather banner: the latest NASA forecast that names Mars, with issue time and arrival window | F5 |
+| `timeSlider.ts` | Local-time slider: typical temperature, pressure, ultraviolet and dust-devil likelihood, Sun height and shadows | F11 |
+| `modes.ts` | Switches between the habitat planner, field tablet and helmet display layouts | F13 |
+| `urlState.ts` | Keeps the view in the address bar so any view can be shared | F7 |
+| `format.ts` | Turns numbers into text: units, ranges, dates in Earth UTC and Mars time |  |
+
+## Known issues
+
+None recorded.

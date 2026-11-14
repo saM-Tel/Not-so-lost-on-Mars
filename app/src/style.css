@@ -1,0 +1,9 @@
+/*
+ * WHAT:    Layout and colours for the globe view and the three display modes (F13, F14).
+ * IN:      Nothing.
+ * OUT:     Styles.
+ * USED BY: index.html and everything in src/ui and src/map.
+ * RULES:   Red means danger and nothing else. Overlays stay readable on orange ground. Tablet controls are glove-sized.
+ * TRAPS:   PITFALLS 11.
+ * OWNER:   Role B.
+ */
