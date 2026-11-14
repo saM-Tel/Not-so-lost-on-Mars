@@ -1,5 +1,15 @@
 # Role A handoff
 
+## Sat 14 Nov 11:35, role A work by Joseph, with Claude Code
+
+Done: Bright Angel is built with real data (F1, pipeline part): 2,160 image tiles (9.7 MB), 52 terrain tiles (1.1 MB), `layers.json`, `validation.json`, `site.json` with `terrainHeightM`; 10.8 MB of the 120 MB budget. `sites.json` now marks it built. `sources.py` reads a window 500 rows at a time.
+Not done: stages 2 and 4 to 7 (`mask.py`, `terrain.py`, `grids.py`, `vectors.py`, `weather.py`, `photos.py`); home and targets in `sites/bright-angel.yaml`.
+Broken or risky: reading the whole 25 cm image window (12,001 rows) in one request failed from the server and from the original address after about five minutes; in blocks it takes under a minute. The box and site position have not been compared with Mars Trek by a person.
+Next: `terrain.py` (slope, roughness, sky exposure), then `grids.py`, and settle the grid part of DATA_CONTRACT.
+Files: pipeline/sources.py, pipeline/test_sources.py, app/public/data/bright-angel/, app/public/data/sites.json, docs/PITFALLS.md
+Other roles need to know: the data server answers from a teammate's laptop: partial reads return 206, and one 50 MB read ran at about 8.6 MB/s. Its web address uses port 8081.
+Checks: `pytest -q` passes, 32 tests; dry run passes; full build run with real data from the team data server, exit 0, 99 s with terrain already cached. Height check: 116 of 116 rover stops, typical difference 0.03 m, largest 0.78 m.
+
 ## Sat 14 Nov 10:01, role A work by the team owner, with Claude Code
 
 Done: `build_globe.py` builds the globe image (Viking colour mosaic, zoom 0 to 5, 13.4 MB, full layer record) and `sites.json` from nine site configs. `mars.py`, `tiles.py`, `config.py`, `records.py` built so far as their headers say. Team data server confirmed complete, including all 690 mineral files.

@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 11:35, role B work by Joseph, with Claude Code
+
+Done: checked the committed F1 app code against the built Bright Angel site. `#site=bright-angel` loads the site and shows the 25 cm image on the ground, tilted, with the details card and a scale bar. No app code changed.
+Not done: deployment to GitHub Pages (F8); overlays, layer panel, route planner.
+Broken or risky: in a headless Edge screenshot the site sits to the right of the view's centre and is cut off at the right edge, and the scale bar's label overlaps the credit line. Joseph then opened the dev server in his own browser at 11:45 and reported it looks good; the terrain heights on screen were not measured against anything. Not tried on a phone, or in Firefox or Safari.
+Next: fix the framing and the scale bar overlap; then deploy (F8).
+Files: none
+Other roles need to know: `npm install` on this laptop rewrote `package-lock.json` (npm 11.19); the change was discarded, not committed.
+Checks: `npm run check` passes: types, tests, build.
+
 ## Sat 14 Nov 10:01, role B work by the team owner, with Claude Code
 
 Done: the app opens on a turning Mars globe with a column, a name and a pulse at each of nine sites; clicking a column, a name or a list entry flies there and shows a details card with sources; "All sites" flies back; `#site=<id>` in the address opens that site (F14, part of F7). Mars constants and geometry in `src/mars/`.

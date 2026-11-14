@@ -123,6 +123,7 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Committing raw data | Never. Files over 100 MB are rejected and the repository becomes unusable. Ignore `data/raw/` |
 | The deployed app reading from the team data server | Never. Judges must not depend on a home machine. The app uses only files in `app/public/data/` |
 | A build failing because the team data server is off or slow | Fall back to the original NASA or USGS address and say which source was used |
+| Reading a large window of a source file over the network fails with "Read failed" after minutes | Read it in blocks of rows. `pipeline/sources.py` reads 500 rows at a time |
 | The server address written into code or committed | Keep it in an ignored `.env` file |
 | Processed tiles too large | Set a size budget per site; fewer zoom levels; compressed formats |
 | Live feeds blocked or rate-limited during judging | Try live, fall back to a saved snapshot, label which is shown |

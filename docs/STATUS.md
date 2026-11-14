@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 10:01. The Mars globe with site markers works on a developer's machine (F14, in progress). No site is built yet and nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 11:35. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
-| A: data and science | to assign | | |
-| B: app | to assign | | |
+| A: data and science | Joseph, covering for the team owner | F1 data built; next `terrain.py` | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Checking F1 in the browser; next F8 | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
@@ -22,8 +22,8 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 
 | Feature | Owner | Status | Notes |
 |---|---|---|---|
-| F14 Mars globe and site picker | A, B | in progress | Works locally: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Not done: the fly-in cannot end on a site map because no site is built; not deployed |
-| F1 Hero site map | A, B | not started | |
+| F14 Mars globe and site picker | A, B | in progress | Works locally: globe, a column and name at each of nine sites, click to fly in, details card with sources, `#site=<id>` links. Not done: not deployed |
+| F1 Hero site map | A, B | in progress | Bright Angel built from real data: 25 cm image and terrain tiles, 10.8 MB. Seen in a headless browser screenshot, and by Joseph in his own browser on the dev server at 11:45, who reported it looks good. To fix: the site sits right of the view's centre; the scale bar label overlaps the credit line |
 | F2 Layer panel and information cards | B | not started | |
 | F3 Route planner | B | not started | |
 | F4 Tether | A, B | not started | |
@@ -43,7 +43,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 
 | Site | Level | Data built | Reviewed by a person |
 |---|---|---|---|
-| bright-angel | 1 | no | no |
+| bright-angel | 1 | image and terrain tiles only | no |
 | gale-crater | 1 | no | no |
 | columbia-hills, meridiani, elysium-planitia, arctic-plain, ares-vallis, chryse-planitia, utopia-planitia | 2 | no | no |
 
@@ -55,7 +55,7 @@ Nothing recorded.
 
 ## Team data server
 
-Set up on 13 November. Reachable from the team owner's laptop over Tailscale. See [../data/AGENTS.md](../data/AGENTS.md).
+Set up on 13 November. Reachable from the team owner's laptop and from Joseph's laptop over Tailscale (checked 14 November 11:15: listing, partial reads, about 8.6 MB/s on one 50 MB read). See [../data/AGENTS.md](../data/AGENTS.md).
 
 | Files | State on 14 November, 09:50 UTC |
 |---|---|
@@ -73,6 +73,5 @@ The first run of the new batch stopped at 02:37 UTC on 14 Nov with 12 problems, 
 
 ## Waiting on someone
 
-- Both teammates: install Tailscale, accept the share of the data server, put the address in `.env`, and confirm a file listing loads.
-- Team owner: share the machine in Tailscale and send the address privately.
+- The third teammate: install Tailscale, accept the share of the data server, put the address in `.env`, and confirm a file listing loads. Joseph has done this.
 - The team: confirm or change the two open proposals in DECISIONS.md (what each link opens on; how AI-written code is acknowledged).
