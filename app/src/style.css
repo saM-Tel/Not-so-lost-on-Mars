@@ -329,7 +329,8 @@ a.source:hover {
 .scale-bar {
   position: absolute;
   left: 12px;
-  bottom: 12px;
+  /* Above the credit line, which runs along the bottom and can wrap to two lines. */
+  bottom: 56px;
   display: flex;
   align-items: flex-end;
   gap: 6px;

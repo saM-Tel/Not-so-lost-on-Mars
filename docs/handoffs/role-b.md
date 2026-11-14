@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 12:00, role B work by Joseph, with Claude Code
+
+Done: scale bar moved above the credit line (it overlapped). Deploy workflow added: `.github/workflows/deploy.yml` runs `npm ci` and `npm run check`, then publishes `app/dist` to GitHub Pages. `package-lock.json` refreshed, because `npm ci` failed on the committed one.
+Not done: GitHub Pages is not switched on, so nothing is public yet. README. Overlays, layer panel, route planner.
+Broken or risky: the workflow has not run successfully yet; its deploy step will fail until a repository admin sets Settings, Pages, Source to "GitHub Actions". The earlier note that the site sat off-centre was wrong: that screenshot was taken mid-flight. A scripted browser that waits in real time shows it centred, tilted 55 degrees, with relief.
+Next: once Pages is on, open the public link in a private window and time the load (F1, F8 checks). Then F2 once the pipeline writes slope.
+Files: app/src/style.css, app/package-lock.json, .github/workflows/deploy.yml, .github/AGENTS.md, .github/CLAUDE.md
+Other roles need to know: every push to main now starts a build on GitHub. A push that fails `npm run check` publishes nothing.
+Checks: `npm run check` passes: types, 29 tests, build; `npm ci` passes from the new lock file in a clean folder. Built site is 24.7 MB.
+
 ## Sat 14 Nov 11:35, role B work by Joseph, with Claude Code
 
 Done: checked the committed F1 app code against the built Bright Angel site. `#site=bright-angel` loads the site and shows the 25 cm image on the ground, tilted, with the details card and a scale bar. No app code changed.
