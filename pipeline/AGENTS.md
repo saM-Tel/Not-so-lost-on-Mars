@@ -63,7 +63,7 @@ Add a row when you add a file. Remove it when you delete one.
 |---|---|---|
 | `requirements.txt` | Pinned Python packages | |
 | `build_site.py` | One command that builds one site from its config: box (any projection, warped), terrain check against the rover, image and terrain tiles (terrain can reach past the box), slope, routing grids, hero scenario, extra coloured layers, geology if prepared, rover layers, photos, `layers.json`, `validation.json`, `site.json`. Builds in `../data/work/<site id>/build.tmp` and moves the folder in. To add: mask, roughness, sky exposure | F1 to F7, F9, F12, F15 |
-| `build_globe.py` | Builds what the globe needs: Web Mercator tiles of the Viking colour mosaic with its layer record, and `sites.json` from every site config | F14 |
+| `build_globe.py` | Builds what the globe needs: Web Mercator tiles of the Viking colour mosaic with its layer record, one whole-planet overview picture at zoom 3 (`overview` in the record), and `sites.json` from every site config. Assembles in `../data/work/globe-build.tmp` and moves the folder in | F14 |
 | `build_approach.py` | Builds the approach imagery: three rings of CTX images (320 km, 40 km, 12 km) around every site, from the CTX global mosaic through Esri's OnMars service, or from a file the site config names under `approach.near` (Bright Angel: the USGS Jezero CTX mosaic). Writes `../app/public/data/approach/` | F14, F1 |
 | `build_geology.py` | Turns the USGS geologic map (SIM 3464 geodatabase) into GeoJSON in degrees for one site, in `../data/work/<site id>/geology.geojson`, which `build_site.py` then ships with a legend. Polygons are cut to a 12 km square and kept to 5 decimal places (1.2 MB at Bright Angel). Needs `fiona` (in requirements.txt). Run `python build_geology.py ../sites/bright-angel.yaml`, then `build_site.py`. First run 14 Nov: 75 polygons in 10 units | F2 |
 | `test_geology.py` | Tests for the polygon cutting in `build_geology.py`, on made-up rings | |
@@ -76,7 +76,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `sources.py` | Finds each source file (team data server, then local copy, then original address) and reads only the site's box from it, warping any other projection onto the app's grid | F1, F15 |
 | `test_sources.py` | Tests for `sources.py` and for the site tile cutting in `tiles.py`, on made-up fixtures | |
 | `mask.py` | Stage 2: finds missing data and seams between source terrain models | F1, F3 |
-| `tiles.py` | Stage 3: cuts tiles in the layout MapLibre reads: whole-planet image pyramids, a site's image (WebP) and terrain (PNG) tiles, terrain with a coarser surround eased flat at its edge, and colour tiles along a ramp | F1, F12, F14 |
+| `tiles.py` | Stage 3: cuts tiles in the layout MapLibre reads: whole-planet image pyramids, a site's image (WebP) and terrain (PNG) tiles, terrain with a coarser surround eased flat at its edge, terrain with an eased margin for a block with nothing round it (level 2 sites, 400 m), and colour tiles along a ramp | F1, F12, F14, F15 |
 | `test_tiles.py` | Tests for `tiles.py` on small made-up fixtures that stay in the test file | |
 | `test_terrain.py` | Tests for `terrain.py`, `grids.py` and `vectors.py` on made-up fixtures, with expected values worked by hand | |
 | `terrain.py` | Stage 4. Built so far: steepest slope over a baseline of at least 5 m, on the corrected cell spacing. To add: roughness and sky exposure | F2, F3, F5 |

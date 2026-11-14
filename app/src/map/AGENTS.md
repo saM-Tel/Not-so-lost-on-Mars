@@ -30,7 +30,7 @@ Add a row when you add a file. Remove it when you delete one.
 
 | File | What it does | Feature |
 |---|---|---|
-| `mapView.ts` | Creates the MapLibre map: globe view with the global Mars image, the corrections MapLibre needs for Mars, and the "Full map" button that hides the side panel | F14, F1 |
+| `mapView.ts` | Creates the MapLibre map: globe view with the global Mars image (one overview picture under the tiles, which start at zoom 3), the corrections MapLibre needs for Mars, and the "Full map" button that hides the side panel | F14, F1 |
 | `approach.ts` | Adds the approach imagery: three rings of real orbital images around the site in focus (the one whose wide ring holds the middle of the view), each limited to its bounds and zooms, so the land around a site stays sharp while zooming in | F14, F1 |
 | `slots.ts` | Fixed places in the layer order: hidden marker layers that every other layer is added beneath, so the order is always rings, site image, sun shading, analysis layers, keep-out, tether, route lines, rover stops | F1 to F4, F11, F14 |
 | `siteMarkers.ts` | Draws a tall column, a name and a pulse at each landing site on the globe, and reports clicks | F14 |

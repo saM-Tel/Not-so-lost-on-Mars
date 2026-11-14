@@ -23,9 +23,9 @@ Agreed by the team owner at 20:20. Work in this order; update the status here as
 | 3 | R11, R12: approach ring order and first zoom | done, c9e2a69 | Not checked by eye |
 | 4 | R20: approach rings only for the site in focus; no name tidying while markers are hidden | done, c9e2a69 | |
 | 5 | Geology layer at Bright Angel (F2) | done, 12b95da | 75 polygons in 10 units, 1.2 MB, labelled with the map's symbols. `build_geology.py` fixed (layer name, cut to the 12 km square); pytest 49 pass |
-| 5a | The site and the globe image load slowly since tonight's changes (owner, 20:50) | in progress | Suspect: the 1.2 MB geology file is fetched and indexed by MapLibre's workers as the site opens, though the layer starts hidden, holding up the image tiles. Fix: fetch it when first switched on, as R18 did for slope |
-| 5b | Level 2 sites (Ares Vallis and others): a vertical height glitch (owner, 20:50) | not started | Suspect REVIEW_QUEUE item 1: these sites have no terrain round their 2 km box, so the box's edges stand up as walls |
-| 6 | F17 interface upgrade | not started | Scope and checks in SPEC.md |
+| 5a | The site and the globe image load slowly since tonight's changes (owner, 20:50) | done, 5855b5c and 93f9e66; not timed | The 1.2 MB geology file is now fetched only when the layer is first switched on. The globe is one 0.8 MB picture loaded at the start and kept under the tiles, which start at zoom 3 (asked for by the owner) |
+| 5b | Level 2 sites (Ares Vallis and others): a vertical height glitch (owner, 20:50) | done, a2b0d2f; owner glad it is fixed (21:10) | Each terrain tile repeated the box's edge heights to its own edge, so the ground ended in a wall that moved with the zoom. Edges now eased to the box's lowest point over 400 m, labelled as not measured. All seven level 2 sites rebuilt |
+| 6 | F17 interface upgrade | in progress from 21:10 | Scope and checks in SPEC.md. Also from the owner: the layers panel's purpose is not clear; "Open this site" still shows once the site is open |
 | 7 | F18 orbiters overhead | not started | Stretch; dropped at the Sunday 12:00 freeze if not working |
 
 ## Public link

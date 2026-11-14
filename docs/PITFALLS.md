@@ -124,6 +124,9 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | A layer added with no position lands on top of everything, so the order depends on which file ran first | Add every layer beneath its slot in `map/slots.ts` |
 | The SIM 3464 geodatabase calls its unit polygons `GeoUnits_v1`, not the GeMS `MapUnitPolys`, and its `unit` field is a bare number | Read `symbol` for the label on the map; the script picks the layer by name |
 | Pretty-printed GeoJSON of a geologic map is about three times the size | Write large shapes with `records.write_json(..., compact=True)` |
+| A build that assembles its folder inside `app/public` while the dev server runs: the old folder is deleted, then the move fails with "Access is denied", leaving the app without it | Assemble in `data/work/` and move in at the end (`build_site.py`, `build_globe.py`). If it happens, copy the `.tmp` folder's contents into place |
+| A terrain block with nothing round it: tiles repeat its edge heights to their own edges, so the 3D ground ends in a wall that moves with the zoom | Ease the edge down over a margin (`tiles.write_site_terrain_tiles(..., feather_m=...)`) and say in the record that the margin is not data |
+| A globe drawn only from tiles fills in piece by piece as it turns | Draw one whole-planet picture under the tiles (`overview` in the globe record) |
 | Blank page on GitHub Pages | The site is served under the repository name. Set the base path in the build config and use relative asset addresses |
 | Works on Windows, breaks when hosted | File names are case-sensitive on the host |
 | Committing raw data | Never. Files over 100 MB are rejected and the repository becomes unusable. Ignore `data/raw/` |
