@@ -17,7 +17,7 @@ Not done: STATUS rows and a role B handoff for Joseph's evening fixes (his to wr
 Broken or risky: none of Joseph's fixes has been seen in a browser.
 Next: try the app in a browser, then record the backup video by 23:00.
 Files: docs/SPEC.md, STATUS.md, REVIEW_QUEUE.md, DATA_CATALOG.md, PITFALLS.md, AI_USE.md
-Other roles need to know: A and B, F18 needs a pipeline step: Horizons does not answer browser calls. Send Mars longitude west-positive.
+Other roles need to know: A and B, F18 needs a pipeline step: Horizons does not answer browser calls. Send a Mars site longitude as a negative east longitude (corrected 21:35; PITFALLS 4).
 Checks: `npm run check`: types, unit tests and build pass.
 
 ## Sat 14 Nov 16:55, role C handover from the team owner, with Claude Code. START HERE
