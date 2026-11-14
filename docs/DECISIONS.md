@@ -12,6 +12,7 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 | 13 Nov | Source files are downloaded to the team data server on the evening before the event. They are not opened, converted or analysed until Saturday 09:00 | The team owner's download speed is slow, and fetching public files is not using them. Decided by the team owner |
 | 14 Nov | The app opens on a 3D Mars globe with a tall marker at each NASA landing site. Clicking a marker flies to the site and shows its details (F14). It is now a must-have and is built first | Decided by the team owner. It puts the "any site" claim on the first screen |
 | 14 Nov | Commits carry no AI co-author line and are made under the committer's own git identity. AI use is disclosed in [AI_USE.md](AI_USE.md) and in the submission | Decided by the team owner |
+| 14 Nov | Routing grids use 4 m cells (4 x 4 cells of the 1 m terrain), stored as raw 32-bit floats: mean height and steepest slope. The pipeline marks nothing as keep-out. Layout in [DATA_CONTRACT.md](DATA_CONTRACT.md) | Matches the terrain's real detail of 3 to 5 m and keeps each file near 2.4 MB. Decided by Joseph, covering roles A and B |
 
 ## Proposed, waiting for the team
 
@@ -19,7 +20,6 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 |---|---|---|
 | How AI-written code and data are acknowledged, now that commits carry no AI line. The guide asks for "descriptive text and metadata" | A section in the README, [AI_USE.md](AI_USE.md), a note in the app's credits, and a metadata note in `index.html` and in the data files the pipeline writes | A plain "written with AI help" line in commit messages, which names no co-author |
 | What each link opens on | The plain link opens on the globe. A link that names a site opens on that site; for Bright Angel that is the hero scenario with its route. Use the Bright Angel link in the video and on the project page | Every link opens on the hero scenario, with a button to reach the globe |
-| Routing grid, built on 14 Nov by one person covering roles A and B | 4 m cells (4 x 4 cells of the 1 m terrain), raw 32-bit floats, mean height and steepest slope; the pipeline marks nothing as keep-out. Described in [DATA_CONTRACT.md](DATA_CONTRACT.md) | 2 m cells: finer than the terrain's real detail and four times the size |
 | The slope limit for a person in a suit | Not chosen. It needs a published source; until one is found it is grade D, "assumed", and adjustable in the suit settings. At Bright Angel 38% of routing cells are steeper than 15 degrees, 19% steeper than 20, 6% steeper than 25 and 1% steeper than 30, so the choice changes the map a great deal | |
 | Hero site | Bright Angel, Jezero crater | Gale crater boxwork: matches the challenge's example and has radiation measured in place, but many teams will choose it |
 | Product name | Tether | Homeward, Lifeline |

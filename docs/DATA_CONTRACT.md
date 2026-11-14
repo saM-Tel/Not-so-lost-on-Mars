@@ -65,7 +65,7 @@ grid/heightM.f32, grid/slopeMaxDeg.f32  routing grids; see "Grid definition"
 
 ## Grid definition
 
-Built on 14 November as a proposal by one person covering roles A and B. The team has not confirmed it. Changing it means changing `pipeline/grids.py` and the app's reader together.
+Built on 14 November and confirmed the same day by Joseph, covering roles A and B (see [DECISIONS.md](DECISIONS.md)). Changing it means changing `pipeline/grids.py` and the app's reader together.
 
 `site.json` holds `grid`, with everything the app needs to read a grid file:
 
