@@ -29,7 +29,7 @@ Add a row when you add a file. Remove it when you delete one.
 
 | File | What it does | Feature |
 |---|---|---|
-| `sitePicker.ts` | The list of sites beside the globe and the details card for a chosen site | F14 |
+| `sitePicker.ts` | The list of sites beside the globe, the details card for a chosen site, and the record of the globe image | F14 |
 | `layerPanel.ts` | Layer panel: one row per layer with a switch, opacity control and legend | F2 |
 | `infoCard.ts` | Information card for a layer or a prediction: mission, instrument, dates, detail, grade and caveats | F2 |
 | `routePanel.ts` | Route panel: pick targets, show distance, time, energy and oxygen for three cases, and the route's confidence | F3 |
@@ -39,7 +39,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `weatherBanner.ts` | Space-weather banner: the latest NASA forecast that names Mars, with issue time and arrival window | F5 |
 | `timeSlider.ts` | Local-time slider: typical temperature, pressure, ultraviolet and dust-devil likelihood, Sun height and shadows | F11 |
 | `modes.ts` | Switches between the habitat planner, field tablet and helmet display layouts | F13 |
-| `urlState.ts` | Keeps the view in the address bar so any view can be shared | F7 |
+| `urlState.ts` | Keeps the view in the address bar so any view can be shared. Built so far: the chosen site, as `#site=<site id>` | F7 |
+| `urlState.test.ts` | Tests for reading and writing the address bar state | |
 | `format.ts` | Turns numbers into text: units, ranges, dates in Earth UTC and Mars time |  |
 
 ## Known issues

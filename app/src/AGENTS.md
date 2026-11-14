@@ -29,7 +29,7 @@ Add a row when you add a file. Remove it when you delete one.
 
 | File | What it does | Feature |
 |---|---|---|
-| `main.ts` | Entry point. Built so far: opens the Mars globe. To add: the address bar, opening a named site, panels and the route worker | F7, F14 |
+| `main.ts` | Entry point. Built so far: opens the Mars globe with a marker at every site, flies to a chosen site, and reads the site named in the address bar. To add: opening a built site's own map, the other panels and the route worker | F7, F14 |
 | `style.css` | Layout and colours for the globe view and the three display modes | F13, F14 |
 
 ## Known issues

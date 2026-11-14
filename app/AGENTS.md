@@ -62,6 +62,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `package.json` | Dependencies and the commands above | |
 | `tsconfig.json` | TypeScript settings: strict, no output | |
 | `vite.config.ts` | Build settings; relative base path for GitHub Pages | F8 |
+| `run-tests.mjs` | Starts Vitest from a folder path with a capital drive letter; used by `npm test` and `npm run check` | |
 | `src/` | Entry point and styles: see [src/AGENTS.md](src/AGENTS.md) | |
 | `src/mars/` | See [src/mars/AGENTS.md](src/mars/AGENTS.md) | F1, F3, F11, F14 |
 | `src/data/` | See [src/data/AGENTS.md](src/data/AGENTS.md) | F1 to F5, F14 |
@@ -73,4 +74,5 @@ Add a row when you add a file. Remove it when you delete one.
 ## Known issues
 
 - Tests sit beside the file they test, as `<name>.test.ts`.
+- On Windows, running `npx vitest` directly fails on every test with "Cannot read properties of undefined (reading 'config')" when the terminal's folder is spelled with a lowercase drive letter (`c:\...`), as VS Code's terminal often spells it. Use `npm test` or `npm run check`; they go through `run-tests.mjs`, which avoids it.
 - The installed versions are MapLibre GL JS 6, Vite 8, TypeScript 7 and Vitest 5. Check their own documentation before relying on behaviour remembered from older versions.

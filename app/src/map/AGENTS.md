@@ -42,3 +42,5 @@ Add a row when you add a file. Remove it when you delete one.
 
 - MapLibre 6 looks for its worker file beside its own module. Under Vite that address is wrong, so `mapView.ts` sets it with `setWorkerUrl`. Without it the map stays blank.
 - MapLibre 6 has no default export. Import names: `import { Map } from 'maplibre-gl'`.
+- A polygon cannot change size with zoom, so `siteMarkers.ts` keeps one set of columns for each half step of zoom. Column heights are scaled by the Earth to Mars radius ratio like every other height.
+- A browser screenshot taken with a "virtual time" budget does not show the columns while the globe is turning. Use a scripted browser that waits in real time.
