@@ -39,7 +39,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `weatherBanner.ts` | Space-weather banner: the latest NASA forecast that names Mars, with issue time and arrival window | F5 |
 | `timeSlider.ts` | Local-time slider: typical temperature, pressure, ultraviolet and dust-devil likelihood, Sun height and shadows | F11 |
 | `modes.ts` | Switches between the habitat planner, field tablet and helmet display layouts | F13 |
-| `urlState.ts` | Keeps the view in the address bar so any view can be shared. Built so far: the chosen site, as `#site=<site id>` | F7 |
+| `urlState.ts` | Keeps the view in the address bar so any view can be shared: the site, the walk's target and the tether settings, as `#site=<site id>&to=<lon>,<lat>&back=<minutes>&t=<minutes>` | F7 |
 | `urlState.test.ts` | Tests for reading and writing the address bar state | |
 | `format.ts` | Turns numbers into text. Built so far: distance, height, duration, energy and three-case ranges. To add: dates in Earth UTC and Mars time |  |
 | `format.test.ts` | Tests for `format.ts` | |

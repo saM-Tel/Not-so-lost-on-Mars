@@ -1,15 +1,25 @@
 # Role B handoff
 
+## Sat 14 Nov 13:31, role B work by Joseph, with Claude Code
+
+Done: the shareable link (F7). `urlState.ts` reads and writes the walk's target (`to=lon,lat`), the walk-back limit (`back=` minutes, left out at the default) and time since leaving home (`t=` minutes). The route card keeps the address bar in step and restores a walk from a link once, at the site the link names.
+Not done: a chosen hero scenario for the Bright Angel link; layer choices in the link; the first-time-visitor check.
+Broken or risky: a target is stored to 5 decimal places and snaps to its 4 m cell's centre when restored, so the address changes slightly on first load and is stable after that. Tried in a scripted browser on the built app only.
+Next: slope against rover tilt (F9, pipeline), then dose and space weather (F5).
+Files: app/src/ui/urlState.ts, urlState.test.ts, routePanel.ts, safetyPanel.ts; main.ts; ui/AGENTS.md
+Other roles need to know: C, a link for the video can now carry the whole scenario. Example that shows a warning: `#site=bright-angel&to=77.29271,18.50596&back=30&t=60`.
+Checks: `npm run check` passes: types, 59 tests, build. The example link restored the 2.22 km round trip, the 30-minute limit, one hour gone and the "leaves the tether" verdict.
+
 Note, 14 Nov 13:25: the entry times from 11:41 to 13:15 below were first written from estimates that ran up to two and a half hours ahead of the clock. They now show the commit times.
 
-## Sat 14 Nov 14:05, role B work by Joseph, with Claude Code
+## Sat 14 Nov 13:30, role B work by Joseph, with Claude Code
 
 Done: the layer panel (F2). Opening a built site adds a "Layers" section under the site's name with a row for each layer: switch, opacity, legend, and a card built from the layer's record. Slope is drawn from the routing grid with the viridis ramp, off at first; the rover's path and stops are bluish green; keep-out ground has its own row and record, grade C.
 Not done: geology; cards for predictions; the layer choices in the address bar.
 Broken or risky: slope and keep-out shading mix to brown when both are on. Seen in a scripted browser on the built app, not by a person.
 Next: F7, the route and settings in the address bar.
 Files: app/src/map/overlays.ts, legend.ts, siteLayers.ts, routeLayer.ts; ui/layerPanel.ts, infoCard.ts, sitePicker.ts, routePanel.ts; data/contract.ts; main.ts; style.css; the folder guides
-Other roles need to know: Joseph asked at 13:45 for work to carry on task by task without waiting for replies, with each task committed and pushed.
+Other roles need to know: Joseph asked at about 13:25 for work to carry on task by task without waiting for replies, with each task committed and pushed.
 Checks: `npm run check` passes: types, 56 tests, build.
 
 ## Sat 14 Nov 13:15, role B work by Joseph, with Claude Code

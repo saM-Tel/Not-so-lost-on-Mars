@@ -1,6 +1,6 @@
 # Role A handoff
 
-## Sat 14 Nov 14:05, role A work by Joseph, with Claude Code
+## Sat 14 Nov 13:30, role A work by Joseph, with Claude Code
 
 Done: `vectors.py` writes the rover's stops (116) and the parts of its drives inside the box (90 lines) as GeoJSON, each with a full layer record. `build_site.py` also writes a record for slope as a layer, drawn by the app from the routing grid. Bright Angel rebuilt: 16.0 MB.
 Not done: geology (the Jezero geologic map is on the server, unread); science targets; mask, roughness, sky exposure; slope against rover tilt.

@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 14:05. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 13:31. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
 | A: data and science | Joseph, covering for the team owner | Slope layer and rover layers built; next checking slope against rover tilt | Sat 11:00 |
-| B: app | Joseph, covering for the team owner | Layer panel built; next the shareable link, then dose | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Shareable link built; next slope against rover tilt, then dose | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
@@ -29,7 +29,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F4 Tether | A, B | works with issues | At Bright Angel a white line shows how far you can go and still walk home in time (cautious case), a fainter line the expected case, and ground outside is dimmed. Controls: walk-back limit (1 hour or 30 minutes) and time since leaving home; the line shrinks as time rises; a walk that leaves it, or that there is no time for, gets a red warning. Seen in a scripted browser. Issues: time only, no energy or oxygen budget and no reserve; judged at the walk's far end only; not tried by a person |
 | F5 Dose and space weather | A, B | not started | |
 | F6 Photos along the route | C, B | not started | |
-| F7 Opening state and shareable link | B | not started | |
+| F7 Opening state and shareable link | B | works with issues | The address bar holds the site, the walk's target and the tether settings, for example `#site=bright-angel&to=77.29271,18.50596&back=30&t=60`; opening that link restores the walk, the settings and the verdict. The plain link opens on the globe with Bright Angel marked "Start here". Issues: no chosen hero scenario yet, so the Bright Angel link without a target opens with no route; layer choices are not in the link; the 10-second test with a first-time visitor has not been done |
 | F8 Public site and repository | B | works with issues | Live. Opened in a scripted browser at 12:45: Bright Angel loaded in 1.6 s with 128 requests and none failed. Not done: README; a person opening it in a private window |
 | F9 Validation panel | A | not started | |
 | F10 Storm mode | A, B | not started | |

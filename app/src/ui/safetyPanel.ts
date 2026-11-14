@@ -22,6 +22,8 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
 export interface TetherControls {
   element: HTMLElement;
   settings(): TetherSettings;
+  /** Put the controls at given settings, as when a shared link is opened. A limit that is not offered is ignored. */
+  set(settings: Partial<TetherSettings>): void;
   /** Say whether the planned walk stays inside the tether, or clear the line with null. */
   showVerdict(verdict: { inside: boolean; text: string } | null): void;
 }
@@ -90,6 +92,13 @@ export function createTetherControls(onChange: () => void): TetherControls {
   return {
     element: box,
     settings,
+    set(wanted) {
+      if (wanted.walkBackLimitS !== undefined && (WALK_BACK_LIMITS_S as readonly number[]).includes(wanted.walkBackLimitS)) {
+        limit.value = String(wanted.walkBackLimitS);
+      }
+      if (wanted.elapsedS !== undefined) elapsed.value = String(Math.min(WALK_DURATION_S, Math.max(0, wanted.elapsedS)));
+      describe();
+    },
     showVerdict(result) {
       verdict.hidden = result === null;
       if (!result) return;

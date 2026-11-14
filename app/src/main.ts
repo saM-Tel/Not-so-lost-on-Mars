@@ -20,7 +20,7 @@ import { watchZoomSelect } from './map/zoomSelect';
 import { createLayerPanel } from './ui/layerPanel';
 import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
-import { readUrlState, writeUrlState } from './ui/urlState';
+import { readUrlState, writeUrlState, type UrlState } from './ui/urlState';
 
 /** Everything the pipeline wrote is under this address. Relative, so it works under the repository name. */
 const DATA_URL = new URL('data/', document.baseURI).href;
@@ -50,7 +50,9 @@ async function start(): Promise<void> {
   const { sites, rejected, file } = loaded;
   // The place to start is the highest-readiness site, built ones first. Today that is the hero site.
   const startSite = [...sites].sort((a, b) => Number(b.built) - Number(a.built) || a.level - b.level || a.name.localeCompare(b.name))[0];
-  const chosenAtStart = sites.find((site) => site.id === readUrlState().siteId) ?? null;
+  /** What the address bar asked for when the page opened: a site, and perhaps a walk there. */
+  let linked: UrlState | null = readUrlState();
+  const chosenAtStart = sites.find((site) => site.id === linked?.siteId) ?? null;
   const facing = chosenAtStart ?? startSite;
 
   const map = createGlobeMap({
@@ -113,8 +115,13 @@ async function start(): Promise<void> {
       if (thisChoice !== choice) { drawn.remove(); return; }
       const layerPanel = createLayerPanel(picker.slot, drawn.overlays, builtSite.layers.rejected);
       const stopRoute = builtSite.site.grid
-        ? startRoutePlanner(map, builtSite, { onOverlay: (overlay) => layerPanel.add(overlay) })
+        ? startRoutePlanner(map, builtSite, {
+          onOverlay: (overlay) => layerPanel.add(overlay),
+          // The walk in a shared link is restored once, at the site the link named.
+          ...(linked?.siteId === site.id ? { restore: linked } : {}),
+        })
         : (): void => {};
+      linked = null;
       stopRoutePlanner = () => {
         stopRoute();
         layerPanel.remove();

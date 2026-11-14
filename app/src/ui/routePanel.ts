@@ -15,10 +15,11 @@ import { addRouteLayer, BACK_COLOUR, OUT_COLOUR } from '../map/routeLayer';
 import { startRouteWorker } from '../route/client';
 import { WALK_CASES } from '../route/cost';
 import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
-import { allowedTimeHomeS, timeLeftS } from '../safety/budget';
+import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS } from '../safety/budget';
 import { farthestFromHomeS, tetherPicture } from '../safety/tether';
 import { formatDistance, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createTetherControls } from './safetyPanel';
+import { updateUrlState, type UrlState } from './urlState';
 
 /**
  * Steepest ground a person in a suit may walk on, degrees. NASA's Artemis III requirement is that slopes for
@@ -72,7 +73,8 @@ const REFUSALS: Record<string, string> = {
 
 /** Start route planning for an open site. Returns a function that takes everything away again. */
 export function startRoutePlanner(
-  map: MapLibreMap, loaded: LoadedSite, options: { onOverlay?: (overlay: Overlay) => void } = {},
+  map: MapLibreMap, loaded: LoadedSite,
+  options: { onOverlay?: (overlay: Overlay) => void; /** A walk to restore, from a shared link. */ restore?: UrlState } = {},
 ): () => void {
   const card = el('section', 'route-card');
   card.setAttribute('aria-label', 'Plan a walk');
@@ -127,7 +129,13 @@ export function startRoutePlanner(
     redraw = requestAnimationFrame(() => {
       const definition = loaded.site.grid;
       if (stopped || !tetherFields || !definition) return;
-      const allowedS = allowedTimeHomeS(tether.settings());
+      const settings = tether.settings();
+      // Keep the address bar in step, so the link can be shared. Defaults are left out to keep it short.
+      updateUrlState({
+        walkBackMin: settings.walkBackLimitS === DEFAULT_WALK_BACK_LIMIT_S ? null : settings.walkBackLimitS / 60,
+        elapsedMin: settings.elapsedS / 60,
+      });
+      const allowedS = allowedTimeHomeS(settings);
       layer.showTether(tetherPicture(tetherFields.cautiousS, tetherFields.expectedS, allowedS, definition.rows, definition.cols), definition);
       showVerdict();
     });
@@ -140,10 +148,12 @@ export function startRoutePlanner(
     result.replaceChildren();
     if (!answer.ok) {
       layer.showRoute(null);
+      updateUrlState({ target: null });
       status.textContent = REFUSALS[answer.reason] ?? 'No route was found.';
       return;
     }
     layer.showRoute({ target: answer.target, out: answer.out.line, back: answer.back.line });
+    updateUrlState({ target: answer.target });
     status.textContent = 'Click another point to change the target.';
     const table = el('table', 'route-card__table');
     const head = el('tr');
@@ -224,9 +234,16 @@ export function startRoutePlanner(
         `Red is keep-out ground, steeper than ${SLOPE_LIMIT_DEG} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
         `${(ready.reachableShare * 100).toFixed(0)}% of it can be walked to and back from.`;
       card.insertBefore(about, result);
+      const restore = options.restore;
       void client.tether.then((fields) => {
         if (stopped) return;
         tetherFields = fields;
+        if (restore) {
+          tether.set({
+            ...(restore.walkBackMin ? { walkBackLimitS: restore.walkBackMin * 60 } : {}),
+            ...(restore.elapsedMin ? { elapsedS: restore.elapsedMin * 60 } : {}),
+          });
+        }
         card.insertBefore(tether.element, result);
         drawTether();
       });
@@ -244,6 +261,14 @@ export function startRoutePlanner(
       };
       map.on('click', onClick);
       map.getCanvas().style.cursor = 'crosshair';
+      // A shared link names a target: plan that walk straight away.
+      if (restore?.target) {
+        const request = ++latest;
+        status.textContent = 'Working out the walk…';
+        void client.route(restore.target).then((answer) => {
+          if (!stopped && request === latest) showAnswer(answer);
+        });
+      }
       if (import.meta.env.DEV) (window as unknown as { tetherRoute: unknown }).tetherRoute = { client, ready, showAnswer, tetherReady: client.tether };
     } catch (error) {
       if (!stopped) status.textContent = error instanceof Error ? error.message : String(error);
