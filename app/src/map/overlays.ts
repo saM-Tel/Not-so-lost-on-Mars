@@ -9,7 +9,7 @@
 // TRAPS:   PITFALLS 4, 11.
 // OWNER:   Role B.
 
-import type { Map as MapLibreMap } from 'maplibre-gl';
+import type { ImageSource, Map as MapLibreMap } from 'maplibre-gl';
 import type { LayerRecord } from '../data/contract';
 import type { LoadedSite } from '../data/loadSite';
 import { rampColour, SLOPE_RAMP, SLOPE_RAMP_TOP_DEG, type Legend } from './legend';
@@ -88,23 +88,37 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
 
   for (const record of loaded.layers.usable) {
     if (record.grid && loaded.site.grid) {
-      const url = await slopePicture(loaded, record.grid);
-      if (!url) continue;
+      const gridName = record.grid;
       const g = loaded.site.grid;
       const west = g.northWestCorner.lonEastDeg;
       const north = g.northWestCorner.latDeg;
       const east = west + g.cols * g.cellLonDeg;
       const south = north - g.rows * g.cellLatDeg;
-      map.addSource(SLOPE_ID, { type: 'image', url, coordinates: [[west, north], [east, north], [east, south], [west, south]] });
+      // The layer starts hidden, so its source starts empty: an image source with no address shows nothing until it
+      // is given a picture. The picture (a 2.4 MB grid read and a PNG to make) waits until the layer is first
+      // switched on, which keeps it out of the way while the site opens (review item R18).
+      map.addSource(SLOPE_ID, { type: 'image', coordinates: [[west, north], [east, north], [east, south], [west, south]] } as Parameters<MapLibreMap['addSource']>[1]);
       map.addLayer({ id: SLOPE_ID, type: 'raster', source: SLOPE_ID, paint: { 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } });
       added.layers.push(SLOPE_ID);
       added.sources.push(SLOPE_ID);
-      overlays.push(overlay(map, record, {
+      const slope = overlay(map, record, {
         kind: 'ramp', colours: [...SLOPE_RAMP],
         // Four labels spaced evenly along the bar, so each sits at its own value.
         labels: [0, 1, 2, 3].map((i) => (i === 3 ? `${SLOPE_RAMP_TOP_DEG}° or more` : `${(i * SLOPE_RAMP_TOP_DEG) / 3}°`)),
         note: 'Steepest slope in each 4 m cell, in degrees from level.',
-      }, { visible: false, opacity: 0.6 }, [{ id: SLOPE_ID, opacityProperties: ['raster-opacity'] }]));
+      }, { visible: false, opacity: 0.6 }, [{ id: SLOPE_ID, opacityProperties: ['raster-opacity'] }]);
+      let asked = false;
+      const show = slope.setVisible;
+      slope.setVisible = (visible) => {
+        show(visible);
+        if (!visible || asked) return;
+        asked = true;
+        void slopePicture(loaded, gridName).then((url) => {
+          // The site may have been left while the picture was being made; then the source is gone.
+          if (url) (map.getSource(SLOPE_ID) as ImageSource | undefined)?.updateImage({ url });
+        });
+      };
+      overlays.push(slope);
     } else if (record.tiles && record !== loaded.image && record !== loaded.terrain) {
       // A tiled layer the pipeline coloured itself, such as night-time infrared (F12). Off at first.
       const id = `overlay-${record.id}`;

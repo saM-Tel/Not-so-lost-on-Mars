@@ -25,18 +25,25 @@ function reducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function arrived(map: MapLibreMap): Promise<void> {
+/**
+ * Move the camera to a view and resolve when it has arrived. The flight is started before the wait for its end
+ * begins: starting a flight stops any flight under way, which fires that old flight's `moveend` at once, and a
+ * wait already in place would take it for the new flight's arrival (review item R16).
+ */
+function travel(map: MapLibreMap, view: Parameters<MapLibreMap['jumpTo']>[0], durationMs: number): Promise<void> {
+  if (reducedMotion()) {
+    map.jumpTo(view);
+    return Promise.resolve();
+  }
+  map.flyTo({ ...view, duration: durationMs, essential: true });
   return new Promise((resolve) => { void map.once('moveend', () => resolve()); });
 }
 
 /** Turn the globe to a site and descend towards it. */
 export function flyToSite(map: MapLibreMap, site: SiteEntry, zoom: number = REGION_ZOOM): Promise<void> {
-  const done = arrived(map);
   // Tilted, so the site's column and the lie of the land read as three-dimensional.
   const view = { center: [site.lonEastDeg, site.latDeg] as [number, number], zoom, pitch: REGION_PITCH_DEG, bearing: 0 };
-  if (reducedMotion()) map.jumpTo(view);
-  else map.flyTo({ ...view, duration: 3200, essential: true });
-  return done;
+  return travel(map, view, 3200);
 }
 
 /** Camera tilt from straight down inside a built site, in degrees. */
@@ -44,25 +51,18 @@ export const SITE_PITCH_DEG = 55;
 
 /** Descend into a built site so that its box fills most of the view, tilted to show the relief. */
 export function flyIntoSite(map: MapLibreMap, site: SiteFile): Promise<void> {
-  const done = arrived(map);
   const lat = site.centre.latDeg;
   // Width of the box on the ground, from the Mars radius; then the zoom at which it spans most of the view.
   const widthM = (site.box.eastLonDeg - site.box.westLonDeg) * METRES_PER_DEGREE * Math.cos((lat * Math.PI) / 180);
   const viewPx = Math.max(200, map.getContainer().clientWidth * 0.8);
   const zoom = zoomForMetresPerPixel(widthM / viewPx, lat, 512); // MapLibre counts zoom on 512-pixel tiles
   const view = { center: [site.centre.lonEastDeg, lat] as [number, number], zoom, pitch: SITE_PITCH_DEG, bearing: 0 };
-  if (reducedMotion()) map.jumpTo(view);
-  else map.flyTo({ ...view, duration: 5000, essential: true });
-  return done;
+  return travel(map, view, 5000);
 }
 
 /** Back out to the whole planet, keeping the place below in view. */
 export function flyToGlobe(map: MapLibreMap): Promise<void> {
-  const done = arrived(map);
-  const view = { zoom: GLOBE_ZOOM, pitch: 0, bearing: 0 };
-  if (reducedMotion()) map.jumpTo(view);
-  else map.flyTo({ ...view, duration: 2400, essential: true });
-  return done;
+  return travel(map, { zoom: GLOBE_ZOOM, pitch: 0, bearing: 0 }, 2400);
 }
 
 /**

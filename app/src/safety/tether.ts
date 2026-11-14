@@ -10,10 +10,20 @@
 import type { GridDefinition } from '../data/contract';
 import type { LonLat } from '../mars/geometry';
 
-/** Colours as red, green, blue, opacity, each 0 to 255. None is red: red means danger only. */
-const OUTSIDE = [8, 9, 14, 120] as const;          // ground beyond the cautious tether is dimmed
-const CAUTIOUS_LINE = [255, 255, 255, 255] as const;
-const EXPECTED_LINE = [255, 255, 255, 120] as const;
+/** Whether this machine stores the low byte of a 32-bit number first. Nearly all do. */
+const LITTLE_ENDIAN = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
+
+/** A colour as one 32-bit number that lands in memory as red, green, blue, opacity, each 0 to 255. */
+function packed(red: number, green: number, blue: number, opacity: number): number {
+  return (LITTLE_ENDIAN
+    ? (opacity << 24) | (blue << 16) | (green << 8) | red
+    : (red << 24) | (green << 16) | (blue << 8) | opacity) >>> 0;
+}
+
+/** None of these is red: red means danger only. */
+const OUTSIDE = packed(8, 9, 14, 120);             // ground beyond the cautious tether is dimmed
+const CAUTIOUS_LINE = packed(255, 255, 255, 255);
+const EXPECTED_LINE = packed(255, 255, 255, 120);
 
 /**
  * Cells on the edge of "can get home in time": inside, with a neighbour that can be walked home from but
@@ -22,17 +32,17 @@ const EXPECTED_LINE = [255, 255, 255, 120] as const;
  */
 function edgeCells(timeHomeS: Float32Array, allowedS: number, rows: number, cols: number): Uint8Array {
   const edge = new Uint8Array(rows * cols);
+  // "Too far" for a neighbour: over the limit, yet with a way home. Infinity and NaN both fail this.
+  const tooFar = (t: number): boolean => t > allowedS && t !== Infinity;
   for (let row = 0; row < rows; row++) {
+    const top = row > 0;
+    const bottom = row < rows - 1;
     for (let col = 0; col < cols; col++) {
       const i = row * cols + col;
       if (!(timeHomeS[i]! <= allowedS)) continue;
-      for (const [dRow, dCol] of [[-1, 0], [1, 0], [0, -1], [0, 1]] as const) {
-        const r = row + dRow;
-        const c = col + dCol;
-        if (r < 0 || c < 0 || r >= rows || c >= cols) continue;
-        const other = timeHomeS[r * cols + c]!;
-        if (Number.isFinite(other) && other > allowedS) { edge[i] = 1; break; }
-      }
+      // The four neighbours written out: this runs for every cell on every slider step (review item R17).
+      if ((top && tooFar(timeHomeS[i - cols]!)) || (bottom && tooFar(timeHomeS[i + cols]!))
+        || (col > 0 && tooFar(timeHomeS[i - 1]!)) || (col < cols - 1 && tooFar(timeHomeS[i + 1]!))) edge[i] = 1;
     }
   }
   return edge;
@@ -46,16 +56,17 @@ export function tetherPicture(
   cautiousS: Float32Array, expectedS: Float32Array, allowedS: number, rows: number, cols: number,
 ): Uint8ClampedArray {
   const picture = new Uint8ClampedArray(rows * cols * 4);
-  const paint = (i: number, colour: readonly number[]): void => { picture.set(colour, i * 4); };
-  for (let i = 0; i < rows * cols; i++) if (!(cautiousS[i]! <= allowedS)) paint(i, OUTSIDE);
+  // One 32-bit write for each cell, in place of four byte writes and a small array.
+  const cells = new Uint32Array(picture.buffer);
+  for (let i = 0; i < rows * cols; i++) if (!(cautiousS[i]! <= allowedS)) cells[i] = OUTSIDE;
   const expectedEdge = edgeCells(expectedS, allowedS, rows, cols);
-  for (let i = 0; i < expectedEdge.length; i++) if (expectedEdge[i]) paint(i, EXPECTED_LINE);
+  for (let i = 0; i < expectedEdge.length; i++) if (expectedEdge[i]) cells[i] = EXPECTED_LINE;
   const cautiousEdge = edgeCells(cautiousS, allowedS, rows, cols);
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       if (!cautiousEdge[row * cols + col]) continue;
       for (let r = Math.max(0, row - 1); r <= Math.min(rows - 1, row + 1); r++) {
-        for (let c = Math.max(0, col - 1); c <= Math.min(cols - 1, col + 1); c++) paint(r * cols + c, CAUTIOUS_LINE);
+        for (let c = Math.max(0, col - 1); c <= Math.min(cols - 1, col + 1); c++) cells[r * cols + c] = CAUTIOUS_LINE;
       }
     }
   }
