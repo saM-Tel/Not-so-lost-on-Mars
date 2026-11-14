@@ -1,7 +1,7 @@
-# WHAT:    Builds what the globe needs (F14): Web Mercator tiles of a global Mars image. Still to add: sites.json from every site config.
-# IN:      The Viking colour mosaic, read as tiles from NASA Mars Trek; kept in ../data/work/globe/ between runs.
-# OUT:     ../app/public/data/globe/: tiles/image-viking/{z}/{x}/{y}.jpg and layers.json.
-# USED BY: People and AI sessions from the command line: python build_globe.py
+# WHAT:    Builds what the globe needs (F14): Web Mercator tiles of a global Mars image, and sites.json from every site config.
+# IN:      The Viking colour mosaic, read as tiles from NASA Mars Trek and kept in ../data/work/globe/ between runs; every config in ../sites/.
+# OUT:     ../app/public/data/globe/ (tiles/image-viking/{z}/{x}/{y}.jpg and layers.json) and ../app/public/data/sites.json.
+# USED BY: People and AI sessions from the command line: python build_globe.py [--only image|sites]
 # RULES:   The image keeps its mission, dates and credit in a layer record. No position without a cited source. A missing source tile stops the build.
 # TRAPS:   PITFALLS 2, 4, 10.
 # OWNER:   Role A.
@@ -17,13 +17,16 @@ import urllib.request
 import numpy as np
 from PIL import Image
 
+import config
 import mars
 import records
 import tiles
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
-OUT = REPO / "app" / "public" / "data" / "globe"
+DATA = REPO / "app" / "public" / "data"
+OUT = DATA / "globe"
 WORK = REPO / "data" / "work" / "globe"
+SITES = REPO / "sites"
 
 LAYER_ID = "image-viking"
 TREK_LAYER = "Mars_Viking_MDIM21_ClrMosaic_global_232m"
@@ -138,10 +141,64 @@ def build(zoom_max: int) -> None:
     print(f"  one pixel at zoom {zoom_max} is {mars.tile_pixel_size_m(zoom_max, 0.0) / 1000:.2f} km at the equator")
 
 
+def site_entry(site: dict) -> dict:
+    """One site as the globe shows it. Everything comes from the site's config; nothing is added here."""
+    position = site["positionChecked"]
+    entry = {
+        "id": site["id"],
+        "name": site["name"],
+        "place": site["place"],
+        "mission": site["mission"],
+        "missionYears": site["missionYears"],
+        "level": site["level"],
+        # Built means the pipeline has written this site's folder, so the app can open it.
+        "built": (DATA / site["id"] / "site.json").exists(),
+        "reviewedByPerson": site["reviewedByPerson"],
+        "lonEastDeg": round(position["lonEastDeg"], 6),
+        "latDeg": round(position["latDeg"], 6),
+        "position": {key: position[key] for key in ("what", "source", "sourceUrl", "why", "whySourceUrl") if position.get(key)},
+        "landing": site.get("landing"),
+        "data": site.get("data", []),
+        "problems": site.get("problems", []),
+    }
+    if "footprint" in position:
+        entry["terrainFootprint"] = {
+            **{key: round(value, 6) for key, value in position["footprint"].items()},
+            "widthKm": round(position["footprintWidthKm"], 1),
+            "heightKm": round(position["footprintHeightKm"], 1),
+        }
+    return entry
+
+
+def build_sites() -> None:
+    """Write sites.json: every site config, checked, for the globe's markers and details cards."""
+    sites = config.load_all_site_configs(SITES)
+    entries = [site_entry(site) for site in sites]
+    DATA.mkdir(parents=True, exist_ok=True)
+    temporary = DATA / "sites.json.tmp"
+    size = records.write_json(temporary, {
+        "contractVersion": records.CONTRACT_VERSION,
+        "builtUtc": records.utc_now_iso(),
+        "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees.",
+        "levels": {str(level): text for level, text in config.LEVELS.items()},
+        "sites": entries,
+    })
+    temporary.replace(DATA / "sites.json")
+    print(f"Site list: {len(entries)} sites, {size} bytes, written to {(DATA / 'sites.json').relative_to(REPO)}")
+    for entry in entries:
+        state = "built" if entry["built"] else "not built"
+        print(f"  {entry['id']:<18} level {entry['level']}  {entry['lonEastDeg']:>11.5f} E  {entry['latDeg']:>10.5f} N  {state}")
+    print("  Compare these positions with Mars Trek before trusting them.")
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build the global Mars image for the globe.")
+    parser = argparse.ArgumentParser(description="Build the global Mars image and the site list for the globe.")
     parser.add_argument("--zoom-max", type=int, default=5, help="highest Web Mercator zoom to cut (default 5)")
+    parser.add_argument("--only", choices=["image", "sites"], help="build just the image tiles or just the site list")
     arguments = parser.parse_args()
     if not 1 <= arguments.zoom_max <= 7:
         sys.exit("zoom-max must be from 1 to 7")
-    build(arguments.zoom_max)
+    if arguments.only != "sites":
+        build(arguments.zoom_max)
+    if arguments.only != "image":
+        build_sites()
