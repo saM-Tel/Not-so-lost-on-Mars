@@ -12,6 +12,7 @@
 import { SOL_S } from '../mars/constants';
 import { sunAtLocalTime, sunriseSunset } from '../mars/sun';
 import { marsMonth, seasonName, solarLongitudeDeg } from '../mars/time';
+import { formatDuration } from './format';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
@@ -109,7 +110,7 @@ export function createTimePanel(options: {
     const end = start + marsHours;
     const inDaylight = start >= daylight.riseHours && end <= daylight.setHours;
     walkLine.textContent = inDaylight
-      ? `Back by about ${formatMarsClock(end)} in the cautious case, ${formatMarsClock(daylight.setHours - end)} before sunset. The whole walk is in daylight.`
+      ? `Back by about ${formatMarsClock(end)} in the cautious case, ${formatDuration((daylight.setHours - end) * (SOL_S / 24))} before sunset. The whole walk is in daylight.`
       : start < daylight.riseHours
         ? `This starts before sunrise (${formatMarsClock(daylight.riseHours)}). Walking in the dark is not advised.`
         : `Back by about ${formatMarsClock(end)} in the cautious case, after sunset at ${formatMarsClock(daylight.setHours)}. Start earlier, or choose a shorter walk.`;

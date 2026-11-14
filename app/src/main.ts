@@ -30,12 +30,26 @@ import { addEarthLink } from './ui/earthLink';
 /** Everything the pipeline wrote is under this address. Relative, so it works under the repository name. */
 const DATA_URL = new URL('data/', document.baseURI).href;
 
+/** Say that something could not be shown. Notes stack in one corner, can be closed, and leave after 20 seconds. */
 function showProblem(message: string): void {
+  let stack = document.querySelector<HTMLElement>('.problems');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.className = 'problems';
+    document.body.append(stack);
+  }
   const box = document.createElement('p');
   box.className = 'problem';
   box.setAttribute('role', 'alert');
   box.textContent = message;
-  document.body.append(box);
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'problem__close';
+  close.textContent = 'Close';
+  close.addEventListener('click', () => box.remove());
+  box.append(' ', close);
+  stack.append(box);
+  window.setTimeout(() => box.remove(), 20_000);
 }
 
 async function start(): Promise<void> {

@@ -1,6 +1,6 @@
 /*
  * WHAT:    Layout and colours for the globe view: the map, the site list and details card, and the site markers (F14).
- *          Still to add: the three display modes (F13).
+ *          Also the route card, layer panel, tether controls, photo strip, banners and the three display modes.
  * IN:      Nothing.
  * OUT:     Styles, and the readiness-level colours that src/map/siteMarkers.ts reads.
  * USED BY: index.html and everything in src/ui and src/map.
@@ -826,18 +826,37 @@ body.map-full #map {
 
 /* ---- Problems ---- */
 
-.problem {
+/* Notes that something could not be shown. They are not dangers, so they are not red. */
+.problems {
   position: absolute;
   left: 50%;
-  top: 40%;
+  top: 30%;
+  z-index: 8;
+  display: grid;
+  gap: 0.5rem;
+  width: min(40rem, calc(100% - 24px));
   transform: translateX(-50%);
-  max-width: 40rem;
+}
+
+.problem {
   margin: 0;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--danger);
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--caution);
   border-radius: 8px;
   background: var(--panel);
   line-height: 1.45;
+}
+
+.problem__close {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
 }
 
 @media (max-width: 720px) {
@@ -1057,7 +1076,7 @@ body.mode-tablet #map {
 }
 
 .field-card__button--storm {
-  border-color: var(--danger);
+  border-color: var(--caution);
 }
 
 .field-card__note {
@@ -1169,7 +1188,8 @@ body.mode-tablet #map {
 .earth-link {
   position: absolute;
   left: 12px;
-  bottom: 64px;
+  /* Above the scale bar, which sits at 56px. */
+  bottom: 96px;
   z-index: 2;
   max-width: min(26rem, calc(100% - 24px));
   padding: 0.35rem 0.6rem;
@@ -1187,4 +1207,29 @@ body.mode-tablet #map {
 
 body.mode-helmet .earth-link {
   display: none;
+}
+
+/* ---- Review items R13 and R15: widgets that covered each other ---- */
+
+/* In the tablet view the card needs the bottom of the screen to itself. */
+body.mode-tablet .earth-link,
+body.mode-tablet .weather-banner {
+  display: none;
+}
+
+/* On narrower screens the mode switch at the top right would cover the route card's Hide button,
+   so the card starts beneath it. */
+@media (max-width: 1120px) {
+  .route-card {
+    top: 52px;
+    max-height: calc(100% - 130px);
+  }
+}
+
+/* On a phone the Install button sits under the mode switch, so the card starts beneath both. */
+@media (max-width: 720px) {
+  .route-card {
+    top: 92px;
+    max-height: calc(100% - 170px);
+  }
 }

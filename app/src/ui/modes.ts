@@ -139,7 +139,9 @@ export function createModeSwitch(actions: {
       el('p', 'field-card__row', `Time at the target before turning back: ${stay}`),
       ...(s.alert ? [el('p', 'field-card__row field-card__row--danger', s.alert)] : []),
     );
-    arrow.style.transform = `rotate(${s.bearingDeg}deg)`;
+    // No arrow: it would point across a photograph whose own direction is not confirmed, and so could mislead.
+    // The bearing stays in the readout, as a number.
+    arrow.hidden = true;
     readout.textContent = `${s.targetName}  ·  ${formatDistance(s.distanceM)}  ·  bearing ${s.bearingDeg.toFixed(0)}°  ·  turn back in ${stay}`;
     const share = s.tetherAllowedS > 0 ? Math.max(0, Math.min(1, s.tetherMarginS / s.tetherAllowedS)) : 0;
     marginFill.style.width = `${(share * 100).toFixed(0)}%`;

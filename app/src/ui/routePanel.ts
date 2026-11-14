@@ -1,8 +1,9 @@
 // WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3),
 //          the tether with its settings and whether the walk stays inside it (F4), the radiation dose on the walk (F5),
 //          and real rover photos taken near it (F6).
-//          Also the scenario's science targets, oxygen, the elevation profile and the suit's slope limit.
-//          Still to add: the route's confidence line.
+//          Also the scenario's science targets, oxygen, the elevation profile, the route's confidence line, the suit's
+//          slope limit, the storm drill, the when-to-go panel, route export and the field views' state.
+//          Still to add: a route through several targets in a row.
 // IN:      A loaded site with routing grids; clicks on the map; results from src/route/client.ts.
 // OUT:     A card over the map, and the route drawn through src/map/routeLayer.ts. Returns a function that removes both.
 // USED BY: src/main.ts.
@@ -104,7 +105,7 @@ function targetList(targets: ScenarioPlace[], onPick: (target: ScenarioPlace) =>
 
 const REFUSALS: Record<string, string> = {
   outside: 'That point is outside the mapped box. Choose a point on the detailed ground.',
-  'keep-out': 'That point is on keep-out ground: steeper than the slope limit. Choose a point that is not shaded red.',
+  'keep-out': 'That point is on keep-out ground: steeper than the slope limit, or with no terrain data. Choose a point that is not shaded red.',
   unreachable: 'No walkable way there and back was found: keep-out ground cuts it off from home.',
 };
 
@@ -210,7 +211,17 @@ export function startRoutePlanner(
     });
   };
   const modes = createModeSwitch({
-    onLayoutChange: () => map.resize(),
+    onLayoutChange: () => {
+      map.resize();
+      const card = document.querySelector<HTMLElement>('.field-card');
+      if (!document.body.classList.contains('mode-tablet') || !card || !lastAnswer?.ok) return;
+      const points = [...lastAnswer.out.line, ...lastAnswer.back.line];
+      const lons = points.map((p) => p[0]);
+      const lats = points.map((p) => p[1]);
+      map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], {
+        padding: { top: 70, left: 40, right: 40, bottom: card.offsetHeight + 60 }, duration: 600,
+      });
+    },
     onNextTarget: () => {
       const targets = loaded.site.targets ?? [];
       if (targets.length === 0) return;
@@ -567,7 +578,7 @@ export function startRoutePlanner(
           : `Home is the site's marker, a stand-in until the team chooses where the crew's rover parks. `;
       about.textContent =
         homeText +
-        `Red is keep-out ground, steeper than ${slopeLimitDeg} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
+        `Red is keep-out ground, steeper than ${slopeLimitDeg} degrees or with no terrain data: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
         `${(ready.reachableShare * 100).toFixed(0)}% of it can be walked to and back from.`;
       const targets = loaded.site.targets ?? [];
       if (first) {
