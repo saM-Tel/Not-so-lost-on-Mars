@@ -211,6 +211,62 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
               f"median {slopes.get('medianDifferenceDeg')} deg, typical {slopes.get('medianAbsoluteDifferenceDeg')} deg, "
               f"90% within {slopes.get('percentile90AbsoluteDifferenceDeg')} deg, correlation {slopes.get('correlation')}")
 
+    # Extra raster layers named in the config (F12), such as night-time infrared: read over a wider square, coloured
+    # along a colour-blind-safe ramp with no red, and given a legend the app draws.
+    for extra in site.get("overlays", []):
+        outer = sources.Box.around(position["lonEastDeg"], position["latDeg"], extra["sizeKm"], extra["sizeKm"])
+        try:
+            extra_grid = sources.read_box(extra["file"], extra["serverPath"], extra["originalUrl"], outer, work / "overlays",
+                                          nodata=extra.get("nodata"))
+        except RuntimeError as error:
+            print(f"No {extra['id']} layer: {error}")
+            continue
+        extra_zooms = (extra["zooms"][0], extra["zooms"][1])
+        folder = temporary / "tiles" / extra["id"]
+        low, high = extra["valueRange"]
+        count, size = tiles.write_site_colour_tiles(extra_grid, outer, extra_zooms[0], extra_zooms[1], folder,
+                                                    extra["ramp"], low, high)
+        record = dict(extra["record"])
+        record.update({
+            "id": extra["id"], "title": extra["title"], "dataType": extra["dataType"],
+            "processing": (f"Read from {extra['file']} over a {extra['sizeKm']} km square centred on the site marker "
+                           f"({extra_grid.origin}), coloured along a ramp from value {low} to {high}, and cut into tiles "
+                           f"for zoom {extra_zooms[0]} to {extra_zooms[1]}. The map stretches them at closer zooms."),
+            "tiles": {
+                "path": f"tiles/{extra['id']}/{{z}}/{{x}}/{{y}}.webp", "minZoom": extra_zooms[0], "maxZoom": extra_zooms[1],
+                "tileSizePx": mars.TILE_SIZE_PX, "count": count, "bytes": size,
+                "bounds": {key: round(value, 7) for key, value in outer.as_dict().items()},
+            },
+            "legend": {"kind": "ramp", "colours": extra["ramp"], "labels": extra["legendLabels"], "note": extra["legendNote"]},
+        })
+        layers.append(record)
+        print(f"Wrote {extra['id']}: {count} tiles, {size / 1e6:.1f} MB, from the {extra_grid.origin}")
+
+    # Geology (F2): build_geology.py turns the USGS geologic map into GeoJSON in degrees in data/work/<site id>/.
+    geology = site.get("geology")
+    geology_file = work / "geology.geojson"
+    if geology and geology_file.exists():
+        import json
+        collection = json.loads(geology_file.read_text(encoding="utf-8"))
+        (temporary / "vectors").mkdir(parents=True, exist_ok=True)
+        records.write_json(temporary / "vectors" / "geology.geojson", collection)
+        units = {}
+        for feature in collection["features"]:
+            p = feature["properties"]
+            units.setdefault(p["unit"], (p["colour"], p["name"]))
+        record = dict(geology["record"])
+        record.update({
+            "id": "geology-sim3464", "title": "Geology", "dataType": "geologic",
+            "processing": geology["processing"],
+            "vector": {"path": "vectors/geology.geojson", "geometry": "polygon", "count": len(collection["features"]),
+                       "bytes": (temporary / "vectors" / "geology.geojson").stat().st_size},
+            "legend": {"kind": "swatches", "items": [{"colour": c, "label": f"{u}: {n}", "shape": "area"} for u, (c, n) in sorted(units.items())]},
+        })
+        layers.append(record)
+        print(f"Wrote geology: {len(collection['features'])} map units in {len(units)} kinds")
+    elif geology:
+        print("No geology layer: run build_geology.py first (it needs the fiona package).")
+
     # Slope as a layer of its own. It is drawn by the app from the routing grid, so it has no tiles.
     slope_record = dict(site["sources"]["terrain"]["record"])
     slope_record.update({

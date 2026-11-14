@@ -76,8 +76,46 @@ export function showSiteLayers(map: MapLibreMap, loaded: LoadedSite, beforeLayer
   return notShown;
 }
 
+const SHADE_ID = 'site-sun-shading';
+
+/**
+ * Computed shading of the 3D ground for a Sun position (F11): MapLibre's hillshade, lit from the Sun's azimuth and
+ * height. Not real shadows: it shades slopes facing away from the Sun but does not cast shadows across the ground.
+ * Pass null to hide it.
+ */
+export function setSunShading(map: MapLibreMap, loaded: LoadedSite, sun: { azimuthDeg: number; elevationDeg: number } | null): void {
+  const terrain = loaded.terrain?.tiles;
+  if (!terrain) return;
+  if (!map.getSource(SHADE_ID)) {
+    const box = terrain.bounds ?? loaded.site.box;
+    map.addSource(SHADE_ID, {
+      type: 'raster-dem', tiles: [loaded.folderUrl + terrain.path], tileSize: terrain.tileSizePx,
+      minzoom: terrain.minZoom, maxzoom: terrain.maxZoom, encoding: 'custom',
+      redFactor: 6553.6, greenFactor: 25.6, blueFactor: 0.1, baseShift: -10000,
+      bounds: [box.westLonDeg, box.southLatDeg, box.eastLonDeg, box.northLatDeg],
+    });
+    // Under the site image would hide it; over it, half see-through, so the ground still shows.
+    // Beneath keep-out shading and the route lines, which must stay readable.
+    const below = ['route-keep-out', 'route-tether', 'route-lines-edge'].find((id) => map.getLayer(id));
+    map.addLayer({
+      id: SHADE_ID, type: 'hillshade', source: SHADE_ID,
+      paint: { 'hillshade-illumination-anchor': 'map', 'hillshade-exaggeration': 0.7, 'hillshade-highlight-color': 'rgba(255,255,255,0)' },
+    }, below);
+  }
+  map.setLayoutProperty(SHADE_ID, 'visibility', sun ? 'visible' : 'none');
+  if (!sun) return;
+  map.setPaintProperty(SHADE_ID, 'hillshade-illumination-direction', sun.azimuthDeg);
+  // Lower Sun, darker shading on slopes facing away from it. Newer MapLibre also takes the Sun's height directly.
+  map.setPaintProperty(SHADE_ID, 'hillshade-shadow-color', `rgba(0,0,0,${Math.min(0.85, 0.35 + (60 - Math.max(0, sun.elevationDeg)) / 100)})`);
+  try {
+    map.setPaintProperty(SHADE_ID, 'hillshade-illumination-altitude' as 'hillshade-exaggeration', Math.max(1, sun.elevationDeg));
+  } catch { /* older style spec: direction and darkness only */ }
+}
+
 /** Take the site's image and terrain off the map. Safe to call when none is shown. */
 export function removeSiteLayers(map: MapLibreMap): void {
+  if (map.getLayer(SHADE_ID)) map.removeLayer(SHADE_ID);
+  if (map.getSource(SHADE_ID)) map.removeSource(SHADE_ID);
   if (map.getTerrain()) map.setTerrain(null);
   if (map.getLayer(IMAGE_ID)) map.removeLayer(IMAGE_ID);
   if (map.getSource(IMAGE_ID)) map.removeSource(IMAGE_ID);

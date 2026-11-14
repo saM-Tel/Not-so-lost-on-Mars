@@ -157,6 +157,40 @@ def write_site_image_tiles(grid, box, zoom_min: int, zoom_max: int, folder: path
     return count, size
 
 
+def ramp_colours(values: np.ndarray, ramp: list[str], low: float, high: float) -> np.ndarray:
+    """Values to RGB along a colour ramp of hex stops, evenly spaced from `low` to `high`."""
+    stops = np.array([[int(c[i:i + 2], 16) for i in (1, 3, 5)] for c in ramp], dtype=np.float64)
+    share = np.clip((values - low) / max(high - low, 1e-9), 0, 1) * (len(ramp) - 1)
+    i0 = np.clip(np.floor(share).astype(int), 0, len(ramp) - 2)
+    f = (share - i0)[..., None]
+    return np.rint(stops[i0] * (1 - f) + stops[i0 + 1] * f).astype(np.uint8)
+
+
+def write_site_colour_tiles(grid, box, zoom_min: int, zoom_max: int, folder: pathlib.Path, ramp: list[str],
+                            low: float, high: float, quality: int = 80) -> tuple[int, int]:
+    """Cut a one-band grid into WebP tiles coloured along a ramp. No data and outside the grid are transparent."""
+    centre_lat = (box.south_lat_deg + box.north_lat_deg) / 2
+    levels = detail_levels(grid, zoom_min, zoom_max, centre_lat)
+    count = size = 0
+    for zoom in range(zoom_min, zoom_max + 1):
+        columns, rows = tile_range(box, zoom)
+        for x in columns:
+            for y in rows:
+                lon, lat = tile_pixel_positions(zoom, x, y)
+                values = levels[zoom].sample(lon, lat)
+                seen = np.isfinite(values)
+                if not seen.any():
+                    continue
+                rgb = ramp_colours(np.where(seen, values, low), ramp, low, high)
+                alpha = np.where(seen, 255, 0).astype(np.uint8)
+                path = folder / str(zoom) / str(x) / f"{y}.webp"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                Image.fromarray(np.dstack([rgb, alpha]), mode="RGBA").save(path, format="WEBP", quality=quality, method=4)
+                count += 1
+                size += path.stat().st_size
+    return count, size
+
+
 def encode_terrain(height_m: np.ndarray) -> np.ndarray:
     """Heights in metres to the three colour channels of a terrain tile."""
     steps = np.rint((height_m - TERRAIN_BASE_M) / TERRAIN_STEP_M).astype(np.int64)

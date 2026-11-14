@@ -1,5 +1,6 @@
 // WHAT:    A built site's layers as things the layer panel can switch and fade: the ground image, slope, and the
-//          rover's path and stops (F2). Still to add: geology.
+//          rover's path and stops (F2), and any tiled or polygon layer the pipeline coloured itself, such as night-time
+//          infrared (F12) and geology (F2), with the legend from its record.
 // IN:      The map; a loaded site, with its layer records and routing grid definition.
 // OUT:     One Overlay for each layer that could be drawn, and a function that takes them off the map.
 // USED BY: src/main.ts, src/ui/layerPanel.ts. src/ui/routePanel.ts makes one more Overlay, for keep-out ground.
@@ -104,6 +105,30 @@ export async function addOverlays(map: MapLibreMap, loaded: LoadedSite): Promise
         labels: [0, 1, 2, 3].map((i) => (i === 3 ? `${SLOPE_RAMP_TOP_DEG}° or more` : `${(i * SLOPE_RAMP_TOP_DEG) / 3}°`)),
         note: 'Steepest slope in each 4 m cell, in degrees from level.',
       }, { visible: false, opacity: 0.6 }, [{ id: SLOPE_ID, opacityProperties: ['raster-opacity'] }]));
+    } else if (record.tiles && record !== loaded.image && record !== loaded.terrain) {
+      // A tiled layer the pipeline coloured itself, such as night-time infrared (F12). Off at first.
+      const id = `overlay-${record.id}`;
+      const box = record.tiles.bounds;
+      map.addSource(id, {
+        type: 'raster', tiles: [loaded.folderUrl + record.tiles.path], tileSize: record.tiles.tileSizePx,
+        minzoom: record.tiles.minZoom, maxzoom: record.tiles.maxZoom,
+        ...(box ? { bounds: [box.westLonDeg, box.southLatDeg, box.eastLonDeg, box.northLatDeg] as [number, number, number, number] } : {}),
+        attribution: `${record.title}: ${record.credit}`,
+      });
+      map.addLayer({ id, type: 'raster', source: id, paint: { 'raster-fade-duration': 0 } });
+      added.layers.push(id);
+      added.sources.push(id);
+      overlays.push(overlay(map, record, record.legend ?? null, { visible: false, opacity: 0.6 }, [{ id, opacityProperties: ['raster-opacity'] }]));
+    } else if (record.vector?.geometry === 'polygon') {
+      // Areas coloured by the pipeline, such as geologic map units (F2). Each feature carries its own colour.
+      const id = `overlay-${record.id}`;
+      map.addSource(id, { type: 'geojson', data: loaded.folderUrl + record.vector.path });
+      map.addLayer({ id, type: 'fill', source: id, paint: { 'fill-color': ['get', 'colour'], 'fill-opacity': 0.35 } });
+      map.addLayer({ id: `${id}-edge`, type: 'line', source: id, paint: { 'line-color': '#08090e', 'line-width': 1, 'line-opacity': 0.6 } });
+      added.layers.push(`${id}-edge`, id);
+      added.sources.push(id);
+      overlays.push(overlay(map, record, record.legend ?? null, { visible: false, opacity: 0.35 },
+        [{ id, opacityProperties: ['fill-opacity'] }, { id: `${id}-edge`, opacityProperties: ['line-opacity'] }]));
     } else if (record.vector) {
       const id = `overlay-${record.id}`;
       map.addSource(id, { type: 'geojson', data: loaded.folderUrl + record.vector.path });

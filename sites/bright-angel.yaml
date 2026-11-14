@@ -138,6 +138,71 @@ approach:
         - "Hills and hollows smaller than about 20 m are not in it."
       credit: "NASA/JPL-Caltech/MSSS/USGS (Fergason, Galuszka and Hare 2020)"
 
+# ---- Extra layers (F12, F2) ------------------------------------------------------------------
+
+overlays:
+  # Night-time infrared: ground that stays warm at night is usually rock or firm ground; ground that cools fast is
+  # usually fine, loose material. A copy ships inside the USGS SIM 3464 package (data/raw/geology after unzipping).
+  - id: thermal-themis
+    title: Night-time warmth
+    dataType: thermal
+    file: nili_THEMIS_NightIR_Controlled_oct2018.tif
+    serverPath: raw/geology
+    originalUrl: "https://pubs.usgs.gov/sim/3464"
+    sizeKm: 12
+    zooms: [9, 12]
+    valueRange: [40, 200]
+    ramp: ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"]
+    legendLabels: ["cooler at night", "", "", "warmer at night"]
+    legendNote: "Relative brightness of the night infrared mosaic, not a temperature. Warmer at night often means rock or firm ground; cooler means fine, loose material."
+    record:
+      mission: Mars Odyssey
+      instrument: Thermal Emission Imaging System (THEMIS), night infrared
+      agency: NASA
+      productId: nili_THEMIS_NightIR_Controlled_oct2018 (USGS THEMIS controlled mosaic, October 2018, as shipped in SIM 3464)
+      sourceUrl: "https://doi.org/10.3133/sim3464"
+      doi: "10.3133/sim3464"
+      acquiredFrom: "2002 at the earliest (THEMIS began mapping in 2002; not stated in the file)"
+      acquiredTo: "Before October 2018, the mosaic version named in its folder"
+      published: "2020"
+      gridSpacing: "100 m"
+      realDetail: "About 100 m: 30 pixels across the 3 km site box"
+      positionAccuracy: not found
+      heightAccuracy: not applicable
+      grade: C
+      caveats:
+        - "Brightness stretched to 8 bits for display, not a temperature."
+        - "Far coarser than the walking map: one pixel is 100 m. A guide to where footing changes, not a footing map."
+        - "Dust cover hides what is underneath; a dusty rock surface can look like loose ground."
+      credit: "NASA/JPL-Caltech/Arizona State University; mosaic by USGS; in Sun and Stack 2020 (USGS SIM 3464)"
+
+geology:
+  # build_geology.py reads the USGS geologic map and writes data/work/bright-angel/geology.geojson.
+  processing: >-
+    Map units from the USGS geologic map of Jezero crater and Nili Planum, read from its geodatabase, moved from its
+    Mars Transverse Mercator projection to degrees on the Mars sphere, and kept where they touch a 12 km square round
+    the site. Colours are ours, colour-blind safe and never red; they are not the map's own colours.
+  record:
+    mission: "Mars Reconnaissance Orbiter (mapped on CTX and HiRISE images)"
+    instrument: "Geologic mapping by Sun and Stack (USGS SIM 3464)"
+    agency: "USGS, for NASA"
+    productId: "SIM 3464, Geologic map of Jezero crater and the Nili Planum region, Mars"
+    sourceUrl: "https://doi.org/10.3133/sim3464"
+    doi: "10.3133/sim3464"
+    acquiredFrom: "Mapped on images taken from 2006"
+    acquiredTo: "2020, when the map was published"
+    published: "2020"
+    gridSpacing: "Map scale 1:75,000"
+    realDetail: "Units a few hundred metres across and larger"
+    positionAccuracy: "100 to 200 m off the corrected base map (docs/DATA_CATALOG.md)"
+    heightAccuracy: not applicable
+    grade: C
+    caveats:
+      - "Lines can be 100 to 200 m off where they really are: about a tenth of the site box."
+      - "Mapped at 1:75,000, so small outcrops a walker would see are not separate units."
+      - "An interpretation by geologists, not a measurement."
+    credit: "Sun and Stack 2020, USGS Scientific Investigations Map 3464"
+
 # ---- What the pipeline builds --------------------------------------------------------------
 
 box:

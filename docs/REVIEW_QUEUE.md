@@ -8,6 +8,15 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 
 ## Open
 
+### 10. Features started but blocked on a source or a decision (high to medium)
+- **F12 minerals:** Mars Trek does not serve its CRISM mineral layers as tiles. The six CRISM MTRDR products (10.9 GB) are on the server, unprocessed; a person should pick the summary parameters to show (for example the hydrated-mineral ones) and check whether any product covers Bright Angel (77.305 E, 18.497 N).
+- **F6 photos by direction of travel:** NASA's feed gives a mast azimuth, but what it is measured from (rover body or north) is not confirmed. Until it is, photos are not chosen by direction.
+- **F11 dust devils:** no published dust-devil rate for Jezero has been read. Leave out until one is.
+- **F4 energy and oxygen budgets and a reserve:** need sourced suit capacities; oxygen used on a walk is shown (Weir 1949) but not compared with a supply.
+- **F7 layer choices in the link:** not built.
+- **F9:** one route against the rover is now shown in the route card as distance driven against distance walked between home and a target (both rover stops). A path-shape comparison is not built.
+
+
 ### 8. Gale crater not built: image dates of the Gale mosaics not found (medium, F15)
 - **Where:** `sites/gale-crater.yaml` has no `box` or `sources` yet. The mosaics (`MSL_Gale_DEM_Mosaic_1m_v3.tif`, `MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif`, Calef and Parker 2016) are on the server and on the app's grid, so the pipeline can read them as they are.
 - **What:** no file we could read gives the dates of the HiRISE images in the mosaics; the USGS page (https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm) refuses automated reading. Without dates the app hides the layers.

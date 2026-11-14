@@ -49,7 +49,11 @@ export interface TimePanel {
   setWalk(cautiousS: number | null): void;
 }
 
-export function createTimePanel(options: { lonEastDeg: number; latDeg: number; weatherUrl: string; now?: Date }): TimePanel {
+export function createTimePanel(options: {
+  lonEastDeg: number; latDeg: number; weatherUrl: string; now?: Date;
+  /** Called with the Sun position when computed shading is on, or null when it is off or the Sun is down. */
+  onSun?: (sun: { azimuthDeg: number; elevationDeg: number } | null) => void;
+}): TimePanel {
   const now = options.now ?? new Date();
   const ls = solarLongitudeDeg(now);
   const month = marsMonth(ls);
@@ -72,6 +76,13 @@ export function createTimePanel(options: { lonEastDeg: number; latDeg: number; w
   row.append(label, slider, clock);
 
   const sunLine = el('p', 'when__sun');
+  const shadeBox = el('input');
+  shadeBox.type = 'checkbox';
+  shadeBox.id = 'when-shade';
+  const shadeLabel = el('label', undefined, ' Shade the ground for this Sun (computed; slopes facing away from the Sun, not cast shadows)');
+  shadeLabel.htmlFor = shadeBox.id;
+  const shadeRow = el('p', 'route-card__note');
+  shadeRow.append(shadeBox, shadeLabel);
   const walkLine = el('p', 'when__walk');
   walkLine.setAttribute('role', 'status');
   const weather = el('div', 'when__weather');
@@ -82,6 +93,7 @@ export function createTimePanel(options: { lonEastDeg: number; latDeg: number; w
     const start = Number(slider.value);
     clock.textContent = `${formatMarsClock(start)} local solar time`;
     const sun = sunAtLocalTime(start, options.latDeg, ls);
+    options.onSun?.(shadeBox.checked && sun.elevationDeg > 0 ? sun : null);
     const sunText = sun.elevationDeg > 0
       ? `The Sun is ${sun.elevationDeg.toFixed(0)} degrees up, towards ${sun.azimuthDeg.toFixed(0)} degrees from north.`
       : 'The Sun is down: it is night.';
@@ -104,6 +116,7 @@ export function createTimePanel(options: { lonEastDeg: number; latDeg: number; w
     walkLine.className = inDaylight ? 'when__walk' : 'when__walk when__walk--warn';
   };
   slider.addEventListener('input', update);
+  shadeBox.addEventListener('change', update);
   update();
 
   // Typical weather for this Mars month, only where the site has its own station record.
@@ -130,7 +143,7 @@ export function createTimePanel(options: { lonEastDeg: number; latDeg: number; w
       'Weather: no data. Our files hold no weather station record for this site, and weather is never borrowed from another site.'));
   });
 
-  box.append(season, row, sunLine, walkLine, weather);
+  box.append(season, row, sunLine, shadeRow, walkLine, weather);
   return {
     element: box,
     setWalk(cautiousS) { walkS = cautiousS; update(); },

@@ -15,6 +15,7 @@ import type { ScenarioPlace } from '../data/contract';
 import { loadRoutingGridFiles, type LoadedSite } from '../data/loadSite';
 import type { Overlay } from '../map/overlays';
 import { addRouteLayer, BACK_COLOUR, OUT_COLOUR } from '../map/routeLayer';
+import { setSunShading } from '../map/siteLayers';
 import { startRouteWorker } from '../route/client';
 import { WALK_CASES } from '../route/cost';
 import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
@@ -240,6 +241,68 @@ export function startRoutePlanner(
   };
   const tether = createTetherControls(drawTether);
 
+  /**
+   * Route confidence (F3): the weakest stretch is ground close to the slope limit, where our slope from orbit may be
+   * off by as much as the margin. 4 degrees: 9 in 10 rover stops agreed with our slope within 4.0 degrees (F9).
+   */
+  const CONFIDENCE_MARGIN_DEG = 4;
+  const confidenceLine = (answer: Extract<RouteAnswer, { ok: true }>): HTMLElement => {
+    const line = el('p', 'route-card__note');
+    const definition = loaded.site.grid;
+    if (!gridFiles || !definition) return line;
+    const slope = new Float32Array(gridFiles.slopeMaxDeg);
+    let near = 0;
+    let total = 0;
+    const points = [...answer.out.line, ...answer.back.line];
+    for (let i = 1; i < points.length; i++) {
+      const [lon, lat] = points[i]!;
+      const col = Math.floor((lon - definition.northWestCorner.lonEastDeg) / definition.cellLonDeg);
+      const row = Math.floor((definition.northWestCorner.latDeg - lat) / definition.cellLatDeg);
+      if (row < 0 || col < 0 || row >= definition.rows || col >= definition.cols) continue;
+      const stepM = Math.hypot((points[i]![0] - points[i - 1]![0]) * definition.cellEastWestM / definition.cellLonDeg,
+        (points[i]![1] - points[i - 1]![1]) * definition.cellNorthSouthM / definition.cellLatDeg);
+      total += stepM;
+      if (slope[row * definition.cols + col]! > slopeLimitDeg - CONFIDENCE_MARGIN_DEG) near += stepM;
+    }
+    const share = total > 0 ? near / total : 0;
+    line.textContent = near === 0
+      ? `Route confidence: the whole walk stays more than ${CONFIDENCE_MARGIN_DEG} degrees below the slope limit, so an error in our slope as large as the rover check found would not make it too steep (grade C).`
+      : `Route confidence: weakest stretch. ${formatDistance(near)} of the walk (${(share * 100).toFixed(0)}%) crosses ground within ${CONFIDENCE_MARGIN_DEG} degrees of the slope limit, where our slope from orbit may be off by that much (9 in 10 rover stops agreed within 4.0 degrees). Check those stretches on the ground (grade C).`;
+    return line;
+  };
+
+  /**
+   * Validation (F9): one route against the rover's own drive. Home and the scenario's targets are rover stops, and
+   * every stop logs the distance the rover had driven, so the rover's distance between them is known.
+   */
+  const stopsRecord = loaded.layers.usable.find((record) => record.vector?.geometry === 'point');
+  const roverStops: Promise<Map<string, { sol: number; drivenTotalM: number }>> = stopsRecord?.vector
+    ? fetch(loaded.folderUrl + stopsRecord.vector.path).then(async (response) => {
+      const collection = (await response.json()) as { features: { properties: { stop: string; sol: number; drivenTotalM?: number } }[] };
+      const byStop = new Map<string, { sol: number; drivenTotalM: number }>();
+      for (const f of collection.features) {
+        if (f.properties.drivenTotalM !== undefined && !byStop.has(f.properties.stop)) byStop.set(f.properties.stop, { sol: f.properties.sol, drivenTotalM: f.properties.drivenTotalM });
+      }
+      return byStop;
+    }).catch(() => new Map())
+    : Promise.resolve(new Map());
+  const roverComparison = (answer: Extract<RouteAnswer, { ok: true }>): HTMLElement => {
+    const line = el('p', 'route-card__note');
+    const home = loaded.site.home;
+    const target = (loaded.site.targets ?? []).find((t) => Math.abs(t.lonEastDeg - answer.target[0]) < 1e-4 && Math.abs(t.latDeg - answer.target[1]) < 1e-4);
+    if (!home || !target) return line;
+    void roverStops.then((stops) => {
+      const a = stops.get(home.stop);
+      const b = stops.get(target.stop);
+      if (!a || !b) return;
+      const drivenM = Math.abs(b.drivenTotalM - a.drivenTotalM);
+      line.textContent =
+        `Checked against the rover: Perseverance drove ${formatDistance(drivenM)} between these two stops (sols ${Math.min(a.sol, b.sol)} to ${Math.max(a.sol, b.sol)}), ` +
+        `against ${formatDistance(answer.out.stats.distanceM)} for our walk out. The rover's drive includes stops and detours for science, so it is a check on scale, not a race (F9, measured).`;
+    });
+    return line;
+  };
+
   /** Storm mode (F10): what to do from the far end of the planned walk if a storm is coming. */
   const showStorm = (): void => {
     if (!lastAnswer?.ok) { storm.show(null, null); return; }
@@ -255,6 +318,7 @@ export function startRoutePlanner(
     lonEastDeg: loaded.site.centre.lonEastDeg,
     latDeg: loaded.site.centre.latDeg,
     weatherUrl: new URL(`../weather/${loaded.site.id}.json`, loaded.folderUrl).href,
+    onSun: (sun) => setSunShading(map, loaded, sun),
   });
 
   const showAnswer = (answer: RouteAnswer): void => {
@@ -325,6 +389,8 @@ export function startRoutePlanner(
     result.append(
       table,
       profileChart(answer.out.stats.profile, answer.back.stats.profile, OUT_COLOUR, BACK_COLOUR, heightNote),
+      confidenceLine(answer),
+      roverComparison(answer),
       el('p', 'route-card__note', `Steepest step along the route: ${steepest.toFixed(0)} degrees. Out and back differ because uphill and downhill cost differently.`),
       oxygenLine,
       el('p', 'route-card__note', OXYGEN_BASIS),

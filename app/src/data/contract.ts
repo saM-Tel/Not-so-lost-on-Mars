@@ -55,7 +55,11 @@ export interface LayerRecord {
   /** For a layer drawn from a routing grid: the name of the grid file in site.json's `grid.files`. */
   grid?: string;
   /** For a layer of points or lines: where its GeoJSON file is, relative to the folder that holds layers.json. */
-  vector?: { path: string; geometry: 'point' | 'line'; count: number; bytes: number };
+  vector?: { path: string; geometry: 'point' | 'line' | 'polygon'; count: number; bytes: number };
+  /** How to read the layer's colours, written by the pipeline for layers it colours itself (thermal, geology). */
+  legend?:
+    | { kind: 'swatches'; items: { colour: string; label: string; shape?: 'line' | 'dot' | 'area' }[] }
+    | { kind: 'ramp'; colours: string[]; labels: string[]; note?: string };
   /** Approach imagery only: the site the ring surrounds, and which ring it is. */
   siteId?: string;
   ring?: 'wide' | 'mid' | 'near';
