@@ -10,19 +10,19 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 
 ### From the app review of 14 Nov, about 16:45 (items R1 to R20)
 
-A larger model (Claude Fable) read the app's map, route, safety, time and display-mode code; full text with line numbers in [reviews/2026-11-14-app-review.md](reviews/2026-11-14-app-review.md). It did not read the pipeline, the service worker, `vite.config.ts`, `photos.ts`, `photoStrip.ts`, `layerPanel.ts`, `urlState.ts`, `zoomSelect.ts` or `scaleBar.ts`, and ran nothing. **None of these is fixed yet.** Work them in this order (the review's fix plan), run `npm run check` after each group, and move each to Done with its commit.
+A larger model (Claude Fable) read the app's map, route, safety, time and display-mode code; full text with line numbers in [reviews/2026-11-14-app-review.md](reviews/2026-11-14-app-review.md). It did not read the pipeline, the service worker, `vite.config.ts`, `photos.ts`, `photoStrip.ts`, `layerPanel.ts`, `urlState.ts`, `zoomSelect.ts` or `scaleBar.ts`, and ran nothing. **Fixed items are marked FIXED with their commit and listed under Done.** Work them in this order (the review's fix plan), run `npm run check` after each group, and move each to Done with its commit.
 
 **Group 1, `app/src/map/routeLayer.ts`**
-- **R1 (high, suspected): tether picture may stay stale on 3D ground.** The canvas source's `play()` may not refresh MapLibre's cached terrain textures. Check: at Bright Angel drag "Time since leaving home" past 7 h without moving the map. If the line does not move, clear the render-to-texture cache after drawing (look for `freeRtt` in `app/node_modules/maplibre-gl/src/`), then `map.triggerRepaint()`; use `play(); pause();` instead of pausing on the next render.
-- **R2 (medium): keep-out is re-added above the tether after a restart and forgets the panel's switch and opacity.** In `showKeepOut`, update the existing image source (`updateImage`) and leave the layer alone; add it before `route-tether` the first time.
+- **R1, FIXED in baa2228 (high, suspected): tether picture may stay stale on 3D ground.** The canvas source's `play()` may not refresh MapLibre's cached terrain textures. Check: at Bright Angel drag "Time since leaving home" past 7 h without moving the map. If the line does not move, clear the render-to-texture cache after drawing (look for `freeRtt` in `app/node_modules/maplibre-gl/src/`), then `map.triggerRepaint()`; use `play(); pause();` instead of pausing on the next render.
+- **R2, FIXED in baa2228 (medium): keep-out is re-added above the tether after a restart and forgets the panel's switch and opacity.** In `showKeepOut`, update the existing image source (`updateImage`) and leave the layer alone; add it before `route-tether` the first time.
 
 **Group 2, `app/src/ui/routePanel.ts`**
-- **R3 (high, confirmed): the tether verdict and tablet margin use the quickest way home, not the planned way back.** Use `Math.max(farthest along the out line, farthest along the back line, backS)`; set the tablet alert in the "not enough time" branch too.
-- **R4 (medium): a restart (slope limit, moved rover) leaves the old tether, verdict, table, storm advice and daylight line on screen,** for good if home becomes unusable. One `restart()` that clears all of them and hides the tether until new fields arrive.
-- **R5 (medium): the rover comparison ignores a moved rover; the confidence line hard-codes Bright Angel's "9 in 10 within 4.0 degrees" and "Perseverance".** Skip the comparison when home was moved; read the figures from `loaded.validation` and the name from `loaded.site.mission`, and leave the sentence out when absent (the level 2 sites have no rover check).
-- **R6 (medium): the tablet shows "Working out the walk…" forever after a refused target.** Pass the refusal message to the field view; clear the storm alert when a new target is chosen.
-- **R7 (medium, suspected): the address bar is rewritten on every slider frame;** Safari throws after 100 calls in 30 s, which would stop the tether redrawing. Debounce to 300 ms in a try/catch.
-- **R8 (speed): skip tether redraws when the allowed time has not changed** (with a 1-hour limit it is 3,600 s for the first 7 hours).
+- **R3, FIXED in baa2228 (high, confirmed): the tether verdict and tablet margin use the quickest way home, not the planned way back.** Use `Math.max(farthest along the out line, farthest along the back line, backS)`; set the tablet alert in the "not enough time" branch too.
+- **R4, FIXED in baa2228 (medium): a restart (slope limit, moved rover) leaves the old tether, verdict, table, storm advice and daylight line on screen,** for good if home becomes unusable. One `restart()` that clears all of them and hides the tether until new fields arrive.
+- **R5, FIXED in baa2228 (medium): the rover comparison ignores a moved rover; the confidence line hard-codes Bright Angel's "9 in 10 within 4.0 degrees" and "Perseverance".** Skip the comparison when home was moved; read the figures from `loaded.validation` and the name from `loaded.site.mission`, and leave the sentence out when absent (the level 2 sites have no rover check).
+- **R6, FIXED in baa2228 (medium): the tablet shows "Working out the walk…" forever after a refused target.** Pass the refusal message to the field view; clear the storm alert when a new target is chosen.
+- **R7, FIXED in baa2228 (medium, suspected): the address bar is rewritten on every slider frame;** Safari throws after 100 calls in 30 s, which would stop the tether redrawing. Debounce to 300 ms in a try/catch.
+- **R8, FIXED in baa2228 (speed): skip tether redraws when the allowed time has not changed** (with a 1-hour limit it is 3,600 s for the first 7 hours).
 
 **Group 3, layer order (slots)**: `main.ts`, `approach.ts`, `siteLayers.ts`, `overlays.ts`, `routeLayer.ts`
 - **R9 (medium): sun shading darkens the analysis layers; the rover-stop circles split the draped layers.** Add hidden anchor layers in `main.ts` after the approach rings (`slot-image`, `slot-shading`, `slot-overlays`, `slot-keep-out`, `slot-tether`, `slot-route`, `slot-points`) and insert every layer before its slot. Target order, bottom to top: globe; rings (all wide, all mid, all near); site image; sun shading; thermal, slope, geology, rover path; keep-out; tether; route lines; rover stops; site columns and pins. Check with `map.getStyle().layers.map(l => l.id)`.
@@ -106,4 +106,15 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 
 ## Done
 
-None yet.
+### R1, R2, R3, R4, R5, R6, R7, R8: fixed Sat 14 Nov 19:37, commit baa2228
+
+- R1: after drawing, release the terrain's cached textures (the call MapLibre makes itself for image sources) and repaint; play then pause, no wait for a render.
+- R2: the keep-out image is updated in place; added under the tether the first time.
+- R3: new safety/tether.ts walkFarthestFromHomeS, with a test; the tablet alert is set when there is not enough time, too.
+- R4: restart() in ui/routePanel.ts; routeLayer.hideTether().
+- R5: figures from loaded.validation.slope and loaded.site.mission; an assumed margin is called assumed.
+- R6: ModeSwitch.setState takes a message.
+- R7: debounced, in a try.
+- R8: skipped when fields and allowed time are unchanged.
+- How checked: types, 77 unit tests (one new, for R3) and the production build pass. R1 was confirmed by reading MapLibre 6.18's source (webgl/render_to_texture.ts, ui/map.ts), not by eye. None of the eight has been seen in a browser: the scripted browser stalled on the site view all evening. A person should try each.
+
