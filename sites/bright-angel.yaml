@@ -180,8 +180,9 @@ geology:
   # build_geology.py reads the USGS geologic map and writes data/work/bright-angel/geology.geojson.
   processing: >-
     Map units from the USGS geologic map of Jezero crater and Nili Planum, read from its geodatabase, moved from its
-    Mars Transverse Mercator projection to degrees on the Mars sphere, and kept where they touch a 12 km square round
-    the site. Colours are ours, colour-blind safe and never red; they are not the map's own colours.
+    Mars Transverse Mercator projection to degrees on the Mars sphere, cut to a 12 km square round the site, with
+    positions kept to about 0.6 m. Each unit is labelled with the symbol printed on the map. Colours are ours,
+    colour-blind safe and never red; they are not the map's own colours.
   record:
     mission: "Mars Reconnaissance Orbiter (mapped on CTX and HiRISE images)"
     instrument: "Geologic mapping by Sun and Stack (USGS SIM 3464)"

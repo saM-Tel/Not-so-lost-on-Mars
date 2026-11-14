@@ -5,3 +5,4 @@ rasterio==1.5.2
 Pillow==13.0.0
 PyYAML==6.0.3
 pytest==9.2.0
+fiona==1.10.1

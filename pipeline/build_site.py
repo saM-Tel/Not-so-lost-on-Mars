@@ -250,7 +250,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
         import json
         collection = json.loads(geology_file.read_text(encoding="utf-8"))
         (temporary / "vectors").mkdir(parents=True, exist_ok=True)
-        records.write_json(temporary / "vectors" / "geology.geojson", collection)
+        records.write_json(temporary / "vectors" / "geology.geojson", collection, compact=True)
         units = {}
         for feature in collection["features"]:
             p = feature["properties"]

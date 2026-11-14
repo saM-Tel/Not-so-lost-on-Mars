@@ -64,9 +64,11 @@ def utc_now_iso() -> str:
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def write_json(path: pathlib.Path, value) -> int:
-    """Write JSON with stable formatting. Returns the size in bytes."""
-    text = json.dumps(value, indent=2, ensure_ascii=False) + "\n"
+def write_json(path: pathlib.Path, value, compact: bool = False) -> int:
+    """Write JSON with stable formatting, or with no spaces at all when `compact` (for large shapes, such as
+    geology, where indentation tripled the file). Returns the size in bytes."""
+    text = (json.dumps(value, separators=(",", ":"), ensure_ascii=False) if compact
+            else json.dumps(value, indent=2, ensure_ascii=False)) + "\n"
     path.write_text(text, encoding="utf-8", newline="\n")
     return path.stat().st_size
 

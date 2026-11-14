@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T16:07:57Z",
+  "builtUtc": "2026-11-14T20:34:04Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -102,7 +102,7 @@
       "id": "thermal-themis",
       "title": "Night-time warmth",
       "dataType": "thermal",
-      "processing": "Read from nili_THEMIS_NightIR_Controlled_oct2018.tif over a 12 km square centred on the site marker (local copy in data/raw, warped from its own projection onto the app's grid), coloured along a ramp from value 40 to 200, and cut into tiles for zoom 9 to 12. The map stretches them at closer zooms.",
+      "processing": "Read from nili_THEMIS_NightIR_Controlled_oct2018.tif over a 12 km square centred on the site marker (local working copy, first read from the local copy in data/raw, warped from its own projection onto the app's grid), coloured along a ramp from value 40 to 200, and cut into tiles for zoom 9 to 12. The map stretches them at closer zooms.",
       "tiles": {
         "path": "tiles/thermal-themis/{z}/{x}/{y}.webp",
         "minZoom": 9,
@@ -133,6 +133,93 @@
           "warmer at night"
         ],
         "note": "Relative brightness of the night infrared mosaic, not a temperature. Warmer at night often means rock or firm ground; cooler means fine, loose material."
+      }
+    },
+    {
+      "mission": "Mars Reconnaissance Orbiter (mapped on CTX and HiRISE images)",
+      "instrument": "Geologic mapping by Sun and Stack (USGS SIM 3464)",
+      "agency": "USGS, for NASA",
+      "productId": "SIM 3464, Geologic map of Jezero crater and the Nili Planum region, Mars",
+      "sourceUrl": "https://doi.org/10.3133/sim3464",
+      "doi": "10.3133/sim3464",
+      "acquiredFrom": "Mapped on images taken from 2006",
+      "acquiredTo": "2020, when the map was published",
+      "published": "2020",
+      "gridSpacing": "Map scale 1:75,000",
+      "realDetail": "Units a few hundred metres across and larger",
+      "positionAccuracy": "100 to 200 m off the corrected base map (docs/DATA_CATALOG.md)",
+      "heightAccuracy": "not applicable",
+      "grade": "C",
+      "caveats": [
+        "Lines can be 100 to 200 m off where they really are: about a tenth of the site box.",
+        "Mapped at 1:75,000, so small outcrops a walker would see are not separate units.",
+        "An interpretation by geologists, not a measurement."
+      ],
+      "credit": "Sun and Stack 2020, USGS Scientific Investigations Map 3464",
+      "id": "geology-sim3464",
+      "title": "Geology",
+      "dataType": "geologic",
+      "processing": "Map units from the USGS geologic map of Jezero crater and Nili Planum, read from its geodatabase, moved from its Mars Transverse Mercator projection to degrees on the Mars sphere, cut to a 12 km square round the site, with positions kept to about 0.6 m. Each unit is labelled with the symbol printed on the map. Colours are ours, colour-blind safe and never red; they are not the map's own colours.",
+      "vector": {
+        "path": "vectors/geology.geojson",
+        "geometry": "polygon",
+        "count": 75,
+        "bytes": 1173459
+      },
+      "legend": {
+        "kind": "swatches",
+        "items": [
+          {
+            "colour": "#f0e442",
+            "label": "Aeb: Eolian bedform unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#cc79a7",
+            "label": "NHjf2: Jezero fan 2 unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#332288",
+            "label": "Njf: Jezero floor unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#d0d0d0",
+            "label": "Nle: Lower etched unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#009e73",
+            "label": "Nnp1: Nili Planum 1 unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#0072b2",
+            "label": "Nnp2: Nili Planum 2 unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#e69f00",
+            "label": "Nrb: Rugged bright unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#56b4e9",
+            "label": "Nue: Upper etched unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#000000",
+            "label": "cr: Crater rim unit",
+            "shape": "area"
+          },
+          {
+            "colour": "#999999",
+            "label": "su: Smooth unit, undivided",
+            "shape": "area"
+          }
+        ]
       }
     },
     {
