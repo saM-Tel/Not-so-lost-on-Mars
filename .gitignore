@@ -1,0 +1,36 @@
+# Local data: never committed. See data/AGENTS.md
+data/raw/
+data/work/
+*.tif
+*.tiff
+*.img
+*.jp2
+*.zip
+
+# App
+node_modules/
+dist/
+.vite/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Secrets and personal settings
+.env
+.env.*
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Video working files
+*.mp4
+*.mov
+*.mkv
