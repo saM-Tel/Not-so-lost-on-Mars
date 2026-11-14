@@ -71,7 +71,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `test_mars.py` | Tests for `mars.py`, with expected values worked by hand | |
 | `config.py` | Reads and checks a site config: identity, position, what data exists, and for a site that can be built its box and sources with their dates and accuracy. To add: home and targets | all |
 | `test_config.py` | Tests for `config.py`; also loads every real config in `../sites/` | |
-| `sources.py` | Finds each source file (team data server, then local copy, then original address) and reads only the site's box from it. Refuses a file on a projection it does not understand | F1 |
+| `sources.py` | Finds each source file (team data server, then local copy, then original address) and reads only the site's box from it, warping any other projection onto the app's grid | F1, F15 |
 | `test_sources.py` | Tests for `sources.py` and for the site tile cutting in `tiles.py`, on made-up fixtures | |
 | `mask.py` | Stage 2: finds missing data and seams between source terrain models | F1, F3 |
 | `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads: whole-planet image pyramids, and a site's image (WebP) and terrain (PNG) tiles | F1, F14 |
@@ -88,7 +88,7 @@ Add a row when you add a file. Remove it when you delete one.
 
 ## Known issues
 
-- Only files on the Jezero grid can be read: equirectangular, true to scale at the equator, radius 3,396,190 m. The landing-site terrain models use other projections and are refused with a clear message.
+- Since 14 Nov, files on other projections (the landing-site terrain models, Phoenix's polar one included) are warped onto the app's grid by GDAL as they are read, and the build output says so. A HiRISE 1 m ortho image borrows its terrain model's georeferencing (`georeferenceFrom: terrain` in the config). Zooms follow each source's detail (`zooms_for` in `build_site.py`).
 - A site build used to fail at its last step with "Access is denied" while the app's dev server was running. Since 14 Nov it builds in `../data/work/<site id>/build.tmp` and moves the folder in at the end; if it still fails, stop `npm run dev` and build again.
 - The first build of a site with a rover reads about 100 pages of NASA's image feed, two minutes for Bright Angel. The answer is kept in `../data/work/<site id>/photo_feed.json`.
 - Missing terrain cells stop a build, because the mask stage is not built. Bright Angel has none.

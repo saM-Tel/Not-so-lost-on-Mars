@@ -3,7 +3,8 @@
 # OUT:     Arrays for the box with their grid definition, and which source was used.
 # USED BY: build_site.py and the stage files.
 # RULES:   Tries the team data server, then ../data/raw/, then the original address. Works with no server set. Never writes to the server.
-#          Refuses a file whose projection it does not understand, so a wrong grid is never assumed.
+#          A file on the app's grid is read cell for cell; any other projection GDAL understands is warped onto that grid
+#          as it is read, and the origin says so. A file with no projection at all is refused.
 # TRAPS:   PITFALLS 4, 10.
 # OWNER:   Role A.
 
@@ -15,6 +16,8 @@ import pathlib
 
 import numpy as np
 import rasterio
+from rasterio.enums import Resampling
+from rasterio.vrt import WarpedVRT
 from rasterio.windows import Window
 
 import mars
@@ -29,6 +32,10 @@ GDAL_OPTIONS = {
     "GDAL_HTTP_MAX_RETRY": "3",
     "GTIFF_DIRECT_IO": "YES",
 }
+
+# The app's grid: equirectangular, true to scale at the equator, on the Mars sphere. A file on any other projection
+# is warped onto it by GDAL as it is read (added 14 Nov for the landing-site terrain models, PITFALLS 4).
+TARGET_CRS = f"+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R={mars.MARS_RADIUS_M} +units=m +no_defs"
 
 # How many rows of a window are fetched in one request. 500 rows of the 25 cm image is about 6 MB.
 ROWS_PER_READ = 500
@@ -175,9 +182,25 @@ def _degrees_per_metre(dataset) -> float:
     return 1.0 / mars.METRES_PER_DEGREE
 
 
-def read_box(file_name: str, server_path: str, original_url: str, box: Box, cache_folder: pathlib.Path) -> Grid:
+def read_georeference(file_name: str, server_path: str, original_url: str):
+    """The projection and transform of a source file, from the first source that answers. Reads the header only."""
+    errors = []
+    for address, origin in candidate_addresses(file_name, server_path, original_url):
+        try:
+            with rasterio.Env(**GDAL_OPTIONS), rasterio.open(address) as dataset:
+                return dataset.crs, dataset.transform
+        except (rasterio.errors.RasterioIOError, OSError) as error:
+            errors.append(f"{origin}: {error}")
+    raise RuntimeError(f"could not read the header of {file_name}: " + " | ".join(errors))
+
+
+def read_box(file_name: str, server_path: str, original_url: str, box: Box, cache_folder: pathlib.Path,
+             georeference=None, nodata: float | None = None) -> Grid:
     """Read the part of a source file that covers the box, from the first source that answers.
 
+    A file on the app's own grid is read cell for cell. Any other file is warped onto that grid as it is read
+    (bilinear), and the origin says so. `georeference` (a projection and transform) replaces the file's own, for
+    an image that is pixel for pixel on the grid of its terrain model. `nodata` is used when the file states none.
     The cells read are kept in `cache_folder` so that a rebuild does not fetch them again.
     """
     cache_folder.mkdir(parents=True, exist_ok=True)
@@ -185,6 +208,8 @@ def read_box(file_name: str, server_path: str, original_url: str, box: Box, cach
     cache_values = cache_folder / f"{stem}.npy"
     cache_meta = cache_folder / f"{stem}.json"
     wanted = {"file": file_name, "box": box.as_dict()}
+    if georeference is not None:
+        wanted["georeferenced"] = True
     if cache_values.exists() and cache_meta.exists():
         meta = json.loads(cache_meta.read_text(encoding="utf-8"))
         if meta.get("wanted") == wanted:
@@ -194,8 +219,20 @@ def read_box(file_name: str, server_path: str, original_url: str, box: Box, cach
     errors = []
     for address, origin in candidate_addresses(file_name, server_path, original_url):
         try:
-            with rasterio.Env(**GDAL_OPTIONS), rasterio.open(address) as dataset:
-                per_metre = _degrees_per_metre(dataset)
+            with rasterio.Env(**GDAL_OPTIONS), rasterio.open(address) as opened:
+                dataset, warped = opened, None
+                try:
+                    if georeference is not None:
+                        raise ValueError("georeference given")
+                    per_metre = _degrees_per_metre(opened)
+                except ValueError:
+                    src_crs, src_transform = georeference if georeference is not None else (opened.crs, opened.transform)
+                    src_nodata = opened.nodata if opened.nodata is not None else nodata
+                    warped = WarpedVRT(opened, src_crs=src_crs, src_transform=src_transform, crs=TARGET_CRS,
+                                       resampling=Resampling.bilinear, src_nodata=src_nodata, nodata=src_nodata)
+                    dataset = warped
+                    per_metre = _degrees_per_metre(warped)
+                    origin = f"{origin}, warped from its own projection onto the app's grid"
                 t = dataset.transform
                 # Columns and rows whose cells touch the box, widened to whole cells and kept inside the file.
                 col0 = max(0, math.floor((box.west_lon_deg / per_metre - t.c) / t.a))
@@ -211,6 +248,8 @@ def read_box(file_name: str, server_path: str, original_url: str, box: Box, cach
                     values[start - row0: start - row0 + count] = dataset.read(1, window=Window(col0, start, col1 - col0, count))
                 grid = Grid(values, (t.c + col0 * t.a) * per_metre, (t.f + row0 * t.e) * per_metre,
                             t.a * per_metre, -t.e * per_metre, dataset.nodata, origin)
+                if warped is not None:
+                    warped.close()
         except (rasterio.errors.RasterioIOError, OSError) as error:
             errors.append(f"{origin}: {error}")
             continue

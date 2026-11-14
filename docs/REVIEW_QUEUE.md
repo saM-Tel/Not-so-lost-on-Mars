@@ -8,6 +8,15 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 
 ## Open
 
+### 8. Gale crater not built: image dates of the Gale mosaics not found (medium, F15)
+- **Where:** `sites/gale-crater.yaml` has no `box` or `sources` yet. The mosaics (`MSL_Gale_DEM_Mosaic_1m_v3.tif`, `MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif`, Calef and Parker 2016) are on the server and on the app's grid, so the pipeline can read them as they are.
+- **What:** no file we could read gives the dates of the HiRISE images in the mosaics; the USGS page (https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm) refuses automated reading. Without dates the app hides the layers.
+- **Fix:** a person reads the dates on that page (or its PDS label), then copy `bright-angel.yaml`'s build section with the Curiosity waypoints (`msl_curiosity_waypoints.json`) as the rover.
+
+### 9. Level 2 sites: image borrowed georeferencing (medium, check by eye)
+- **Where:** the seven level 2 configs, `georeferenceFrom: terrain`.
+- **What:** GDAL reads the 1 m ortho JP2's georeferencing differently from its terrain model's label (for Spirit it reports latitude of origin -10 where the terrain says true scale at -10). The two files have the same size and scale, so the image uses the terrain file's. Check in the app that ridges in the image line up with the 3D terrain at each site.
+
 ### 7. Geology layer blocked: no vector reader (high, F2 must-have)
 - **Where:** the Jezero geologic map (USGS SIM 3464) is an ArcGIS file geodatabase only, no shapefiles (`data/raw/geology/sim3464_database.zip`).
 - **What:** the pipeline has no package that reads vector data. Installing `fiona==1.10.1` into `pipeline/.venv` was refused by the AI tool's permission check on 14 Nov, so a person must approve or run it.

@@ -18,7 +18,7 @@ import { addRouteLayer, BACK_COLOUR, OUT_COLOUR } from '../map/routeLayer';
 import { startRouteWorker } from '../route/client';
 import { WALK_CASES } from '../route/cost';
 import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
-import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS } from '../safety/budget';
+import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS, WALK_DURATION_S } from '../safety/budget';
 import { walkDose } from '../safety/dose';
 import { OXYGEN_BASIS, oxygenForEnergy } from '../safety/oxygen';
 import { stormAdvice } from '../safety/storm';
@@ -27,6 +27,9 @@ import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight,
 import { createPhotoStrip } from './photoStrip';
 import { profileChart } from './profileChart';
 import { createTimePanel } from './timeSlider';
+import { createModeSwitch, type FieldState } from './modes';
+import { loadPhotoIndex, photosNearRoute } from '../data/photos';
+import { bearingDeg } from '../mars/geometry';
 import { createStormDrill, createSuitSettings as suitSettings, createTetherControls } from './safetyPanel';
 import { updateUrlState, type UrlState } from './urlState';
 
@@ -145,7 +148,7 @@ export function startRoutePlanner(
   /** Say whether the walk on screen stays inside the tether, judged at its far end in the cautious case. */
   const showVerdict = (): void => {
     const definition = loaded.site.grid;
-    if (!tetherFields || !definition || !lastAnswer?.ok) { tether.showVerdict(null); return; }
+    if (!tetherFields || !definition || !lastAnswer?.ok) { tether.showVerdict(null); modes.setState(null); return; }
     const settings = tether.settings();
     const outS = caseValue(lastAnswer.out, 'cautious', 'timeS');
     const backS = caseValue(lastAnswer.back, 'cautious', 'timeS');
@@ -159,7 +162,64 @@ export function startRoutePlanner(
     } else {
       tether.showVerdict({ inside: true, text: `This walk stays inside the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case; ${formatDuration(allowedThereS)} is allowed.` });
     }
+    updateField(lastAnswer, settings.elapsedS, outS, backS, allowedThereS, farthestS);
   };
+
+  /** The field tablet and helmet views (F13): cautious values for the planned walk. */
+  let stormAlert: string | null = null;
+  const photoIndex = loadPhotoIndex(loaded.folderUrl);
+  let fieldRequest = 0;
+  const updateField = (
+    answer: Extract<RouteAnswer, { ok: true }>, elapsedS: number, outS: number, backS: number, allowedThereS: number, farthestS: number,
+  ): void => {
+    const homeAt: [number, number] = loaded.site.home ? [loaded.site.home.lonEastDeg, loaded.site.home.latDeg] : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg];
+    const named = (loaded.site.targets ?? []).find((t) => Math.abs(t.lonEastDeg - answer.target[0]) < 1e-4 && Math.abs(t.latDeg - answer.target[1]) < 1e-4);
+    const state: FieldState = {
+      targetName: named?.name ?? 'Chosen point',
+      distanceM: answer.out.stats.distanceM,
+      bearingDeg: bearingDeg(homeAt, answer.target),
+      homeFromTargetS: backS,
+      tetherMarginS: allowedThereS - farthestS,
+      tetherAllowedS: allowedThereS,
+      stayAtTargetS: farthestS <= allowedThereS ? WALK_DURATION_S - elapsedS - outS - backS : 0,
+      alert: stormAlert ?? (farthestS > allowedThereS ? 'This walk leaves the tether. Choose a nearer target.' : null),
+      photo: null,
+    };
+    modes.setState(state);
+    const mine = ++fieldRequest;
+    void photoIndex.then((index) => {
+      if (!index || mine !== fieldRequest) return;
+      const near = photosNearRoute(index.photos, [answer.target], 60, 1, 1)[0];
+      if (!near) return;
+      const p = near.photo;
+      modes.setState({ ...state, photo: { url: p.mediumUrl, caption: `${p.camera}, sol ${p.sol}, ${Math.round(near.distanceM)} m from the target. ${p.credit}` } });
+    });
+  };
+  const modes = createModeSwitch({
+    onNextTarget: () => {
+      const targets = loaded.site.targets ?? [];
+      if (targets.length === 0) return;
+      const current = lastAnswer?.ok ? lastAnswer.target : null;
+      const at = current ? targets.findIndex((t) => Math.abs(t.lonEastDeg - current[0]) < 1e-4 && Math.abs(t.latDeg - current[1]) < 1e-4) : -1;
+      const next = targets[(at + 1) % targets.length]!;
+      stormAlert = null;
+      planTo([next.lonEastDeg, next.latDeg]);
+    },
+    onGoHome: () => {
+      if (!lastAnswer?.ok) return;
+      const line = lastAnswer.back.line;
+      const lons = line.map((p) => p[0]);
+      const lats = line.map((p) => p[1]);
+      map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 80, duration: 800 });
+      stormAlert = null;
+      showVerdict();
+    },
+    onStorm: () => {
+      if (!lastAnswer?.ok) return;
+      stormAlert = stormAdvice(caseValue(lastAnswer.back, 'cautious', 'timeS'), storm.warningS(), formatDuration).headline;
+      showVerdict();
+    },
+  });
 
   /** Draw the tether for the settings now chosen. Several changes in one frame are drawn once. */
   const drawTether = (): void => {
@@ -409,5 +469,6 @@ export function startRoutePlanner(
     map.getCanvas().style.cursor = '';
     layer.remove();
     card.remove();
+    modes.remove();
   };
 }

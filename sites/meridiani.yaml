@@ -41,5 +41,65 @@ data:
   - "HiRISE images matched to that terrain model"
 
 problems:
-  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "Built automatically from one terrain strip and not reviewed by a person."
   - "Three more terrain models are on the team data server for this site: DTEEC_001414_1780_001612_1780_U01 (its label says 'Possibily Opportunity Rover landing site', but its footprint does not contain the published landing position), DTEEC_018701_1775_018846_1775_U01 (Endeavour crater western rim) and DTEEC_028815_1780_028670_1780_A01 (north-central Endeavour crater)."
+
+# ---- What the pipeline builds (added 14 Nov 2026) ------------------------------------------
+# A level 2 build: a 2 km box at the centre of the terrain model's footprint. Scale is from the terrain model's label;
+# dates are the START_TIME of its two source images in the HiRISE archive (ESP_021747_1780 on 2011-03-18, ESP_022380_1780 on 2011-05-06), read 14 Nov 2026.
+
+box:
+  widthKm: 2
+  heightKm: 2
+
+sources:
+  terrain:
+    file: DTEEC_021747_1780_022380_1780_U01.IMG
+    serverPath: raw/opportunity
+    originalUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780"
+    record:
+      mission: Mars Reconnaissance Orbiter
+      instrument: HiRISE
+      agency: NASA
+      productId: DTEEC_021747_1780_022380_1780_U01
+      sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780/"
+      doi: not found
+      acquiredFrom: "2011-03-18"
+      acquiredTo: "2011-05-06"
+      published: not found
+      gridSpacing: "1.01 m"
+      realDetail: "About 3 to 5 m"   # docs/CONFIDENCE.md section 6, as for the Jezero HiRISE terrain
+      positionAccuracy: not found
+      heightAccuracy: not found
+      grade: C
+      caveats:
+        - "One terrain model from one pair of images, not checked against anything measured on the ground here."
+        - "Made on its own map projection and warped onto the app's grid by our pipeline."
+        - "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model."
+      credit: "NASA/JPL-Caltech/University of Arizona"
+  image:
+    file: ESP_021747_1780_RED_C_01_ORTHO.JP2
+    serverPath: raw/opportunity
+    originalUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780"
+    georeferenceFrom: terrain   # the 1 m ortho image is pixel for pixel on the terrain model's grid
+    nodata: 0
+    record:
+      mission: Mars Reconnaissance Orbiter
+      instrument: HiRISE
+      agency: NASA
+      productId: ESP_021747_1780_RED_C_01_ORTHO
+      sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780/"
+      doi: not found
+      acquiredFrom: "2011-03-18"
+      acquiredTo: "2011-03-18"
+      published: not found
+      gridSpacing: "1.01 m"
+      realDetail: "About 1 m: the 1 m copy of the image, made to match the terrain model"
+      positionAccuracy: not found
+      heightAccuracy: not applicable
+      grade: C
+      caveats:
+        - "One black-and-white band. It shows brightness, not colour."
+        - "Dark patches can be shadows, not dark ground."
+        - "Made on its own map projection and warped onto the app's grid by our pipeline."
+      credit: "NASA/JPL-Caltech/University of Arizona"

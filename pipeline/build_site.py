@@ -44,6 +44,18 @@ SURROUND_FEATHER_M = 1500.0
 BUDGET_MB = {1: 120, 2: 50}
 
 
+# Terrain tiles finer than this add nothing: HiRISE terrain has a real detail of about 3 to 5 m.
+TERRAIN_FINEST_PIXEL_M = 2.0
+
+
+def zooms_for(cell_m: float, lat_deg: float, limits: tuple[int, int], levels: int) -> tuple[int, int]:
+    """The zoom range for a source: up to the finest zoom whose pixels are at least 0.8 of a cell, capped by `limits`."""
+    finest = limits[0]
+    while finest < limits[1] and mars.tile_pixel_size_m(finest + 1, lat_deg) >= cell_m * 0.8:
+        finest += 1
+    return (max(0, finest - levels), finest)
+
+
 def folder_summary(root: pathlib.Path, relative: str) -> dict:
     files = [p for p in (root / relative).rglob("*") if p.is_file()]
     return {"path": relative, "files": len(files), "bytes": sum(p.stat().st_size for p in files)}
@@ -74,7 +86,14 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
     grids = {}
     for name in ("terrain", "image"):
         source = site["sources"][name]
-        grids[name] = sources.read_box(source["file"], source["serverPath"], source["originalUrl"], box, work)
+        # A HiRISE ortho image is pixel for pixel on its terrain model's grid, and its own georeferencing is not
+        # always read right by GDAL, so it can borrow the terrain file's (config: georeferenceFrom: terrain).
+        georeference = None
+        if source.get("georeferenceFrom") == "terrain":
+            t = site["sources"]["terrain"]
+            georeference = sources.read_georeference(t["file"], t["serverPath"], t["originalUrl"])
+        grids[name] = sources.read_box(source["file"], source["serverPath"], source["originalUrl"], box, work,
+                                       georeference=georeference, nodata=source.get("nodata"))
         grid = grids[name]
         missing = 0 if grid.nodata is None else int((grid.values == grid.nodata).sum())
         print(f"Read {name}: {grid.cols} x {grid.rows} cells from the {grid.origin}; "
@@ -111,9 +130,12 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
 
     layers = []
     surround = (site.get("approach") or {}).get("terrain")
+    # Zooms follow the detail of each source: the finest zoom whose tile pixels are not much smaller than its cells.
+    image_zooms = zooms_for(grids["image"].cell_north_south_m, centre_lat, IMAGE_ZOOMS, 6)
+    terrain_zooms = zooms_for(max(grids["terrain"].cell_north_south_m, TERRAIN_FINEST_PIXEL_M), centre_lat, TERRAIN_ZOOMS, 4)
     for name, layer_id, title, data_type, zooms in (
-        ("image", "image-hirise", "Ground from orbit", "optical", IMAGE_ZOOMS),
-        ("terrain", "terrain-hirise", "Terrain height", "topographic", TERRAIN_ZOOMS),
+        ("image", "image-hirise", "Ground from orbit", "optical", image_zooms),
+        ("terrain", "terrain-hirise", "Terrain height", "topographic", terrain_zooms),
     ):
         folder = temporary / "tiles" / layer_id
         pixel_m = mars.tile_pixel_size_m(zooms[1], centre_lat)

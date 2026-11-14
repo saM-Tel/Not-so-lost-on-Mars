@@ -35,5 +35,65 @@ data:
   - "HiRISE images matched to that terrain model"
 
 problems:
-  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "Built automatically from one terrain strip and not reviewed by a person."
   - "The landing position was not found in the NASA catalogue page we read, so whether this model contains the lander is not checked."
+
+# ---- What the pipeline builds (added 14 Nov 2026) ------------------------------------------
+# A level 2 build: a 2 km box at the centre of the terrain model's footprint. Scale is from the terrain model's label;
+# dates are the START_TIME of its two source images in the HiRISE archive (ESP_036761_1845 on 2014-05-30, ESP_037262_1845 on 2014-07-09), read 14 Nov 2026.
+
+box:
+  widthKm: 2
+  heightKm: 2
+
+sources:
+  terrain:
+    file: DTEEC_037262_1845_036761_1845_U01.IMG
+    serverPath: raw/insight
+    originalUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845"
+    record:
+      mission: Mars Reconnaissance Orbiter
+      instrument: HiRISE
+      agency: NASA
+      productId: DTEEC_037262_1845_036761_1845_U01
+      sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845/"
+      doi: not found
+      acquiredFrom: "2014-05-30"
+      acquiredTo: "2014-07-09"
+      published: not found
+      gridSpacing: "1.01 m"
+      realDetail: "About 3 to 5 m"   # docs/CONFIDENCE.md section 6, as for the Jezero HiRISE terrain
+      positionAccuracy: not found
+      heightAccuracy: not found
+      grade: C
+      caveats:
+        - "One terrain model from one pair of images, not checked against anything measured on the ground here."
+        - "Made on its own map projection and warped onto the app's grid by our pipeline."
+        - "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model."
+      credit: "NASA/JPL-Caltech/University of Arizona"
+  image:
+    file: ESP_037262_1845_RED_C_01_ORTHO.JP2
+    serverPath: raw/insight
+    originalUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845"
+    georeferenceFrom: terrain   # the 1 m ortho image is pixel for pixel on the terrain model's grid
+    nodata: 0
+    record:
+      mission: Mars Reconnaissance Orbiter
+      instrument: HiRISE
+      agency: NASA
+      productId: ESP_037262_1845_RED_C_01_ORTHO
+      sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845/"
+      doi: not found
+      acquiredFrom: "2014-07-09"
+      acquiredTo: "2014-07-09"
+      published: not found
+      gridSpacing: "1.01 m"
+      realDetail: "About 1 m: the 1 m copy of the image, made to match the terrain model"
+      positionAccuracy: not found
+      heightAccuracy: not applicable
+      grade: C
+      caveats:
+        - "One black-and-white band. It shows brightness, not colour."
+        - "Dark patches can be shadows, not dark ground."
+        - "Made on its own map projection and warped onto the app's grid by our pipeline."
+      credit: "NASA/JPL-Caltech/University of Arizona"
