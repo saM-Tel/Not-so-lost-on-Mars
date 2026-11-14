@@ -51,26 +51,41 @@ app/public/data/
 **A built site's folder**, `<site id>/`, so far holds:
 
 ```
-site.json          identity, box, centre, terrain height range, which source each input was read from, file sizes
+site.json          identity, box, centre, terrain height range, grid definition, which source each input was read from, file sizes
 layers.json        one record per layer, as above
 validation.json    terrain checked against the rover: sample size and typical difference
 tiles/image-hirise/{z}/{x}/{y}.webp     zoom 12 to 18; transparent where there is no data
 tiles/terrain-hirise/{z}/{x}/{y}.png    zoom 11 to 15
+grid/heightM.f32, grid/slopeMaxDeg.f32  routing grids; see "Grid definition"
 ```
 
-**`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `readFrom`, `files` and `totalBytes`.
+**`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `grid`, `readFrom`, `files` and `totalBytes`.
 
 **Terrain tiles** are 256-pixel PNG files. A height in metres relative to the areoid is `-10000 + (red * 65536 + green * 256 + blue) * 0.1`, which MapLibre calls the "mapbox" encoding; the record says `"encoding": "mapbox"`. Heights are true Mars metres. The app scales them by the Earth to Mars radius ratio when drawing, and subtracts `terrainHeightM.lowest` at draw time only. Past the edge of the box a tile repeats the edge height; that is not data.
 
 ## Grid definition
 
-To settle on Saturday. The app needs all of these from `site.json` to read a grid correctly:
+Built on 14 November as a proposal by one person covering roles A and B. The team has not confirmed it. Changing it means changing `pipeline/grids.py` and the app's reader together.
 
-- Rows and columns
-- Longitude and latitude of the north-west corner
-- Cell size in metres, north to south and east to west separately
-- Row order (north first) and byte order
-- For each grid file: name, number type, unit, and the value that means "no data"
+`site.json` holds `grid`, with everything the app needs to read a grid file:
+
+- `rows`, `cols`
+- `northWestCorner`: `lonEastDeg`, `latDeg` of the outer corner of the first cell
+- `cellLonDeg`, `cellLatDeg`: a cell's size in degrees. Cell `(row, col)` has its centre at longitude `northWestCorner.lonEastDeg + (col + 0.5) * cellLonDeg` and latitude `northWestCorner.latDeg - (row + 0.5) * cellLatDeg`
+- `cellNorthSouthM`, `cellEastWestM`: a cell's size on the ground, separately, with `cellEastWestMeasuredAtLatDeg`. At Bright Angel a cell is 4.0 m by 3.79 m
+- `rowOrder` (north row first; within a row, west cell first) and `byteOrder` (little-endian)
+- `sourceCellsPerCell`: 4, so a routing cell joins 4 x 4 cells of the 1 m terrain. Chosen to match the terrain's real detail of 3 to 5 m and to keep each file near 2.4 MB
+- `slopeBaselineM`: the span each slope was measured over, `northSouthM` and `eastWestM`
+- `files`: for each grid file `name`, `path`, `numberType`, `unit`, `noData`, `cellsWithNoData`, `bytes`, `fromLayer` (the layer record that gives its source, dates and accuracy) and `meaning`
+
+Grid files so far, each `rows * cols` 32-bit floats with NaN for no data:
+
+| File | Unit | What it holds |
+|---|---|---|
+| `grid/heightM.f32` | m | Mean terrain height of the cell, relative to the areoid |
+| `grid/slopeMaxDeg.f32` | degrees | The steepest slope among the cell's source cells. For keep-out. For effort, take the slope along the direction of travel from `heightM` |
+
+The pipeline writes measured values only. It does not mark cells as keep-out: the slope limit is a suit setting in the app. Still to add: the missing-data and seam mask, footing and sky exposure.
 
 ## Tiles
 

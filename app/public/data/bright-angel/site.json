@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T11:25:50Z",
+  "builtUtc": "2026-11-14T11:47:49Z",
   "id": "bright-angel",
   "name": "Bright Angel",
   "place": "Neretva Vallis, Jezero crater",
@@ -27,9 +27,53 @@
     "highest": -1869.78,
     "atCentre": -2354.0
   },
+  "grid": {
+    "rows": 750,
+    "cols": 791,
+    "northWestCorner": {
+      "lonEastDeg": 77.278504849,
+      "latDeg": 18.522793804
+    },
+    "cellLonDeg": 6.748241943246088e-05,
+    "cellLatDeg": 6.748241943246088e-05,
+    "cellNorthSouthM": 4.0,
+    "cellEastWestM": 3.7934,
+    "cellEastWestMeasuredAtLatDeg": 18.497484,
+    "rowOrder": "north row first; within a row, west cell first",
+    "byteOrder": "little-endian",
+    "sourceCellsPerCell": 4,
+    "slopeBaselineM": {
+      "northSouthM": 6.0,
+      "eastWestM": 5.69
+    },
+    "files": [
+      {
+        "name": "heightM",
+        "path": "grid/heightM.f32",
+        "numberType": "float32",
+        "unit": "m",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 2373000,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Mean terrain height of the 4 x 4 source cells in the routing cell, relative to the areoid."
+      },
+      {
+        "name": "slopeMaxDeg",
+        "path": "grid/slopeMaxDeg.f32",
+        "numberType": "float32",
+        "unit": "deg",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 2373000,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Steepest slope found among the 4 x 4 source cells in the routing cell. Each source cell's slope is measured over 6.0 m north to south and 5.69 m east to west. Use it for keep-out; for effort use the slope along the direction of travel, taken from heightM."
+      }
+    ]
+  },
   "readFrom": {
     "terrain": "local working copy, first read from the team data server",
-    "image": "team data server"
+    "image": "local working copy, first read from the team data server"
   },
   "files": [
     {
@@ -40,7 +84,7 @@
     {
       "path": "validation.json",
       "files": 1,
-      "bytes": 921
+      "bytes": 927
     },
     {
       "path": "tiles/image-hirise",
@@ -51,7 +95,12 @@
       "path": "tiles/terrain-hirise",
       "files": 52,
       "bytes": 1122077
+    },
+    {
+      "path": "grid",
+      "files": 2,
+      "bytes": 4746000
     }
   ],
-  "totalBytes": 10828640
+  "totalBytes": 15574646
 }

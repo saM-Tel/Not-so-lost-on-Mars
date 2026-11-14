@@ -1,5 +1,6 @@
 # WHAT:    One command that builds one site from its config. So far: reads the box, checks terrain against the rover, cuts image and
-#          terrain tiles, and writes layers.json, validation.json and site.json (F1). Still to add: stages 2 and 4 to 7.
+#          terrain tiles, measures slope, writes the routing grids, and writes layers.json, validation.json and site.json (F1, F3).
+#          Still to add: stage 2, the rest of stages 4 and 5, and stages 6 and 7.
 # IN:      Path to a site config in ../sites/.
 # OUT:     ../app/public/data/<site id>/, written to a temporary folder and renamed when complete; sites.json is then rewritten.
 # USED BY: People and AI sessions from the command line: python build_site.py ../sites/<site id>.yaml [--dry-run]
@@ -12,11 +13,15 @@ import pathlib
 import shutil
 import sys
 
+import numpy as np
+
 import build_globe
 import config
+import grids as routing_grids
 import mars
 import records
 import sources
+import terrain
 import tiles
 import validate
 
@@ -123,6 +128,17 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
         layers.append(record)
         print(f"Wrote {count} {name} tiles, {size / 1e6:.1f} MB")
 
+    terrain_grid = grids["terrain"]
+    slope, slope_baseline = terrain.slope_deg(terrain_grid.values, terrain_grid.cell_north_south_m,
+                                              terrain_grid.cell_east_west_m(centre_lat), terrain_grid.nodata)
+    grid_definition = routing_grids.write_routing_grids(terrain_grid, slope, slope_baseline, centre_lat, temporary / "grid")
+    known = slope[~np.isnan(slope)]
+    print(f"Slope over {slope_baseline['northSouthM']} m north to south and {slope_baseline['eastWestM']} m east to west: "
+          f"median {np.median(known):.1f} deg, 95% of cells under {np.percentile(known, 95):.1f} deg, steepest {known.max():.1f} deg")
+    print(f"Wrote routing grids: {grid_definition['cols']} x {grid_definition['rows']} cells of "
+          f"{grid_definition['cellNorthSouthM']} m north to south by {grid_definition['cellEastWestM']} m east to west, "
+          f"{sum(entry['bytes'] for entry in grid_definition['files']) / 1e6:.1f} MB")
+
     records.write_layers(temporary, layers)
     records.write_json(temporary / "validation.json", {
         "contractVersion": records.CONTRACT_VERSION, "builtUtc": records.utc_now_iso(), **checks,
@@ -131,6 +147,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
         {"path": "layers.json", "files": 1, "bytes": (temporary / "layers.json").stat().st_size},
         {"path": "validation.json", "files": 1, "bytes": (temporary / "validation.json").stat().st_size},
         *[folder_summary(temporary, f"tiles/{layer['id']}") for layer in layers],
+        folder_summary(temporary, "grid"),
     ]
     total = sum(entry["bytes"] for entry in files)
     records.write_json(temporary / "site.json", {
@@ -151,6 +168,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
             "highest": round(float(grids["terrain"].values.max()), 2),
             "atCentre": round(float(grids["terrain"].sample(position["lonEastDeg"], position["latDeg"])), 2),
         },
+        "grid": grid_definition,
         "readFrom": {name: grids[name].origin for name in grids},
         "files": files,
         "totalBytes": total,

@@ -1,5 +1,15 @@
 # Role A handoff
 
+## Sat 14 Nov 12:30, role A work by Joseph, with Claude Code
+
+Done: `terrain.py` measures steepest slope over 6.0 m north to south and 5.69 m east to west (the smallest spans of at least 5 m). `grids.py` writes `grid/heightM.f32` and `grid/slopeMaxDeg.f32` on 4 m cells, 791 x 750, 2.4 MB each, and the grid definition in `site.json`. Bright Angel rebuilt: 15.6 MB.
+Not done: mask, roughness, sky exposure, vectors, weather, photos; slope as a map layer with its own record; home and targets in the site config.
+Broken or risky: the grid layout is a proposal (DATA_CONTRACT, DECISIONS). No slope limit is chosen and none may be invented: it needs a source. Slope has not been checked against rover tilt yet (F9), so nothing independent confirms it.
+Next: a slope map layer for F2 (tiles and a full record), then `vectors.py` for the rover path and stops. Find a published slope limit for suited walking.
+Files: pipeline/terrain.py, grids.py, test_terrain.py, build_site.py, pipeline/AGENTS.md, app/public/data/bright-angel/, docs/DATA_CONTRACT.md, docs/DECISIONS.md, docs/PITFALLS.md
+Other roles need to know: B, read grids exactly as DATA_CONTRACT "Grid definition" says; NaN is no data. Stop `npm run dev` before a site build on Windows or the build fails at its last step. Slope at Bright Angel: median 10.4 degrees, 95% of 1 m cells under 23.9, steepest 53.6.
+Checks: `pytest -q` passes, 37 tests; full build with real data, exit 0. Grid files read back and matched their definition (size, no missing cells, height range equal to the terrain's).
+
 ## Sat 14 Nov 11:35, role A work by Joseph, with Claude Code
 
 Done: Bright Angel is built with real data (F1, pipeline part): 2,160 image tiles (9.7 MB), 52 terrain tiles (1.1 MB), `layers.json`, `validation.json`, `site.json` with `terrainHeightM`; 10.8 MB of the 120 MB budget. `sites.json` now marks it built. `sources.py` reads a window 500 rows at a time.
