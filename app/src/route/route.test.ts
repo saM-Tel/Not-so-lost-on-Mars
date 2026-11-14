@@ -82,6 +82,18 @@ describe('the grid', () => {
 });
 
 describe('route search', () => {
+  it('stopped early at a stop, gives that stop the same cost and path as a full search (F3, several stops)', () => {
+    const grid = fixtureGrid(9, 9, 0.6);
+    for (const row of [0, 1, 2, 3, 4, 5, 6]) grid.slopeMaxDeg[row * 9 + 4] = 25; // a wall to go round
+    const blocked = keepOut(grid, 20);
+    const from = 1 * 9 + 1;
+    const to = 2 * 9 + 7;
+    const full = searchFromHome(grid, blocked, from, expected, 'fromHome');
+    const early = searchFromHome(grid, blocked, from, expected, 'fromHome', 'energyJ', to);
+    expect(early.cost[to]).toBeCloseTo(full.cost[to]!, 9);
+    expect(pathToHome(early, to)).toEqual(pathToHome(full, to));
+  });
+
   it('walks straight across flat ground', () => {
     const grid = fixtureGrid(5, 5);
     const home = 2 * 5 + 0;

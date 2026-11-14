@@ -79,6 +79,8 @@ class Heap {
 export function searchFromHome(
   grid: RoutingGrid, blocked: Uint8Array, home: number, walkCase: WalkCase, direction: 'fromHome' | 'toHome',
   minimise: 'energyJ' | 'timeS' = 'energyJ',
+  /** Stop as soon as this cell's cost is final: enough for one leg of a walk through several stops (F3). */
+  stopAt = -1,
 ): Field {
   const cells = grid.rows * grid.cols;
   const best = new Float64Array(cells).fill(Infinity);
@@ -94,6 +96,7 @@ export function searchFromHome(
     const { cell, cost } = heap.pop();
     if (done[cell]) continue;
     done[cell] = 1;
+    if (cell === stopAt) break;
     const row = Math.floor(cell / grid.cols);
     const col = cell - row * grid.cols;
     const height = grid.heightM[cell]!;

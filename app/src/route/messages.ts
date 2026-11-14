@@ -19,7 +19,8 @@ export type Request =
       home: LonLat;
       slopeLimitDeg: number;
     }
-  | { type: 'route'; id: number; target: LonLat };
+  /** A walk from home to the target and back; with `via`, through those stops in order before the target (F3). */
+  | { type: 'route'; id: number; target: LonLat; via?: LonLat[] };
 
 /** One direction of a walk: the line to draw, in walking order, and its numbers. */
 export interface RouteLeg {
@@ -43,9 +44,15 @@ export interface Ready {
   searchMs: number;
 }
 
+/** A stop of a walk through several stops: where it is, and its index in the way out's line. The target is the last. */
+export interface RouteStop {
+  position: LonLat;
+  lineIndex: number;
+}
+
 export type RouteAnswer =
-  | { type: 'route'; id: number; ok: true; target: LonLat; out: RouteLeg; back: RouteLeg }
-  | { type: 'route'; id: number; ok: false; reason: 'outside' | 'keep-out' | 'unreachable' };
+  | { type: 'route'; id: number; ok: true; target: LonLat; out: RouteLeg; back: RouteLeg; stops?: RouteStop[] }
+  | { type: 'route'; id: number; ok: false; reason: 'outside' | 'keep-out' | 'unreachable'; /** Which stop, counting from 0, when there are several. */ stop?: number };
 
 /** Time to walk home from every cell, seconds, north row first; Infinity where there is no way home. */
 export interface TetherFields {

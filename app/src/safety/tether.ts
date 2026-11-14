@@ -102,3 +102,22 @@ export function walkFarthestFromHomeS(
 ): number {
   return Math.max(farthestFromHomeS(timeHomeS, definition, outLine), farthestFromHomeS(timeHomeS, definition, backLine), plannedBackS);
 }
+
+/**
+ * The tether checked at every point of a walk against the moment the walker is there (F3, F4): at each point, the
+ * longest walk home allowed by then minus the cautious walk home from there. Infinity in the field (no way home) gives
+ * a margin of minus Infinity. Returns every margin and the index of the tightest point.
+ */
+export function marginsAlongWalk(
+  timeHomeS: Float32Array, definition: GridDefinition, points: readonly LonLat[], timesS: readonly number[],
+  allowedAt: (elapsedS: number) => number, startElapsedS: number,
+): { marginsS: number[]; tightestIndex: number } {
+  const marginsS = points.map((point, i) => {
+    const cell = cellOf(definition, point);
+    const home = cell < 0 ? Infinity : timeHomeS[cell]!;
+    return allowedAt(startElapsedS + timesS[i]!) - home;
+  });
+  let tightestIndex = 0;
+  marginsS.forEach((m, i) => { if (m < marginsS[tightestIndex]!) tightestIndex = i; });
+  return { marginsS, tightestIndex };
+}

@@ -16,7 +16,8 @@ export interface RouteClient {
   /** Resolves a little later, with the time to walk home from every cell. */
   tether: Promise<TetherFields>;
   /** Ask for the walk from home to a position and back. A later request does not cancel an earlier one. */
-  route(target: LonLat): Promise<RouteAnswer>;
+  /** Home to the target and back; with `via`, through those stops first (F3). */
+  route(target: LonLat, via?: LonLat[]): Promise<RouteAnswer>;
   stop(): void;
 }
 
@@ -53,9 +54,9 @@ export function startRouteWorker(options: {
   return {
     ready,
     tether,
-    route(target) {
+    route(target, via) {
       const id = nextId++;
-      const request: Request = { type: 'route', id, target };
+      const request: Request = { type: 'route', id, target, ...(via && via.length > 0 ? { via } : {}) };
       return new Promise((resolve) => {
         waiting.set(id, resolve);
         worker.postMessage(request);

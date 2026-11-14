@@ -120,3 +120,12 @@ export function alongTimeline(timeline: RouteTimeline, seconds: number): { posit
   const f = span > 0 ? (Math.max(0, seconds) - timesS[low]!) / span : 0;
   return { position: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], headingDeg: bearingDeg(a, b), done: false };
 }
+
+/**
+ * A timeline with time spent at stops (F3): each stop's time is added to every point from that stop on, so a stop
+ * counts at the moment of leaving it, the later and stricter moment for the tether.
+ */
+export function withStopTimes(timeline: RouteTimeline, stops: readonly { lineIndex: number; stayS: number }[]): RouteTimeline {
+  const timesS = timeline.timesS.map((t, i) => t + stops.reduce((sum, s) => sum + (i >= s.lineIndex ? s.stayS : 0), 0));
+  return { points: timeline.points, timesS };
+}

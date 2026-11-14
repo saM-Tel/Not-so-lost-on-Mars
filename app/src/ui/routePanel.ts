@@ -25,7 +25,8 @@ import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS, WALK_DURATION_S
 import { walkDose } from '../safety/dose';
 import { OXYGEN_BASIS, oxygenForEnergy } from '../safety/oxygen';
 import { stormAdvice } from '../safety/storm';
-import { tetherPicture, walkFarthestFromHomeS } from '../safety/tether';
+import { marginsAlongWalk, tetherPicture, walkFarthestFromHomeS } from '../safety/tether';
+import { routeTimeline, withStopTimes, type RouteTimeline, type WalkerGround } from '../safety/walker';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createOrbitPanel } from './orbitPanel';
 import { createWalkThrough } from './walkThrough';
@@ -146,7 +147,7 @@ export function startRoutePlanner(
     return box;
   };
   const parts = {
-    targets: part('Science targets', true),
+    targets: part('Targets and stops', true),
     tether: part('Tether: how far you can go', true),
     walk: part('This walk: distance, time, oxygen, radiation', true),
     orbit: part('Link and view from orbit', false),
@@ -180,12 +181,7 @@ export function startRoutePlanner(
   let homeAt: [number, number] | null = null;
   let heightView: Float32Array | null = null;
   const walk = createWalkThrough(map, {
-    ground: () => {
-      const definition = loaded.site.grid;
-      if (!definition || !gridFiles) return null;
-      heightView ??= new Float32Array(gridFiles.heightM);
-      return { definition, heightM: heightView, keepOut: keepOutCells };
-    },
+    ground: () => groundNow(),
     timeHomeS: () => tetherFields?.cautiousS ?? null,
     home: () => homeAt,
     route: () => (lastAnswer?.ok ? { out: lastAnswer.out.line, back: lastAnswer.back.line } : null),
@@ -195,6 +191,157 @@ export function startRoutePlanner(
     site: [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg],
   });
   fill(parts.walkthrough, walk.element);
+  /** The ground for the walk-through and the margin chart: heights and keep-out cells, once the grids are read. */
+  function groundNow(): WalkerGround | null {
+    const definition = loaded.site.grid;
+    if (!definition || !gridFiles) return null;
+    heightView ??= new Float32Array(gridFiles.heightM);
+    return { definition, heightM: heightView, keepOut: keepOutCells };
+  }
+
+  // The walk on screen as one timeline with cautious times and time at stops, and the tether margin along it (F3, F4).
+  let walkTimeline: RouteTimeline | null = null;
+  const marginBox = el('div', 'margin-chart');
+  /** Where on the walk a point of the timeline is, in words. */
+  function whereOnWalk(index: number): string {
+    if (!lastAnswer?.ok) return '';
+    const outCount = lastAnswer.out.line.length;
+    if (index >= outCount) return 'on the way home';
+    const passed = shownStops.filter((s) => s.lineIndex <= index);
+    const at = shownStops.find((s) => s.lineIndex === index);
+    if (at) return `at stop ${shownStops.indexOf(at) + 1}, ${at.name}, as you leave it`;
+    if (passed.length > 0) return `after stop ${passed.length}, ${passed[passed.length - 1]!.name}`;
+    return index === outCount - 1 ? 'at the far end' : 'on the way out';
+  }
+  /** The tightest point and a small chart of the margin by time along the walk. Redrawn when the settings move. */
+  function renderMargins(): void {
+    marginBox.replaceChildren();
+    const definition = loaded.site.grid;
+    if (!walkTimeline || !tetherFields || !definition || !lastAnswer?.ok) return;
+    const settings = tether.settings();
+    const { marginsS, tightestIndex } = marginsAlongWalk(tetherFields.cautiousS, definition, walkTimeline.points, walkTimeline.timesS,
+      (elapsedS) => allowedTimeHomeS({ ...settings, elapsedS }), settings.elapsedS);
+    const times = walkTimeline.timesS;
+    const total = times[times.length - 1] || 1;
+    const tight = marginsS[tightestIndex]!;
+    const when = `${formatDuration(times[tightestIndex]!)} into the walk, ${whereOnWalk(tightestIndex)}`;
+    const text = el('p', tight < 0 ? 'margin-chart__line margin-chart__line--outside' : 'margin-chart__line');
+    text.textContent = !Number.isFinite(tight)
+      ? `Tightest point: ${when}: no walkable way home from there.`
+      : tight >= 0
+        ? `Tightest point: ${when}, with ${formatDuration(tight)} of tether to spare (cautious).`
+        : `Tightest point: ${when}: outside the tether by ${formatDuration(-tight)} (cautious).`;
+    const finite = marginsS.filter(Number.isFinite);
+    const top = Math.max(0, ...finite);
+    const bottom = Math.min(0, ...finite);
+    const span = top - bottom || 1;
+    const x = (s: number): number => (s / total) * 300;
+    const y = (m: number): number => 6 + (1 - ((Number.isFinite(m) ? m : bottom) - bottom) / span) * 52;
+    const svgNs = 'http://www.w3.org/2000/svg';
+    const make = (tag: string, attributes: Record<string, string>): SVGElement => {
+      const node = document.createElementNS(svgNs, tag);
+      for (const [k, v] of Object.entries(attributes)) node.setAttribute(k, v);
+      return node;
+    };
+    const svg = make('svg', {
+      viewBox: '0 0 300 64', class: 'margin-chart__svg', role: 'img',
+      'aria-label': `Tether margin along the walk; tightest point ${when}.`,
+    });
+    svg.append(
+      make('line', { x1: '0', x2: '300', y1: String(y(0)), y2: String(y(0)), class: 'margin-chart__zero' }),
+      make('polyline', { points: marginsS.map((m, i) => `${x(times[i]!).toFixed(1)},${y(m).toFixed(1)}`).join(' '), class: 'margin-chart__trace' }),
+    );
+    for (const s of shownStops) {
+      const at = String(x(times[Math.min(s.lineIndex, times.length - 1)]!));
+      svg.append(make('line', { x1: at, x2: at, y1: '2', y2: '62', class: 'margin-chart__stop' }));
+    }
+    svg.append(make('circle', {
+      cx: String(x(times[tightestIndex]!)), cy: String(y(tight)), r: '3.5',
+      class: tight < 0 ? 'margin-chart__dot margin-chart__dot--outside' : 'margin-chart__dot',
+    }));
+    const axis = el('p', 'route-card__note',
+      `Tether margin by time along the walk, 0 to ${formatDuration(total)}${shownStops.length > 1 ? '; thin lines mark the stops' : ''}. Below the dashed line is outside the tether.`);
+    marginBox.append(text, svg, axis);
+  }
+
+  // Several stops (F3): home, each stop in order, then home. Built once; filled into "Targets and stops".
+  const stopsBox = el('div', 'stops');
+  const stopsToggle = el('input');
+  stopsToggle.type = 'checkbox';
+  stopsToggle.id = `stops-adding-${loaded.site.id}`;
+  const stopsToggleLabel = el('label', undefined, ' Click the map to add stops');
+  stopsToggleLabel.htmlFor = stopsToggle.id;
+  const stopsToggleRow = el('p', 'stops__toggle');
+  stopsToggleRow.append(stopsToggle, stopsToggleLabel);
+  const stopsList = el('ol', 'stops__list');
+  const clearStops = el('button', 'route-card__target', 'Clear the stops');
+  clearStops.type = 'button';
+  stopsBox.append(
+    el('h4', 'stops__title', 'Several stops'),
+    el('p', 'route-card__note', 'Walk home, then each stop in order, then home. Switch this on, then click the map or pick science targets. Time at each stop is your choice; it counts against the tether.'),
+    stopsToggleRow, stopsList, clearStops,
+  );
+  let pointCount = 0;
+  /** Pins at the stops while they are being chosen or walked. */
+  function renderStopPins(): void {
+    layer.showStops(addingStops || shownStops.length > 0 ? stops.map((s, i) => ({ position: s.position, label: `${i + 1}. ${s.name}` })) : null);
+  }
+  function renderStops(): void {
+    stopsList.replaceChildren(...stops.map((stop, i) => {
+      const item = el('li', 'stops__item');
+      const name = el('span', 'stops__name', stop.name);
+      const stay = el('input');
+      stay.type = 'number';
+      stay.min = '0';
+      stay.max = '240';
+      stay.step = '5';
+      stay.value = String(stop.stayMin);
+      stay.setAttribute('aria-label', `Minutes at ${stop.name}`);
+      stay.addEventListener('change', () => { stop.stayMin = Math.max(0, Math.min(240, Number(stay.value) || 0)); stopsChanged(); });
+      const stayLabel = el('label', 'stops__stay');
+      stayLabel.append(stay, ' min there');
+      const button = (text: string, label: string, action: () => void): HTMLButtonElement => {
+        const b = el('button', 'stops__button', text);
+        b.type = 'button';
+        b.setAttribute('aria-label', label);
+        b.addEventListener('click', action);
+        return b;
+      };
+      const move = (by: number) => () => {
+        const j = i + by;
+        if (j < 0 || j >= stops.length) return;
+        [stops[i], stops[j]] = [stops[j]!, stops[i]!];
+        stopsChanged();
+      };
+      item.append(name, stayLabel,
+        button('\u2191', `Move ${stop.name} earlier`, move(-1)),
+        button('\u2193', `Move ${stop.name} later`, move(1)),
+        button('\u2715', `Remove ${stop.name}`, () => { stops.splice(i, 1); stopsChanged(); }));
+      return item;
+    }));
+    clearStops.hidden = stops.length === 0;
+    renderStopPins();
+  }
+  /** After any change to the stops: redraw the list and plan the walk through them again. */
+  function stopsChanged(): void {
+    renderStops();
+    if (stops.length > 0) planVia();
+  }
+  function addStop(position: [number, number], name: string): void {
+    stops.push({ position, name, stayMin: 10 });
+    stopsChanged();
+  }
+  stopsToggle.addEventListener('change', () => {
+    addingStops = stopsToggle.checked;
+    renderStopPins();
+  });
+  clearStops.addEventListener('click', () => {
+    stops = [];
+    shownStops = [];
+    pointCount = 0;
+    renderStops();
+  });
+  renderStops();
   let stopped = false;
   let stopWorker = (): void => {};
   let onClick: ((event: MapMouseEvent) => void) | null = null;
@@ -206,6 +353,15 @@ export function startRoutePlanner(
   let slopeLimitDeg = SLOPE_LIMIT_DEG;
   /** Plan the walk from home to a position and back. Set once the worker is ready. */
   let planTo: (position: [number, number]) => void = () => {};
+  /** Stops for a walk through several stops (F3), in walking order; the last is the far end. Time at each is the
+   * person's choice and counts against the tether. */
+  let stops: { position: [number, number]; name: string; stayMin: number }[] = [];
+  let addingStops = false;
+  /** The stops of the walk now on screen, with where each falls on the way out; empty for a walk to one target. */
+  let shownStops: { lineIndex: number; stayS: number; name: string }[] = [];
+  /** Plan the walk through `stops`. Set once the worker is ready. */
+  let planVia: () => void = () => {};
+  const stayAtStopsS = (): number => shownStops.reduce((sum, s) => sum + s.stayS, 0);
 
   /** Say whether the walk on screen stays inside the tether, judged at its far end in the cautious case. */
   const showVerdict = (): void => {
@@ -214,14 +370,16 @@ export function startRoutePlanner(
     const settings = tether.settings();
     const outS = caseValue(lastAnswer.out, 'cautious', 'timeS');
     const backS = caseValue(lastAnswer.back, 'cautious', 'timeS');
-    // By the time the walker reaches the far end, this much of the walk has gone.
-    const allowedThereS = allowedTimeHomeS({ ...settings, elapsedS: settings.elapsedS + outS });
+    // Time at stops (F3) counts too: by the time the walker leaves the far end, the walk out and every stop have gone.
+    const stayS = stayAtStopsS();
+    const allowedThereS = allowedTimeHomeS({ ...settings, elapsedS: settings.elapsedS + outS + stayS });
     // Judged along the walk as planned: the way back drawn on the map can be slower than the quickest way home.
     const farthestS = walkFarthestFromHomeS(tetherFields.cautiousS, definition, lastAnswer.out.line, lastAnswer.back.line, backS);
     let alert: string | null = null;
-    if (outS + backS > timeLeftS(settings.elapsedS)) {
+    const atStops = stayS > 0 ? `, with ${formatDuration(stayS)} at the stops` : '';
+    if (outS + backS + stayS > timeLeftS(settings.elapsedS)) {
       alert = 'Not enough time left for this walk.';
-      tether.showVerdict({ inside: false, text: `Not enough time left. Out and back takes ${formatDuration(outS + backS)} in the cautious case and ${formatDuration(timeLeftS(settings.elapsedS))} is left.` });
+      tether.showVerdict({ inside: false, text: `Not enough time left. Out and back takes ${formatDuration(outS + backS + stayS)} in the cautious case${atStops}, and ${formatDuration(timeLeftS(settings.elapsedS))} is left.` });
     } else if (farthestS > allowedThereS) {
       alert = 'This walk leaves the tether. Choose a nearer target.';
       tether.showVerdict({ inside: false, text: `This walk leaves the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case, along the planned way out and back; the most allowed by then is ${formatDuration(allowedThereS)}. Choose a nearer target.` });
@@ -229,6 +387,7 @@ export function startRoutePlanner(
       tether.showVerdict({ inside: true, text: `This walk stays inside the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case, along the planned way out and back; ${formatDuration(allowedThereS)} is allowed.` });
     }
     updateField(lastAnswer, settings.elapsedS, outS, backS, allowedThereS, farthestS, alert);
+    renderMargins();
   };
 
   /** The field tablet and helmet views (F13): cautious values for the planned walk. */
@@ -473,12 +632,19 @@ export function startRoutePlanner(
     onSun: (sun) => setSunShading(map, loaded, sun),
   });
 
-  const showAnswer = (answer: RouteAnswer): void => {
+  const showAnswer = (answer: RouteAnswer, failedStop?: string): void => {
     lastAnswer = answer;
+    const ground = answer.ok ? groundNow() : null;
+    walkTimeline = answer.ok && ground ? withStopTimes(routeTimeline(ground, [answer.out.line, answer.back.line]), shownStops) : null;
+    renderStopPins();
     showVerdict();
     showStorm();
     when.setWalk(answer.ok ? caseValue(answer.out, 'cautious', 'timeS') + caseValue(answer.back, 'cautious', 'timeS') : null);
-    if (answer.ok) {
+    if (answer.ok && walkTimeline) {
+      // Each point at its cautious time, with time at stops, so the link timeline and the glow are timed as walked.
+      const totalMin = walkTimeline.timesS[walkTimeline.timesS.length - 1]! / 60;
+      orbit.setWalk({ minutes: totalMin, legs: [{ line: walkTimeline.points, distancesM: walkTimeline.timesS, minutes: totalMin }] });
+    } else if (answer.ok) {
       const outMin = caseValue(answer.out, 'cautious', 'timeS') / 60;
       const backMin = caseValue(answer.back, 'cautious', 'timeS') / 60;
       orbit.setWalk({
@@ -497,7 +663,7 @@ export function startRoutePlanner(
       layer.showRoute(null);
       photos.show(null);
       updateUrlState({ target: null });
-      status.textContent = REFUSALS[answer.reason] ?? 'No route was found.';
+      status.textContent = `${failedStop ? `${failedStop}: ` : ''}${REFUSALS[answer.reason] ?? 'No route was found.'}`;
       modes.setState(null, status.textContent);
       return;
     }
@@ -511,7 +677,7 @@ export function startRoutePlanner(
     for (const title of ['', 'Distance', 'Climb', 'Time', 'Energy']) head.append(el('th', undefined, title));
     const body = el('tbody');
     body.append(
-      legRow('Out', OUT_COLOUR, [answer.out]),
+      legRow(shownStops.length > 1 ? `Out, through ${shownStops.length} stops` : 'Out', OUT_COLOUR, [answer.out]),
       legRow('Back', BACK_COLOUR, [answer.back]),
       legRow('Round trip', null, [answer.out, answer.back]),
     );
@@ -566,6 +732,7 @@ export function startRoutePlanner(
       doseLine,
       steepLine,
       profileChart(answer.out.stats.profile, answer.back.stats.profile, OUT_COLOUR, BACK_COLOUR, heightNote),
+      marginBox,
       confidenceLine(answer),
       roverComparison(answer),
       details,
@@ -670,7 +837,9 @@ export function startRoutePlanner(
       if (first) {
         fill(parts.setup, about, moveRover, suit.element);
         if (targets.length > 0) {
-          fill(parts.targets, targetList(targets, (target) => planTo([target.lonEastDeg, target.latDeg])));
+          fill(parts.targets, targetList(targets, (target) => (addingStops
+            ? addStop([target.lonEastDeg, target.latDeg], target.name)
+            : planTo([target.lonEastDeg, target.latDeg]))));
           layer.showTargets(targets);
         }
       }
@@ -698,11 +867,27 @@ export function startRoutePlanner(
       planTo = (position) => {
         const request = ++latest;
         lastTarget = position;
+        shownStops = [];
         // A storm alert belongs to the walk it was raised for.
         stormAlert = null;
         status.textContent = 'Working out the walk…';
         void client.route(position).then((answer) => {
           if (!stopped && request === latest) showAnswer(answer);
+        });
+      };
+      planVia = () => {
+        if (stops.length === 0) return;
+        const request = ++latest;
+        const wanted = stops.map((s) => ({ ...s }));
+        lastTarget = null;
+        stormAlert = null;
+        status.textContent = `Working out the walk through ${wanted.length} stop${wanted.length === 1 ? '' : 's'}…`;
+        void client.route(wanted[wanted.length - 1]!.position, wanted.slice(0, -1).map((s) => s.position)).then((answer) => {
+          if (stopped || request !== latest) return;
+          // One stop comes back without a stop list: it is the far end of an ordinary walk.
+          const found = answer.ok ? answer.stops ?? [{ position: answer.target, lineIndex: answer.out.line.length - 1 }] : [];
+          shownStops = found.map((s, i) => ({ lineIndex: s.lineIndex, stayS: wanted[i]!.stayMin * 60, name: wanted[i]!.name }));
+          showAnswer(answer, answer.ok || answer.stop === undefined ? undefined : wanted[answer.stop]?.name);
         });
       };
       if (first) {
@@ -715,6 +900,7 @@ export function startRoutePlanner(
             restart();
             return;
           }
+          if (addingStops) { addStop([event.lngLat.lng, event.lngLat.lat], `Point ${++pointCount}`); return; }
           planTo([event.lngLat.lng, event.lngLat.lat]);
         };
         map.on('click', onClick);
@@ -723,7 +909,9 @@ export function startRoutePlanner(
       // A shared link names a target: plan that walk straight away. Without one, the hero scenario opens on the
       // walk to the first science target, so the route and the tether are on screen at once (F7). After a change of
       // suit settings the same walk is planned again.
-      if (!first && lastTarget) planTo(lastTarget);
+      if (first) fill(parts.targets, stopsBox);
+      if (!first && shownStops.length > 0 && stops.length > 0) planVia();
+      else if (!first && lastTarget) planTo(lastTarget);
       else if (restore?.target) planTo(restore.target);
       else if (targets[0]) planTo([targets[0].lonEastDeg, targets[0].latDeg]);
       if (import.meta.env.DEV) (window as unknown as { tetherRoute: unknown }).tetherRoute = { client, ready, showAnswer, tetherReady: client.tether };

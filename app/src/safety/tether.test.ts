@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GridDefinition } from '../data/contract';
 import { allowedTimeHomeS, timeLeftS, WALK_DURATION_S } from './budget';
-import { farthestFromHomeS, tetherPicture, walkFarthestFromHomeS } from './tether';
+import { farthestFromHomeS, marginsAlongWalk, tetherPicture, walkFarthestFromHomeS } from './tether';
 
 /** Test fixture: one row of six cells; home is the west cell and each cell east is 10 minutes further from home. */
 const cols = 6;
@@ -84,6 +84,20 @@ describe('how far from home a route gets', () => {
     expect(walkFarthestFromHomeS(cautiousS, definition, out, back, 1000)).toBe(2400);
     // A planned way back of 62 minutes counts in full, though the quickest way home is shorter.
     expect(walkFarthestFromHomeS(cautiousS, definition, out, out, 3720)).toBe(3720);
+  });
+
+  it('checks the tether at every point against the moment the walker is there (several stops)', () => {
+    // Fixture: cells 0, 3 and 5 of the row (0, 1,800 and 3,000 s from home), reached at 0, 1 h and 3 h into the walk.
+    const points: [number, number][] = [[77.30005, 18.49995], [77.30035, 18.49995], [77.30055, 18.49995]];
+    const times = [0, 3600, 3 * 3600];
+    // Allowed: 1 hour until 7 hours gone, then the time left of the 8-hour walk.
+    const allowed = (elapsed: number) => allowedTimeHomeS({ walkBackLimitS: 3600, elapsedS: elapsed });
+    const early = marginsAlongWalk(cautiousS, definition, points, times, allowed, 0);
+    expect(early.marginsS).toEqual([3600, 1800, 600]);
+    expect(early.tightestIndex).toBe(2);
+    // Started 6 hours into the outing: at 9 hours gone nothing is left, so the last point is 3,000 s over.
+    const late = marginsAlongWalk(cautiousS, definition, points, times, allowed, 6 * 3600);
+    expect(late.marginsS[2]).toBe(-3000);
   });
 
   it('says there is no way home from a point outside the grid', () => {

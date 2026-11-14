@@ -71,18 +71,37 @@ self.onmessage = (event: MessageEvent<Request>): void => {
     }
     if (!state) throw new Error('A route was asked for before the grids were loaded.');
     const { grid, blocked, out, back } = state;
-    const target = cellAt(grid, request.target);
-    if (target < 0) { post({ type: 'route', id: request.id, ok: false, reason: 'outside' }); return; }
-    if (blocked[target]) { post({ type: 'route', id: request.id, ok: false, reason: 'keep-out' }); return; }
-    if (!Number.isFinite(out.cost[target]!) || !Number.isFinite(back.cost[target]!)) {
-      post({ type: 'route', id: request.id, ok: false, reason: 'unreachable' });
-      return;
+    // The stops in order, the target last. One stop is the ordinary walk out and back.
+    const stops = [...(request.via ?? []), request.target].map((position) => cellAt(grid, position));
+    for (let i = 0; i < stops.length; i++) {
+      const cell = stops[i]!;
+      const stop = stops.length > 1 ? { stop: i } : {};
+      if (cell < 0) { post({ type: 'route', id: request.id, ok: false, reason: 'outside', ...stop }); return; }
+      if (blocked[cell]) { post({ type: 'route', id: request.id, ok: false, reason: 'keep-out', ...stop }); return; }
+      if (!Number.isFinite(out.cost[cell]!) || !Number.isFinite(back.cost[cell]!)) {
+        post({ type: 'route', id: request.id, ok: false, reason: 'unreachable', ...stop });
+        return;
+      }
     }
+    // Home to the first stop from the search from home already made; the outward field's path runs from the stop
+    // back to home, so it is reversed into walking order. Each later leg is its own search from the stop before,
+    // stopped as soon as it reaches the next. Home again from the search towards home already made.
+    const cells = pathToHome(out, stops[0]!).reverse();
+    const stopIndex = [cells.length - 1];
+    for (let i = 1; i < stops.length; i++) {
+      const from = stops[i - 1]!;
+      const field = searchFromHome(grid, blocked, from, planningCase, 'fromHome', 'energyJ', stops[i]!);
+      const legCells = pathToHome(field, stops[i]!).reverse();
+      if (legCells.length === 0) { post({ type: 'route', id: request.id, ok: false, reason: 'unreachable', stop: i }); return; }
+      cells.push(...legCells.slice(1));
+      stopIndex.push(cells.length - 1);
+    }
+    const last = stops[stops.length - 1]!;
     post({
-      type: 'route', id: request.id, ok: true, target: cellCentre(grid, target),
-      // The outward field's path runs from the target back to home, so it is reversed into walking order.
-      out: leg(grid, pathToHome(out, target).reverse()),
-      back: leg(grid, pathToHome(back, target)),
+      type: 'route', id: request.id, ok: true, target: cellCentre(grid, last),
+      out: leg(grid, cells),
+      back: leg(grid, pathToHome(back, last)),
+      ...(stops.length > 1 ? { stops: stopIndex.map((lineIndex) => ({ position: cellCentre(grid, cells[lineIndex]!), lineIndex })) } : {}),
     });
   } catch (error) {
     post({ type: 'error', message: error instanceof Error ? error.message : String(error) });

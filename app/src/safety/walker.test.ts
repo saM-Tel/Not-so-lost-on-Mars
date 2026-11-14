@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 import type { GridDefinition } from '../data/contract';
 import { distanceM, type LonLat } from '../mars/geometry';
 import { speedMps, stepCost, WALK_CASES } from '../route/cost';
-import { alongTimeline, cellIndex, routeTimeline, walkFreely, type WalkerGround } from './walker';
+import { alongTimeline, cellIndex, routeTimeline, walkFreely, withStopTimes, type WalkerGround } from './walker';
 
 const CELL_DEG = 4 / 59_274.9; // about 4 m on Mars, north to south
 const FIXTURE_DEFINITION = {
@@ -65,5 +65,14 @@ describe('routeTimeline and alongTimeline', () => {
     expect(quarter.headingDeg).toBeCloseTo(90, 3);
     expect(cellIndex(FIXTURE_DEFINITION, quarter.position)).toBe(10 * 20 + 2);
     expect(alongTimeline(timeline, 1e9).done).toBe(true);
+  });
+});
+
+describe('withStopTimes', () => {
+  it('adds the time at each stop to every point from that stop on', () => {
+    const timeline = { points: [[0, 0], [1, 0], [2, 0], [3, 0]] as [number, number][], timesS: [0, 10, 20, 30] };
+    const stopped = withStopTimes(timeline, [{ lineIndex: 1, stayS: 100 }, { lineIndex: 2, stayS: 5 }]);
+    expect(stopped.timesS).toEqual([0, 110, 125, 135]);
+    expect(stopped.points).toBe(timeline.points);
   });
 });

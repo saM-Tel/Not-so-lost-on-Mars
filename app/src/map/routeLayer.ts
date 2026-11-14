@@ -37,6 +37,8 @@ export interface RouteLayer {
   showRoute(route: { target: LonLat; out: LonLat[]; back: LonLat[] } | null): void;
   /** Glow beneath the stretches of the walk with no relay link (F18), or clear it with null. */
   showGaps(stretches: LonLat[][] | null): void;
+  /** Numbered pins at the stops of a walk through several stops (F3), or clear them with null. */
+  showStops(stops: { position: LonLat; label: string }[] | null): void;
   remove(): void;
 }
 
@@ -85,6 +87,7 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
   let home: Marker | null = null;
   let target: Marker | null = null;
   let targetPins: Marker[] = [];
+  let stopPins: Marker[] = [];
 
   map.addSource(LINES_ID, { type: 'geojson', data: lines([], []) });
   map.addLayer({
@@ -193,6 +196,11 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
         target = new Marker({ element: pin('route-pin--target', 'Target'), anchor: 'bottom' }).setLngLat(route.target).addTo(map);
       }
     },
+    showStops(stops) {
+      for (const marker of stopPins) marker.remove();
+      stopPins = (stops ?? []).map((s) =>
+        new Marker({ element: pin('route-pin--stop', s.label), anchor: 'bottom' }).setLngLat(s.position).addTo(map));
+    },
     showGaps(stretches) {
       const data: Parameters<GeoJSONSource['setData']>[0] = {
         type: 'FeatureCollection' as const,
@@ -214,6 +222,7 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
       home?.remove();
       target?.remove();
       for (const marker of targetPins) marker.remove();
+      for (const marker of stopPins) marker.remove();
       for (const id of [`${LINES_ID}-back`, `${LINES_ID}-out`, `${LINES_ID}-edge`, GAPS_ID, TETHER_ID, KEEP_OUT_ID]) {
         if (map.getLayer(id)) map.removeLayer(id);
       }
