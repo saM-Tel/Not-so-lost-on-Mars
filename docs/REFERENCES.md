@@ -42,6 +42,11 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | PDS Orbital Data Explorer search service | https://oderest.rsl.wustl.edu/live2/ |
 | NASA DONKI space weather database | https://api.nasa.gov/ |
 | Deep Space Network Now | https://eyes.nasa.gov/dsn/dsn.html |
+| JPL Horizons, NASA JPL Solar System Dynamics: predicted positions of MRO, Mars Odyssey, Mars Express and TGO (trajectories from the NASA and ESA navigation teams). Fetched by `pipeline/build_orbiters.py` on 14 Nov 2026 for F18 | https://ssd.jpl.nasa.gov/horizons/ |
+| NASA, Mars Reconnaissance Orbiter mission page (read 14 Nov 2026: HiRISE camera; relay role) | https://science.nasa.gov/mission/mars-reconnaissance-orbiter/ |
+| NASA, Mars Odyssey mission page (read 14 Nov 2026: THEMIS camera; relay role) | https://science.nasa.gov/mission/odyssey/ |
+| ESA, Mars Express page (read 14 Nov 2026: High Resolution Stereo Camera) | https://www.esa.int/Science_Exploration/Space_Science/Mars_Express |
+| ESA, ExoMars page (read 14 Nov 2026; TGO's camera and relay role not confirmed from it) | https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars |
 
 ## Science
 

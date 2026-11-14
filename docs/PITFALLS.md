@@ -56,7 +56,7 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Assuming every terrain file uses the Jezero grid | The single-strip HiRISE models each have their own projection: a different latitude of true scale, sometimes a local radius, and polar stereographic for Phoenix. Read it from the file |
 | A landing position copied from an old source | Older figures use other reference frames and often do not say which latitude type. NASA's catalogue figure for Pathfinder is about 20 km from the terrain model labelled as its site. Quote such a position as text with its source; do not plot it |
 | Rover positions assumed to match the image exactly | They are localised against the same base map but can differ by metres. State it |
-| JPL Horizons takes a Mars site's longitude west-positive. Its `GEODETIC` latitude is measured on its own reference shape, probably planetographic (check) | For 77.305 E send -77.305 or 282.695, and check the `Center geodetic` line it echoes. Convert our planetocentric latitude first, or try `COORD_TYPE='CYLINDRICAL'` |
+| JPL Horizons works in west-positive longitude for Mars and refuses a positive site longitude ("Input east-longitude as negative"). Its `GEODETIC` latitude and its sub-observer latitude are planetodetic, on an ellipsoid of 3396.19 and 3376.2 km (stated in its output, checked 14 Nov) | For 77.305 E send -77.305 (not 282.695), and check the `Center geodetic` line it echoes (282.695 W). Convert latitude both ways; `pipeline/build_orbiters.py` does both and is tested |
 
 ## 5. Terrain
 
