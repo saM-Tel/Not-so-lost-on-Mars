@@ -19,6 +19,38 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   return node;
 }
 
+/** Slope limits offered in the suit settings, degrees. 20 is NASA's Artemis III figure and the default. */
+const SLOPE_LIMITS_DEG = [
+  { deg: 15, label: '15° (more careful; your choice)' },
+  { deg: 20, label: '20° (NASA Artemis III figure; default)' },
+  { deg: 25, label: '25° (beyond the NASA figure; your choice)' },
+] as const;
+
+/**
+ * Suit settings (F4): the steepest ground the person will walk on. Changing it redraws keep-out ground, the
+ * tether and the walk. The walking speeds and suit masses of the three cases are listed with their sources.
+ */
+export function createSuitSettings(onChange: (slopeLimitDeg: number) => void): { element: HTMLElement } {
+  const box = el('section', 'suit');
+  box.append(el('h3', undefined, 'Suit settings'));
+  const select = el('select');
+  select.id = 'suit-slope-limit';
+  for (const option of SLOPE_LIMITS_DEG) {
+    const item = el('option', undefined, option.label);
+    item.value = String(option.deg);
+    item.selected = option.deg === 20;
+    select.append(item);
+  }
+  const label = el('label', undefined, 'Steepest ground to walk on ');
+  label.htmlFor = select.id;
+  const row = el('p', 'tether__row');
+  row.append(label, select);
+  select.addEventListener('change', () => onChange(Number(select.value)));
+  box.append(row, el('p', 'route-card__note',
+    'A limit other than 20 degrees is your own choice, not a sourced figure. Changing it works out the ways from home again, about a second.'));
+  return { element: box };
+}
+
 export interface TetherControls {
   element: HTMLElement;
   settings(): TetherSettings;

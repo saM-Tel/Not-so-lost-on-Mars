@@ -1,7 +1,8 @@
 // WHAT:    Route card: click a target, see the walk out and back with distance, climb, time and energy for three cases (F3),
 //          the tether with its settings and whether the walk stays inside it (F4), the radiation dose on the walk (F5),
 //          and real rover photos taken near it (F6).
-//          Still to add: several targets, oxygen, the route's confidence line, the elevation profile.
+//          Also the scenario's science targets, oxygen, the elevation profile and the suit's slope limit.
+//          Still to add: the route's confidence line.
 // IN:      A loaded site with routing grids; clicks on the map; results from src/route/client.ts.
 // OUT:     A card over the map, and the route drawn through src/map/routeLayer.ts. Returns a function that removes both.
 // USED BY: src/main.ts.
@@ -10,6 +11,7 @@
 // OWNER:   Role B.
 
 import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import type { ScenarioPlace } from '../data/contract';
 import { loadRoutingGridFiles, type LoadedSite } from '../data/loadSite';
 import type { Overlay } from '../map/overlays';
 import { addRouteLayer, BACK_COLOUR, OUT_COLOUR } from '../map/routeLayer';
@@ -18,10 +20,12 @@ import { WALK_CASES } from '../route/cost';
 import type { RouteAnswer, RouteLeg, TetherFields } from '../route/messages';
 import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS } from '../safety/budget';
 import { walkDose } from '../safety/dose';
+import { OXYGEN_BASIS, oxygenForEnergy } from '../safety/oxygen';
 import { farthestFromHomeS, tetherPicture } from '../safety/tether';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createPhotoStrip } from './photoStrip';
-import { createTetherControls } from './safetyPanel';
+import { profileChart } from './profileChart';
+import { createSuitSettings as suitSettings, createTetherControls } from './safetyPanel';
 import { updateUrlState, type UrlState } from './urlState';
 
 /**
@@ -68,9 +72,33 @@ function legRow(name: string, colour: string | null, legs: RouteLeg[]): HTMLElem
   return row;
 }
 
+/** The scenario's science targets as buttons, each with its reason and where its position comes from. */
+function targetList(targets: ScenarioPlace[], onPick: (target: ScenarioPlace) => void): HTMLElement {
+  const box = el('div', 'route-card__targets');
+  box.append(el('h3', undefined, 'Science targets'));
+  const list = el('ul');
+  for (const target of targets) {
+    const item = el('li');
+    const button = el('button', 'route-card__target', target.name);
+    button.type = 'button';
+    button.addEventListener('click', () => onPick(target));
+    const why = el('p', 'route-card__note');
+    why.append(`${target.why} `);
+    const link = el('a', undefined, 'Source');
+    link.href = target.whySourceUrl;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    why.append(link, `. Position: ${target.positionSource}.`);
+    item.append(button, why);
+    list.append(item);
+  }
+  box.append(list);
+  return box;
+}
+
 const REFUSALS: Record<string, string> = {
   outside: 'That point is outside the mapped box. Choose a point on the detailed ground.',
-  'keep-out': `That point is on keep-out ground: steeper than ${SLOPE_LIMIT_DEG} degrees. Choose a point that is not shaded red.`,
+  'keep-out': 'That point is on keep-out ground: steeper than the slope limit. Choose a point that is not shaded red.',
   unreachable: 'No walkable way there and back was found: keep-out ground cuts it off from home.',
 };
 
@@ -107,6 +135,10 @@ export function startRoutePlanner(
   let tetherFields: TetherFields | null = null;
   let lastAnswer: RouteAnswer | null = null;
   let redraw = 0;
+  /** The suit's slope limit now chosen, degrees. Changing it restarts the route worker. */
+  let slopeLimitDeg = SLOPE_LIMIT_DEG;
+  /** Plan the walk from home to a position and back. Set once the worker is ready. */
+  let planTo: (position: [number, number]) => void = () => {};
 
   /** Say whether the walk on screen stays inside the tether, judged at its far end in the cautious case. */
   const showVerdict = (): void => {
@@ -194,50 +226,89 @@ export function startRoutePlanner(
       'Modelled, not measured. Nobody has walked on Mars. Time and energy come from a walking model built on Apollo lunar data and load-carrying tests on Earth, with Mars gravity (grade C).',
       'Each number is the expected case, with the favourable and cautious cases in brackets. The route is chosen for least energy in the expected case; walking time only, with no stops.',
       ...WALK_CASES.map((c) => `${c.id[0]!.toUpperCase()}${c.id.slice(1)}: ${c.basis}`),
-      `Ground steeper than ${SLOPE_LIMIT_DEG} degrees is keep-out, from NASA's Artemis requirement for walking on the Moon (grade C). Slope is measured from orbit over about 6 m, so rocks and ledges smaller than about 3 to 5 m are not seen.`,
+      `Ground steeper than ${slopeLimitDeg} degrees is keep-out${slopeLimitDeg === SLOPE_LIMIT_DEG ? ", from NASA's Artemis requirement for walking on the Moon (grade C)" : ', a limit chosen in the suit settings (assumed); the NASA figure is 20 degrees'}. Slope is measured from orbit over about 6 m, so rocks and ledges smaller than about 3 to 5 m are not seen.`,
       'The route follows 4 m grid cells, so its distance can be up to about 8% longer than a smooth path.',
-      'Loose sand and rubble are not yet counted. Energy is metabolic energy; oxygen is not yet shown.',
+      'Loose sand and rubble are not yet counted. Energy is metabolic energy; oxygen is worked out from it.',
     ]) basis.append(el('li', undefined, text));
     details.append(basis);
+    // Oxygen breathed over the round trip, from the energy of each case.
+    const energy = (caseId: string): number => caseValue(answer.out, caseId, 'energyJ') + caseValue(answer.back, caseId, 'energyJ');
+    const grams = (caseId: string): number => oxygenForEnergy(energy(caseId)).grams;
+    const oxygenLine = el('p', 'route-card__dose');
+    oxygenLine.textContent =
+      `Oxygen breathed on this walk: ${formatRange(grams('expected'), grams('favourable'), grams('cautious'), (g) => `${g.toFixed(0)} g`)}.`;
+    const terrainRecord = loaded.layers.usable.find((record) => record.id === 'terrain-hirise');
+    const heightNote = terrainRecord
+      ? `Heights from ${terrainRecord.mission} ${terrainRecord.instrument}; real detail ${terrainRecord.realDetail.toLowerCase()}; each point is the mean of a 4 m cell.`
+      : 'Each point is the mean height of a 4 m cell.';
     result.append(
       table,
+      profileChart(answer.out.stats.profile, answer.back.stats.profile, OUT_COLOUR, BACK_COLOUR, heightNote),
       el('p', 'route-card__note', `Steepest step along the route: ${steepest.toFixed(0)} degrees. Out and back differ because uphill and downhill cost differently.`),
+      oxygenLine,
+      el('p', 'route-card__note', OXYGEN_BASIS),
       doseLine,
       doseBasis,
       details,
     );
   };
 
-  void (async () => {
+  // The site's routing grids, read once; the worker is started again whenever the slope limit changes.
+  let gridFiles: Awaited<ReturnType<typeof loadRoutingGridFiles>> | null = null;
+  let firstStart = true;
+  let lastTarget: [number, number] | null = null;
+  const about = el('p', 'route-card__note');
+  const suit = suitSettings((limitDeg) => {
+    slopeLimitDeg = limitDeg;
+    stopWorker();
+    tetherFields = null;
+    lastAnswer = null;
+    layer.showRoute(null);
+    planTo = () => {};
+    void begin();
+  });
+
+  /** Start the route worker for the current slope limit, draw keep-out ground and the tether, and plan a walk. */
+  const begin = async (): Promise<void> => {
     try {
       const definition = loaded.site.grid;
       if (!definition) throw new Error('This site has no routing grids, so routes cannot be planned here.');
-      const files = await loadRoutingGridFiles(loaded);
+      status.textContent = 'Reading the ground and working out the ways from home…';
+      gridFiles ??= await loadRoutingGridFiles(loaded);
       if (stopped) return;
-      const home: [number, number] = [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg];
-      const client = startRouteWorker({ definition, ...files, home, slopeLimitDeg: SLOPE_LIMIT_DEG });
+      // The scenario's home when the site has one (pipeline/scenario.py); otherwise the site marker stands in.
+      const scenarioHome = loaded.site.home;
+      const home: [number, number] = scenarioHome
+        ? [scenarioHome.lonEastDeg, scenarioHome.latDeg]
+        : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg];
+      // The worker takes ownership of the arrays it is given, so it gets copies and the originals stay for a restart.
+      const client = startRouteWorker({
+        definition, heightM: gridFiles.heightM.slice(), slopeMaxDeg: gridFiles.slopeMaxDeg.slice(), home, slopeLimitDeg,
+      });
       stopWorker = client.stop;
       const ready = await client.ready;
       if (stopped) return;
       layer.showKeepOut(ready.keepOut, definition);
+      const first = firstStart;
+      firstStart = false;
       // Keep-out ground is a layer like any other in the layer panel. Its record is the slope layer's, with what
       // we did to it and the lower grade that the walking limit brings.
       const slope = loaded.layers.usable.find((record) => record.grid === 'slopeMaxDeg');
-      if (slope && options.onOverlay) {
+      if (first && slope && options.onOverlay) {
         const keepOut: Overlay = {
           record: {
             ...slope,
             id: 'keep-out',
             title: 'Keep-out ground',
-            processing: `Cells whose steepest slope is over ${SLOPE_LIMIT_DEG} degrees. The limit is NASA's Artemis III requirement for walking on the Moon (Ortiz 2025), applied to Mars. Routes never cross these cells.`,
+            processing: `Cells whose steepest slope is over the suit's slope limit, ${SLOPE_LIMIT_DEG} degrees unless changed in the suit settings. The default is NASA's Artemis III requirement for walking on the Moon (Ortiz 2025), applied to Mars. Routes never cross these cells.`,
             grade: 'C',
             caveats: [
-              `The ${SLOPE_LIMIT_DEG} degree limit is a lunar requirement applied to Mars, and its source does not say over what distance slope is measured.`,
+              `The ${SLOPE_LIMIT_DEG} degree default is a lunar requirement applied to Mars, and its source does not say over what distance slope is measured.`,
               'Ground that is not shaded is not proven safe: rocks, loose sand and ledges under about 3 m are not seen.',
               ...slope.caveats,
             ],
           },
-          legend: { kind: 'swatches', items: [{ colour: '#e5484d', label: `Steeper than ${SLOPE_LIMIT_DEG}°: do not walk here` }] },
+          legend: { kind: 'swatches', items: [{ colour: '#e5484d', label: 'Steeper than the slope limit: do not walk here' }] },
           visible: true,
           opacity: 0.4,
           setVisible(visible) { keepOut.visible = visible; layer.setKeepOut(keepOut.visible, keepOut.opacity); },
@@ -246,15 +317,25 @@ export function startRoutePlanner(
         options.onOverlay(keepOut);
       }
       if (ready.homeCentre) layer.showHome(ready.homeCentre);
-      const about = el('p', 'route-card__note');
+      const homeText = scenarioHome
+        ? `Home: ${scenarioHome.name}${scenarioHome.assumed ? ' (assumed)' : ''}. ${scenarioHome.why} `
+        : `Home is the site's marker, a stand-in until the team chooses where the crew's rover parks. `;
       about.textContent =
-        `Home is the site's marker, a stand-in until the team chooses where the crew's rover parks. ` +
-        `Red is keep-out ground, steeper than ${SLOPE_LIMIT_DEG} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
+        homeText +
+        `Red is keep-out ground, steeper than ${slopeLimitDeg} degrees: ${(ready.keepOutShare * 100).toFixed(0)}% of this box. ` +
         `${(ready.reachableShare * 100).toFixed(0)}% of it can be walked to and back from.`;
-      card.insertBefore(about, result);
-      const restore = options.restore;
+      const targets = loaded.site.targets ?? [];
+      if (first) {
+        card.insertBefore(about, result);
+        card.insertBefore(suit.element, result);
+        if (targets.length > 0) {
+          card.insertBefore(targetList(targets, (target) => planTo([target.lonEastDeg, target.latDeg])), result);
+          layer.showTargets(targets);
+        }
+      }
+      const restore = first ? options.restore : undefined;
       void client.tether.then((fields) => {
-        if (stopped) return;
+        if (stopped || stopWorker !== client.stop) return;
         tetherFields = fields;
         if (restore) {
           tether.set({
@@ -262,36 +343,39 @@ export function startRoutePlanner(
             ...(restore.elapsedMin ? { elapsedS: restore.elapsedMin * 60 } : {}),
           });
         }
-        card.insertBefore(tether.element, result);
+        if (!tether.element.isConnected) card.insertBefore(tether.element, result);
         drawTether();
       });
       if (!ready.homeUsable) {
         status.textContent = 'Home is on keep-out ground or outside the box, so no walk can start here.';
         return;
       }
-      status.textContent = 'Click the ground to choose a target.';
-      onClick = (event) => {
+      status.textContent = targets.length > 0 ? 'Pick a science target, or click the ground.' : 'Click the ground to choose a target.';
+      planTo = (position) => {
         const request = ++latest;
+        lastTarget = position;
         status.textContent = 'Working out the walk…';
-        void client.route([event.lngLat.lng, event.lngLat.lat]).then((answer) => {
+        void client.route(position).then((answer) => {
           if (!stopped && request === latest) showAnswer(answer);
         });
       };
-      map.on('click', onClick);
-      map.getCanvas().style.cursor = 'crosshair';
-      // A shared link names a target: plan that walk straight away.
-      if (restore?.target) {
-        const request = ++latest;
-        status.textContent = 'Working out the walk…';
-        void client.route(restore.target).then((answer) => {
-          if (!stopped && request === latest) showAnswer(answer);
-        });
+      if (first) {
+        onClick = (event) => planTo([event.lngLat.lng, event.lngLat.lat]);
+        map.on('click', onClick);
+        map.getCanvas().style.cursor = 'crosshair';
       }
+      // A shared link names a target: plan that walk straight away. Without one, the hero scenario opens on the
+      // walk to the first science target, so the route and the tether are on screen at once (F7). After a change of
+      // suit settings the same walk is planned again.
+      if (!first && lastTarget) planTo(lastTarget);
+      else if (restore?.target) planTo(restore.target);
+      else if (targets[0]) planTo([targets[0].lonEastDeg, targets[0].latDeg]);
       if (import.meta.env.DEV) (window as unknown as { tetherRoute: unknown }).tetherRoute = { client, ready, showAnswer, tetherReady: client.tether };
     } catch (error) {
       if (!stopped) status.textContent = error instanceof Error ? error.message : String(error);
     }
-  })();
+  };
+  void begin();
 
   return () => {
     stopped = true;

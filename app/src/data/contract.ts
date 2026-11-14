@@ -203,6 +203,25 @@ export interface GridDefinition {
   files: GridFile[];
 }
 
+/** Home or a science target of a site's hero scenario, placed at a rover stop (pipeline/scenario.py). */
+export interface ScenarioPlace {
+  /** Targets only. */
+  id?: string;
+  name: string;
+  /** The rover stop it stands at, and the sol that stop was first logged. */
+  stop: string;
+  firstSol: number;
+  lonEastDeg: number;
+  latDeg: number;
+  /** Terrain height there, metres relative to the areoid. */
+  heightM: number;
+  why: string;
+  whySourceUrl: string;
+  positionSource: string;
+  /** True when the place is a choice made for the scenario, not a fact. */
+  assumed: boolean;
+}
+
 /** A built site's own file, site.json. */
 export interface SiteFile {
   contractVersion: number;
@@ -221,6 +240,9 @@ export interface SiteFile {
   terrainHeightM: { lowest: number; highest: number; atCentre: number };
   /** The routing grids, when the site has them. */
   grid?: GridDefinition;
+  /** The hero scenario, when the site config has one: where home is, and the science targets. */
+  home?: ScenarioPlace;
+  targets?: ScenarioPlace[];
   /** Which source each input was read from when the site was built, in words. */
   readFrom: Record<string, string>;
   files: { path: string; files: number; bytes: number }[];

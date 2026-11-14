@@ -40,7 +40,43 @@ data:
   - "Rover photographs taken on the ground"
 
 problems:
-  - "Home position and science targets are still to be set, so there are no routes yet."
+  - "Home is an assumption for this scenario: the crew rover parks at a rover stop Perseverance reached."
+
+# ---- Hero scenario: home and science targets (pipeline/scenario.py) -------------------------
+# Every position is a rover stop, looked up by its id in the waypoints file at build time, so no coordinate is typed
+# here. How long Perseverance stayed is counted from the same file: the sols until its next logged stop.
+
+scenario:
+  home:
+    name: Crew rover
+    stop: "50_1618"
+    assumed: true
+    why: >-
+      Assumed for this scenario: the crew's pressurised rover parks where Perseverance itself stood for 16 sols
+      (sol 1068 to 1083), on ground the rover's drivers chose and reached, with the rover tilted 8.5 degrees.
+    whySourceUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+  targets:
+    - id: cheyava-falls
+      name: Cheyava Falls
+      stop: "56_0"
+      why: >-
+        The rock NASA described as having features that may bear on whether Mars was once home to microscopic life.
+        Perseverance cored it on 21 July 2024 at the northern edge of Neretva Vallis.
+      whySourceUrl: "https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/"
+    - id: stop-56-3438
+      name: Rover stop 56_3438
+      stop: "56_3438"
+      why: >-
+        Perseverance stayed here 13 sols (sol 1231 to 1243), the second-longest stay in this box, so its team found
+        enough here to stop and work.
+      whySourceUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+    - id: stop-59-204
+      name: Rover stop 59_204
+      stop: "59_204"
+      why: >-
+        Perseverance stayed here 10 sols (sol 1254 to 1263) on its climb out of the valley, about 108 m above the crew
+        rover. The hardest walk of the three.
+      whySourceUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
 
 # ---- Approach imagery (pipeline/build_approach.py) ------------------------------------------
 

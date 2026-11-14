@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T13:55:24Z",
+  "builtUtc": "2026-11-14T15:40:52Z",
   "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees.",
   "levels": {
     "1": {
@@ -130,7 +130,7 @@
         "Rover photographs taken on the ground"
       ],
       "problems": [
-        "Home position and science targets are still to be set, so there are no routes yet."
+        "Home is an assumption for this scenario: the crew rover parks at a rover stop Perseverance reached."
       ]
     },
     {

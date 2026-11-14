@@ -34,6 +34,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `tether.test.ts` | Tests for `budget.ts` and `tether.ts` on a made-up grid | |
 | `dose.ts` | Radiation dose for a planned walk: dose equivalent and absorbed dose, each from its own measured rate, with a range. To add: terrain shielding | F5 |
 | `dose.test.ts` | Tests for `dose.ts` | |
+| `oxygen.ts` | Oxygen breathed on a walk from its metabolic energy (Weir 1949, respiratory quotient 0.85 assumed), for each case | F3 |
 | `storm.ts` | Storm mode: compares going home with sheltering against terrain, and replays the 20 May 2024 event | F10 |
 
 ## Known issues

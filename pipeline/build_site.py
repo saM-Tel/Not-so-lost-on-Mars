@@ -21,6 +21,7 @@ import grids as routing_grids
 import mars
 import photos
 import records
+import scenario
 import sources
 import terrain
 import tiles
@@ -93,10 +94,16 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
               f"median difference {heights.get('medianDifferenceM')} m, typical {heights.get('medianAbsoluteDifferenceM')} m, "
               f"largest {heights.get('largestAbsoluteDifferenceM')} m")
 
-    temporary = DATA / f"{site_id}.tmp"
+    # Built outside app/public and moved in whole at the end: a running dev server holds open every folder made
+    # under app/public on Windows, which made the final rename fail (pipeline/AGENTS.md, known issues).
+    temporary = work / "build.tmp"
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
+    hero = scenario.resolve(site.get("scenario"), stops if rover else [], box, grids["terrain"])
+    if hero:
+        print(f"Scenario: home at stop {hero['home']['stop'] if 'home' in hero else 'none'}; "
+              f"{len(hero.get('targets', []))} targets: {', '.join(t['name'] for t in hero.get('targets', []))}")
 
     layers = []
     for name, layer_id, title, data_type, zooms in (
@@ -233,6 +240,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
             "atCentre": round(float(grids["terrain"].sample(position["lonEastDeg"], position["latDeg"])), 2),
         },
         "grid": grid_definition,
+        **hero,
         "readFrom": {name: grids[name].origin for name in grids},
         "files": files,
         "totalBytes": total,
@@ -241,7 +249,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
     final = DATA / site_id
     if final.exists():
         shutil.rmtree(final)
-    temporary.rename(final)
+    shutil.move(str(temporary), str(final))
 
     budget = BUDGET_MB.get(site["level"])
     total_mb = (total + (final / "site.json").stat().st_size) / 1e6

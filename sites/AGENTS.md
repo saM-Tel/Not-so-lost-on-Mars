@@ -41,9 +41,11 @@ Role A, with role C supplying science targets and their reasons.
 | `chryse-planitia.yaml` | Chryse Planitia (Viking 1) | 2 | No |
 | `utopia-planitia.yaml` | Utopia Planitia (Viking 2) | 2 | No |
 
-Each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. `bright-angel.yaml` also holds what a build needs: the box (a size, centred on the marker position), the terrain and image files with their dates, accuracy and credit, and the rover's stops. It is the only site built. Home and science targets are still to be added to it.
+Each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. `bright-angel.yaml` also holds what a build needs: the box (a size, centred on the marker position), the terrain and image files with their dates, accuracy and credit, and the rover's stops. It is the only site built, and the only one with a hero scenario (home and science targets).
 
 A position is given in one of two ways, both copied digit for digit from the source: `from: point` with a longitude and latitude, or `from: terrain-footprint` with the four edges of a terrain model, in which case the marker stands at the footprint's centre. `pipeline/config.py` converts the longitude and refuses a position with no source.
+
+A config may have `scenario`: `home` and `targets`, each naming a rover `stop` id (looked up in the waypoints file at build time, so no coordinate is typed), a `name`, a `why` and a `whySourceUrl`; home may be `assumed: true`. Targets need an `id`. `bright-angel.yaml` has one.
 
 A config may also have `approach.near`: a file for the near ring of approach imagery, with the same fields as a source (`file`, `serverPath`, `originalUrl`, `record`). Without it the near ring comes from the CTX global mosaic. `bright-angel.yaml` names the USGS Jezero CTX mosaic, which the HiRISE map was aligned to.
 

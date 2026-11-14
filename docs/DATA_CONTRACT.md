@@ -72,7 +72,7 @@ vectors/rover-path.geojson              the rover's drives in the box: lines wit
 photos.json                             real rover photos at the stops in the box; optional
 ```
 
-**`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `grid`, `readFrom`, `files` and `totalBytes`.
+**`site.json`** holds `contractVersion`, `builtUtc`, `id`, `name`, `place`, `mission`, `level`, `reviewedByPerson`, `convention`, `box` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), `boxSizeKm`, `centre`, `terrainHeightM` (`lowest`, `highest`, `atCentre`, metres relative to the areoid), `grid`, `readFrom`, `files` and `totalBytes`. When the config has a scenario (added 14 Nov, `pipeline/scenario.py`) it also holds `home` and `targets`: each a place at a rover stop with `name`, `stop`, `firstSol`, `lonEastDeg`, `latDeg`, `heightM`, `why`, `whySourceUrl`, `positionSource` and `assumed`; targets also have `id`. The app uses `home` for the tether and routes, and plans the walk to the first target when the site opens without a walk in the link.
 
 **Terrain tiles** are 256-pixel PNG files. A height in metres relative to the areoid is `-10000 + (red * 65536 + green * 256 + blue) * 0.1`, which MapLibre calls the "mapbox" encoding; the record says `"encoding": "mapbox"`. Heights are true Mars metres. The app scales them by the Earth to Mars radius ratio when drawing, and subtracts `terrainHeightM.lowest` at draw time only. Past the edge of the box a tile repeats the edge height; that is not data.
 

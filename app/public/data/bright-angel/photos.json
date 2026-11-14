@@ -1,10 +1,10 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T13:55:22Z",
+  "builtUtc": "2026-11-14T15:40:48Z",
   "source": {
     "name": "NASA Mars 2020 raw images",
     "url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/",
-    "readFrom": "local working copy, first read from NASA's raw image feed",
+    "readFrom": "NASA's raw image feed",
     "framesRead": 9341
   },
   "how": "Up to 6 full frames from the left navigation camera for each rover stop in the box, spread around the mast's turn, looking between -35 and 10 degrees from the horizon, and only above -20 degrees where a stop has at least 3 such frames. A photo is placed at a stop only when the feed's own site and drive numbers match that stop.",

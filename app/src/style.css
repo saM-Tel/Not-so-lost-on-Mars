@@ -662,6 +662,46 @@ body.map-full #map {
   background: var(--level-1);
 }
 
+/* A science target of the scenario: smaller and quieter than the chosen target, so the walk stays the focus. */
+.route-pin--science {
+  padding: 0.05rem 0.35rem;
+  background: rgba(241, 236, 228, 0.85);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.route-card__targets h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.85rem;
+}
+
+.route-card__targets ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.route-card__targets li {
+  margin-bottom: 0.4rem;
+}
+
+.route-card__target {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--level-1);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.route-card__target:hover,
+.route-card__target:focus-visible {
+  background: rgba(86, 180, 233, 0.2);
+}
+
 /* ---- Rover photos near the route (F6) ---- */
 
 .photo-strip {

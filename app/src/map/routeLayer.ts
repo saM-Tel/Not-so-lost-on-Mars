@@ -27,6 +27,8 @@ export interface RouteLayer {
   /** Draw the tether from a picture with four bytes per grid cell (src/safety/tether.ts). */
   showTether(picture: Uint8ClampedArray, definition: GridDefinition): void;
   showHome(position: LonLat): void;
+  /** Small named pins at the scenario's science targets. */
+  showTargets(targets: { name: string; lonEastDeg: number; latDeg: number }[]): void;
   /** Draw a walk, or clear it with null. */
   showRoute(route: { target: LonLat; out: LonLat[]; back: LonLat[] } | null): void;
   remove(): void;
@@ -61,6 +63,7 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
   let tetherImage: ImageData | null = null;
   let home: Marker | null = null;
   let target: Marker | null = null;
+  let targetPins: Marker[] = [];
 
   map.addSource(LINES_ID, { type: 'geojson', data: lines([], []) });
   map.addLayer({
@@ -146,6 +149,11 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
       home?.remove();
       home = new Marker({ element: pin('route-pin--home', 'Home'), anchor: 'bottom' }).setLngLat(position).addTo(map);
     },
+    showTargets(targets) {
+      for (const marker of targetPins) marker.remove();
+      targetPins = targets.map((t) =>
+        new Marker({ element: pin('route-pin--science', t.name), anchor: 'bottom' }).setLngLat([t.lonEastDeg, t.latDeg]).addTo(map));
+    },
     showRoute(route) {
       target?.remove();
       target = null;
@@ -157,6 +165,7 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
     remove() {
       home?.remove();
       target?.remove();
+      for (const marker of targetPins) marker.remove();
       for (const id of [`${LINES_ID}-back`, `${LINES_ID}-out`, `${LINES_ID}-edge`, TETHER_ID, KEEP_OUT_ID]) {
         if (map.getLayer(id)) map.removeLayer(id);
       }
