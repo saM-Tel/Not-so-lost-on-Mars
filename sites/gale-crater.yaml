@@ -1,0 +1,37 @@
+# WHAT:    Site config for Gale crater, where Curiosity landed: readiness level 1, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: gale-crater
+name: Gale crater
+place: Gale crater
+mission: Curiosity
+missionYears: "2012 to now"
+level: 1
+reviewedByPerson: false
+
+position:
+  from: point   # where Curiosity landed
+  source: "Curiosity waypoints file, first logged stop (RMC 2_0, sol 3), before it had driven"
+  sourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+  longitudeConvention: "east-positive, -180 to 180"
+  latitudeType: planetocentric
+  lonEastDeg: 137.441633
+  latDeg: -4.589467
+
+landing:
+  asPublished: "4.589467 S, 137.441633 E: the rover's first logged stop (RMC 2_0, sol 3)"
+  source: "Curiosity waypoints file"
+  sourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+
+data:
+  - "Image mosaic at 25 cm and terrain mosaic on a 1 m grid from HiRISE (USGS)"
+  - "Curiosity's own stops, 1,388 logged to sol 5070"
+  - "Radiation and daily weather measured on the ground by Curiosity"
+
+problems:
+  - "Not built yet. The rover is now far from where it landed; the box to build has not been chosen."

@@ -1,0 +1,39 @@
+# WHAT:    Site config for Elysium Planitia, where InSight landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: elysium-planitia
+name: Elysium Planitia
+place: Elysium Planitia
+mission: InSight
+missionYears: "2018 to 2022"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEEC_037262_1845_036761_1845_U01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 135.56099987
+  eastLonDeg: 135.69246846
+  southLatDeg: 4.2308253586181
+  northLatDeg: 4.6312720085059
+terrain:
+  - productId: DTEEC_037262_1845_036761_1845_U01
+    serverPath: "raw/insight/DTEEC_037262_1845_036761_1845_U01.IMG"
+    labelSays: "InSight mission candidate landing site"
+    projection: "equirectangular, true to scale at the equator"
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "The landing position was not found in the NASA catalogue page we read, so whether this model contains the lander is not checked."

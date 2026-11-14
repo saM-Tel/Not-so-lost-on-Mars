@@ -1,0 +1,44 @@
+# WHAT:    Site config for Chryse Planitia, where Viking 1 landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: chryse-planitia
+name: Chryse Planitia
+place: Chryse Planitia
+mission: Viking 1
+missionYears: "1976 to 1982"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEEC_001521_2025_001719_2025_U01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_001500_001599/PSP_001521_2025_PSP_001719_2025/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 311.9771246
+  eastLonDeg: 312.13160426
+  southLatDeg: 22.097035749993
+  northLatDeg: 22.445370788305
+terrain:
+  - productId: DTEEC_001521_2025_001719_2025_U01
+    serverPath: "raw/viking1/DTEEC_001521_2025_001719_2025_U01.IMG"
+    labelSays: "Possible Viking Lander 1 landing site"
+    projection: "equirectangular, true to scale at 20 N"
+
+landing:
+  asPublished: "22.27 deg N latitude and 312.05 deg E longitude (planetocentric)"
+  source: "NASA NSSDCA catalogue, Viking 1 Lander"
+  sourceUrl: "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-075C"
+  insideTerrainFootprint: true
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."

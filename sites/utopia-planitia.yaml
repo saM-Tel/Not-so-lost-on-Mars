@@ -1,0 +1,45 @@
+# WHAT:    Site config for Utopia Planitia, where Viking 2 landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: utopia-planitia
+name: Utopia Planitia
+place: Utopia Planitia
+mission: Viking 2
+missionYears: "1976 to 1980"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEEC_002055_2280_001976_2280_A01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_002000_002099/PSP_002055_2280_PSP_001976_2280/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 134.19237305
+  eastLonDeg: 134.37881901
+  southLatDeg: 47.55267931621
+  northLatDeg: 47.76789691545
+terrain:
+  - productId: DTEEC_002055_2280_001976_2280_A01
+    serverPath: "raw/viking2/DTEEC_002055_2280_001976_2280_A01.IMG"
+    labelSays: "Possible location for Viking Lander 2"
+    projection: "equirectangular, true to scale at 45 N"
+
+landing:
+  asPublished: "47.6673 deg N latitude and 134.2809 deg E longitude"
+  source: "NASA NSSDCA catalogue, Viking 2 Lander"
+  sourceUrl: "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C"
+  insideTerrainFootprint: true
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "The source does not say whether its latitude is planetocentric."

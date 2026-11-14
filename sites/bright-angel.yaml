@@ -1,7 +1,43 @@
 # WHAT:    Site config for Bright Angel in Neretva Vallis, Jezero crater: the hero site, readiness level 1.
 # IN:      Nothing.
-# OUT:     Everything the pipeline needs to build this site: box, source files, home, science targets, dates and accuracy.
-# USED BY: pipeline/build_site.py, pipeline/build_globe.py.
-# RULES:   No invented coordinates. Every position cites its source, such as a rover stop and sol.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
 # TRAPS:   PITFALLS 2, 4.
 # OWNER:   Role A, with role C supplying targets.
+
+id: bright-angel
+name: Bright Angel
+place: Neretva Vallis, Jezero crater
+mission: Perseverance
+missionYears: "2021 to now"
+level: 1
+reviewedByPerson: false
+
+position:
+  from: point   # the rover stop where Perseverance stood from sol 1210 to sol 1218
+  source: "Perseverance waypoints file, stop RMC 56_0, first logged on sol 1210"
+  sourceUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+  longitudeConvention: "east-positive, -180 to 180"
+  latitudeType: planetocentric
+  lonEastDeg: 77.305191
+  latDeg: 18.497484
+  why: >-
+    NASA says the Cheyava Falls rock core was collected on 21 July 2024 at the northern edge of
+    Neretva Vallis. By our count from the landing date that is sol 1215, and the rover's log has it
+    at this stop from sol 1210 until it next moved on sol 1219.
+  whySourceUrl: "https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/"
+
+landing:
+  asPublished: "18.44463 N, 77.45089 E: the rover's first logged stop (RMC 3_0, sol 13), before it had driven"
+  source: "Perseverance waypoints file"
+  sourceUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+
+data:
+  - "Image mosaic at 25 cm from HiRISE (USGS)"
+  - "Terrain mosaic on a 1 m grid from HiRISE stereo images (USGS); real detail about 3 to 5 m"
+  - "Perseverance's own stops, 708 logged to sol 2022, with tilt and height at each"
+  - "Rover photographs taken on the ground"
+
+problems:
+  - "Not built yet: the site's box, home position and science targets are still to be set."

@@ -1,0 +1,45 @@
+# WHAT:    Site config for Ares Vallis, where Pathfinder landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: ares-vallis
+name: Ares Vallis
+place: Ares Vallis
+mission: Pathfinder
+missionYears: "1997"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEEC_002391_1995_001890_1995_A01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_002300_002399/PSP_002391_1995_PSP_001890_1995/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 326.69496308
+  eastLonDeg: 326.81098787
+  southLatDeg: 18.938910015711
+  northLatDeg: 19.182149448421
+terrain:
+  - productId: DTEEC_002391_1995_001890_1995_A01
+    serverPath: "raw/pathfinder/DTEEC_002391_1995_001890_1995_A01.IMG"
+    labelSays: "Possible Mars Pathfinder landing site"
+    projection: "equirectangular, true to scale at 15 N"
+
+landing:
+  asPublished: "19.33 N, 33.55 W"
+  source: "NASA NSSDCA catalogue, Mars Pathfinder"
+  sourceUrl: "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A"
+  insideTerrainFootprint: false
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "The landing position NASA's catalogue prints (19.33 N, 33.55 W) is outside this terrain model. It is an older figure and the source does not say which latitude type or reference frame it uses. The terrain label itself says 'possible' landing site. Do not show a lander position here until it is settled."

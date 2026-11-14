@@ -1,0 +1,46 @@
+# WHAT:    Site config for Arctic plain, where Phoenix landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: arctic-plain
+name: Arctic plain
+place: North polar region
+mission: Phoenix
+missionYears: "2008"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEPC_008591_2485_008644_2485_U01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_008500_008599/PSP_008591_2485_PSP_008644_2485/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 234.08574817
+  eastLonDeg: 234.4332309
+  southLatDeg: 68.121495764396
+  northLatDeg: 68.292335140399
+terrain:
+  - productId: DTEPC_008591_2485_008644_2485_U01
+    serverPath: "raw/phoenix/DTEPC_008591_2485_008644_2485_U01.IMG"
+    labelSays: "Phoenix lander landing site"
+    projection: "polar stereographic"
+
+landing:
+  asPublished: "nominally at 68.15 N, 125.9 W"
+  source: "NASA NSSDCA catalogue, Phoenix Mars Lander"
+  sourceUrl: "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2007-034A"
+  insideTerrainFootprint: true
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "The terrain model is in a polar projection, unlike every other site. The pipeline cannot read it yet."
+  - "The source does not say whether its latitude is planetocentric."

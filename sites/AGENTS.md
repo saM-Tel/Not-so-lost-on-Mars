@@ -31,4 +31,18 @@ Role A, with role C supplying science targets and their reasons.
 
 | File | Site | Level | Reviewed by a person |
 |---|---|---|---|
-| `bright-angel.yaml` | Bright Angel, Neretva Vallis, Jezero crater | 1 | No. Header only; not filled in yet |
+| `bright-angel.yaml` | Bright Angel, Neretva Vallis, Jezero crater (Perseverance) | 1 | No |
+| `gale-crater.yaml` | Gale crater (Curiosity) | 1 | No |
+| `columbia-hills.yaml` | Columbia Hills, Gusev crater (Spirit) | 2 | No |
+| `meridiani.yaml` | Meridiani (Opportunity) | 2 | No |
+| `elysium-planitia.yaml` | Elysium Planitia (InSight) | 2 | No |
+| `arctic-plain.yaml` | Arctic plain (Phoenix) | 2 | No |
+| `ares-vallis.yaml` | Ares Vallis (Pathfinder) | 2 | No |
+| `chryse-planitia.yaml` | Chryse Planitia (Viking 1) | 2 | No |
+| `utopia-planitia.yaml` | Utopia Planitia (Viking 2) | 2 | No |
+
+So far each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. None is built. The box, source files, home and targets are added when a site is built.
+
+A position is given in one of two ways, both copied digit for digit from the source: `from: point` with a longitude and latitude, or `from: terrain-footprint` with the four edges of a terrain model, in which case the marker stands at the footprint's centre. `pipeline/config.py` converts the longitude and refuses a position with no source.
+
+After changing a config, run `build_globe.py --only sites` in `pipeline/` to rewrite `app/public/data/sites.json`.

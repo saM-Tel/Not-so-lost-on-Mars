@@ -1,0 +1,45 @@
+# WHAT:    Site config for Meridiani, where Opportunity landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: meridiani
+name: Meridiani
+place: Terra Meridiani
+mission: Opportunity
+missionYears: "2004 to 2018"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEEC_021747_1780_022380_1780_U01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 354.46316309
+  eastLonDeg: 354.57849962
+  southLatDeg: -2.1605326975917
+  northLatDeg: -1.9329635490807
+terrain:
+  - productId: DTEEC_021747_1780_022380_1780_U01
+    serverPath: "raw/opportunity/DTEEC_021747_1780_022380_1780_U01.IMG"
+    labelSays: "Victoria Crater"
+    projection: "equirectangular, true to scale at the equator"
+
+landing:
+  asPublished: "1.946 S, 354.473 E (IAU 2000 body-centered coordinates)"
+  source: "NASA NSSDCA catalogue, Mars Exploration Rover B (Opportunity)"
+  sourceUrl: "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A"
+  insideTerrainFootprint: true
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."
+  - "Three more terrain models are on the team data server for this site: DTEEC_001414_1780_001612_1780_U01 (its label says 'Possibily Opportunity Rover landing site', but its footprint does not contain the published landing position), DTEEC_018701_1775_018846_1775_U01 (Endeavour crater western rim) and DTEEC_028815_1780_028670_1780_A01 (north-central Endeavour crater)."

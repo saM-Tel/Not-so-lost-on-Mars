@@ -1,0 +1,44 @@
+# WHAT:    Site config for Columbia Hills, where Spirit landed: readiness level 2, not built.
+# IN:      Nothing.
+# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
+# RULES:   No invented coordinates. Every number is copied from the source named beside it.
+# TRAPS:   PITFALLS 2, 4.
+# OWNER:   Role A.
+
+id: columbia-hills
+name: Columbia Hills
+place: Gusev crater
+mission: Spirit
+missionYears: "2004 to 2010"
+level: 2
+reviewedByPerson: false
+
+position:
+  from: terrain-footprint   # the marker stands at the centre of this terrain model's footprint
+  source: "Label at the start of DTEEC_001513_1655_001777_1650_U01.IMG, HiRISE archive, University of Arizona"
+  sourceUrl: "https://hirise.lpl.arizona.edu/PDS/DTM/PSP/ORB_001500_001599/PSP_001513_1655_PSP_001777_1650/"
+  longitudeConvention: "east-positive, 0 to 360"
+  latitudeType: planetocentric
+  westLonDeg: 175.44186625
+  eastLonDeg: 175.5548178
+  southLatDeg: -14.67751994921
+  northLatDeg: -14.492566129485
+terrain:
+  - productId: DTEEC_001513_1655_001777_1650_U01
+    serverPath: "raw/spirit/DTEEC_001513_1655_001777_1650_U01.IMG"
+    labelSays: "Possible location of Spirit Rover in Columbia Hills"
+    projection: "equirectangular, true to scale at 10 S"
+
+landing:
+  asPublished: "14.572 S, 175.478 E"
+  source: "NASA NSSDCA catalogue, Mars Exploration Rover A (Spirit)"
+  sourceUrl: "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-027A"
+  insideTerrainFootprint: true
+
+data:
+  - "One terrain model on a grid of about 1 m from HiRISE stereo images (University of Arizona), covering a single strip"
+  - "HiRISE images matched to that terrain model"
+
+problems:
+  - "Not built. An automatic build would be marked 'not reviewed by a person'."
