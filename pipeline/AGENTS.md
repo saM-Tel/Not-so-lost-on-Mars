@@ -16,8 +16,8 @@ Run these inside `pipeline/`. Use a standard Python 3.12 from python.org. The Py
 
 - Create the Python environment and install: `py -3.12 -m venv .venv`, then `.venv\Scripts\python -m pip install -r requirements.txt`. On macOS or Linux: `python3.12 -m venv .venv`, then `.venv/bin/python -m pip install -r requirements.txt`
 - Build a site: `.venv\Scripts\python build_site.py ../sites/<site id>.yaml` (not built yet)
-- Build the globe image and site list: `.venv\Scripts\python build_globe.py` (not built yet)
-- Check (tests and a dry run), the one command that must pass before any push: to be set with the first test
+- Build the globe image and site list: `.venv\Scripts\python build_globe.py` (builds the image; the site list is not built yet). It fetches 512 tiles from Mars Trek on the first run and keeps them in `../data/work/globe/`
+- Check, the one command that must pass before any push: `.venv\Scripts\python -m pytest -q`. A dry run of a site build will be added to it when `build_site.py` exists
 
 ## Reads and writes
 
@@ -61,19 +61,21 @@ Add a row when you add a file. Remove it when you delete one.
 |---|---|---|
 | `requirements.txt` | Pinned Python packages | |
 | `build_site.py` | One command that builds one site from its config: runs every stage in order and writes the site folder | F1 to F6, F9 |
-| `build_globe.py` | Builds what the globe needs: Web Mercator tiles of a global Mars image, and `sites.json` from every site config | F14 |
+| `build_globe.py` | Builds what the globe needs. Built so far: Web Mercator tiles of the Viking colour mosaic, with its layer record. To add: `sites.json` from every site config | F14 |
 | `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |
+| `test_mars.py` | Tests for `mars.py`, with expected values worked by hand | |
 | `config.py` | Reads and checks a site config | all |
 | `sources.py` | Finds each source file and reads only the site's box from it | F1 |
 | `mask.py` | Stage 2: finds missing data and seams between source terrain models | F1, F3 |
-| `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads | F1, F14 |
+| `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads. Built so far: whole-planet image pyramids | F1, F14 |
+| `test_tiles.py` | Tests for `tiles.py` on small made-up fixtures that stay in the test file | |
 | `terrain.py` | Stage 4: slope, roughness and sky exposure from terrain heights | F2, F3, F5 |
 | `grids.py` | Stage 5: writes the routing grids as raw binary arrays | F3, F4 |
 | `vectors.py` | Stage 6: converts geology, the rover path, rover stops and science targets to GeoJSON | F2 |
 | `weather.py` | Stage 7: typical weather by local hour for the season, from the weather archive | F11 |
 | `photos.py` | Stage 7: index of real rover photos near the route area | F6 |
 | `validate.py` | Stage 8: checks our terrain against the rover's own measurements | F1, F9 |
-| `records.py` | Stage 9: writes `layers.json` and `site.json`, including file sizes | F2 |
+| `records.py` | Stage 9: writes `layers.json` and `site.json`, including file sizes. Built so far: the layer record check and `layers.json` | F2, F14 |
 
 ## Known issues
 

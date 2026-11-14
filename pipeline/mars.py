@@ -5,3 +5,85 @@
 # RULES:   Values match the root AGENTS.md and app/src/mars/constants.ts. The only place they are defined in Python.
 # TRAPS:   PITFALLS 3, 4.
 # OWNER:   Role A.
+
+import math
+
+# The sphere the USGS map products use. Source: root AGENTS.md, "Conventions".
+MARS_RADIUS_M = 3_396_190.0
+MARS_GRAVITY_M_S2 = 3.71
+SOL_S = 88_775.244
+
+# Ground distance covered by one degree of latitude, or of longitude at the equator.
+METRES_PER_DEGREE = MARS_RADIUS_M * math.pi / 180.0
+
+# Web Mercator cannot show the poles. This is the latitude where the square map ends.
+MERCATOR_MAX_LAT_DEG = math.degrees(math.atan(math.sinh(math.pi)))
+
+TILE_SIZE_PX = 256
+
+
+def lon_to_180(lon_east_deg: float) -> float:
+    """East-positive longitude in any range, returned in -180 (exclusive) to 180 (inclusive)."""
+    lon = math.fmod(lon_east_deg, 360.0)
+    if lon > 180.0:
+        lon -= 360.0
+    elif lon <= -180.0:
+        lon += 360.0
+    return lon
+
+
+def west_to_east(lon_west_deg: float) -> float:
+    """West-positive longitude, as in older products, to east-positive in -180 to 180."""
+    return lon_to_180(-lon_west_deg)
+
+
+def east_west_spacing_m(north_south_spacing_m: float, lat_deg: float) -> float:
+    """Ground width of a cell in a grid that is true to scale at the equator.
+
+    The USGS mosaics are equirectangular with their true scale at the equator, so a cell
+    that is `north_south_spacing_m` tall is narrower than that east to west by cos(latitude).
+    """
+    return north_south_spacing_m * math.cos(math.radians(lat_deg))
+
+
+def distance_m(lon1_deg: float, lat1_deg: float, lon2_deg: float, lat2_deg: float) -> float:
+    """Great-circle distance on the Mars sphere, in metres."""
+    p1, p2 = math.radians(lat1_deg), math.radians(lat2_deg)
+    dp = p2 - p1
+    dl = math.radians(lon2_deg - lon1_deg)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * MARS_RADIUS_M * math.asin(min(1.0, math.sqrt(a)))
+
+
+# ---- Web Mercator tile maths -------------------------------------------------------------
+# MapLibre reads tiles cut on the Web Mercator square. The maths below works on longitude and
+# latitude only, so it holds for any sphere; nothing here uses a radius.
+
+
+def mercator_fraction(lon_deg: float, lat_deg: float) -> tuple[float, float]:
+    """Position on the Web Mercator square: x from 0 (180 W) to 1 (180 E), y from 0 (north) to 1 (south)."""
+    x = (lon_deg + 180.0) / 360.0
+    lat = max(-MERCATOR_MAX_LAT_DEG, min(MERCATOR_MAX_LAT_DEG, lat_deg))
+    y = 0.5 - math.asinh(math.tan(math.radians(lat))) / (2 * math.pi)
+    return x, y
+
+
+def mercator_y_to_lat_deg(y: float) -> float:
+    """Latitude in degrees for a y position on the Web Mercator square (0 north, 1 south)."""
+    return math.degrees(math.atan(math.sinh(math.pi * (1.0 - 2.0 * y))))
+
+
+def tile_bounds_deg(z: int, x: int, y: int) -> tuple[float, float, float, float]:
+    """West, south, east, north of a tile in degrees."""
+    n = 2**z
+    west = x / n * 360.0 - 180.0
+    east = (x + 1) / n * 360.0 - 180.0
+    north = mercator_y_to_lat_deg(y / n)
+    south = mercator_y_to_lat_deg((y + 1) / n)
+    return west, south, east, north
+
+
+def tile_pixel_size_m(z: int, lat_deg: float) -> float:
+    """Ground size on Mars of one tile pixel at this zoom and latitude, in metres."""
+    world_px = TILE_SIZE_PX * 2**z
+    return 2 * math.pi * MARS_RADIUS_M * math.cos(math.radians(lat_deg)) / world_px
