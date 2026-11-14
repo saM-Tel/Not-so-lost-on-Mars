@@ -9,8 +9,8 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Source | Address | Read |
 |---|---|---|
 | Participant FAQ | https://www.spaceappschallenge.org/resources/participant-faqs/ | No, search excerpt only |
-| Judging and Awards Guide | https://www.spaceappschallenge.org/resources/judging-awards-guide/ | No, search excerpt only |
-| Project Submission Guide | https://www.spaceappschallenge.org/resources/project-submission-guide/ | No, search excerpt only |
+| Judging and Awards Guide, dated 13 Nov 2026 | https://www.spaceappschallenge.org/resources/judging-awards-guide/ | Yes, 14 Nov, from a saved PDF |
+| Project Submission Guide, dated 13 Nov 2026 | https://www.spaceappschallenge.org/resources/project-submission-guide/ | Yes, 14 Nov, from a saved PDF |
 | Participant terms and conditions | https://www.spaceappschallenge.org/legal/ | No |
 | Organiser answers on submission times | https://github.com/nasa/spaceapps/discussions/1788 | Yes |
 
@@ -28,6 +28,8 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Sun and Stack 2020, Geologic map of Jezero crater and the Nili Planum region, USGS SIM 3464, doi 10.3133/sim3464 | https://pubs.usgs.gov/publication/sim3464 |
 | Perseverance location data | https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json |
 | Curiosity location data | https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json |
+| NASA NSSDCA spacecraft catalogue: landing positions as published for Viking 1, Viking 2, Pathfinder, Spirit, Opportunity and Phoenix | https://nssdc.gsfc.nasa.gov/nmc/ |
+| NASA JPL, "NASA's Perseverance Rover Scientists Find Intriguing Mars Rock", 25 July 2024: date and place of the Cheyava Falls core | https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/ |
 | Perseverance raw images | https://mars.nasa.gov/mars2020/multimedia/raw-images/ |
 | Curiosity weather feed | https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json |
 | Mars 2020 MEDA archive, PDS Atmospheres Node | https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/ |

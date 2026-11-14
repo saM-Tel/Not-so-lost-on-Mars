@@ -53,6 +53,8 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Trek tile address order | Zoom, then row, then column. Zoom 0 has two tiles |
 | Trek terrain layers used as heights | They are pictures. Use the USGS files |
 | The Jezero geologic map is 100 to 200 m off the corrected base, in its own projection | Reproject with the supplied definition, shift by eye against known contacts, and state the offset |
+| Assuming every terrain file uses the Jezero grid | The single-strip HiRISE models each have their own projection: a different latitude of true scale, sometimes a local radius, and polar stereographic for Phoenix. Read it from the file |
+| A landing position copied from an old source | Older figures use other reference frames and often do not say which latitude type. NASA's catalogue figure for Pathfinder is about 20 km from the terrain model labelled as its site. Quote such a position as text with its source; do not plot it |
 | Rover positions assumed to match the image exactly | They are localised against the same base map but can differ by metres. State it |
 
 ## 5. Terrain
@@ -127,6 +129,9 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Remote images used as 3D textures | That needs permission headers on the image host. Use ordinary image elements, or check first |
 | The demo depends on a slow computation | Ship a precomputed route for the opening state |
 | New dependencies on Sunday | None after the freeze |
+| Tests all fail on Windows with "Cannot read properties of undefined (reading 'config')" | The terminal's folder is spelled with a lowercase drive letter. Use `npm run check`, which starts the tests the right way |
+| A blank map with MapLibre 6 under Vite | Its worker file must be given with `setWorkerUrl`. See `app/src/map/mapView.ts` |
+| A new web address that judges' networks block | The guide suggests asking for a web filter classification for a new site. A `github.io` address avoids the question |
 | Three people and several AIs editing the same files | One owner per folder; pull before push; small commits |
 | An AI tidying or refactoring files it was not asked to touch | Change only what the task needs |
 | An AI reporting success without running the code | Run it with real data and say what was tested |

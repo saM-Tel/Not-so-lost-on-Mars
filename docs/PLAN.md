@@ -23,16 +23,17 @@ Hero site: **Bright Angel in Neretva Vallis, Jezero crater**, where Perseverance
 
 | Item | What we know | Confidence |
 |---|---|---|
-| Hackathon window | Saturday 14 Nov 09:00 to Sunday 15 Nov 23:59, local time | Confirmed by an organiser post on Space Apps Connect |
+| Hackathon window | Saturday 14 Nov 09:00 to Sunday 15 Nov 23:59. For the Universal Event the times follow the local time of the Team Owner's area of residence | Confirmed in the Project Submission Guide |
 | Starting early | The official FAQ says teams "are not allowed to begin working on the challenges prior to the hackathon" | From a search excerpt of the FAQ; read the full answer yourselves |
-| Judging criteria | Impact, Creativity, Validity, Relevance, Presentation, each scored 1 to 5 | Search excerpt of the 2026 guide |
-| Demo | A video of at most 30 seconds, or a slide deck of at most 7 slides including title and intro. Hosted externally on a public link. English, or English subtitles | Search excerpt |
-| Universal Event eligibility | At least two team members, all listed on the team's Members tab, all with the same event choice | Search excerpt |
-| Originality | A checkbox confirms the work is original and all external resources are listed in References. Every source must be cited | Search excerpt |
-| AI use | Allowed but must be declared. A third-party kit says AI-generated images and video must be watermarked and NASA logos must not be used | Not confirmed from the official guide |
-| Results | Global Nominees 3 Dec 2026, Global Finalists 17 Dec 2026 | Search excerpt |
+| Judging criteria | Impact, Creativity, Validity, Relevance, Presentation, each scored 1 to 5. Validity includes usability. Relevance asks for NASA data "as a core component". Presentation is scored from the demo and the full project | Confirmed in the Judging and Awards Guide |
+| Demo | A video of at most 30 seconds, or a slide deck of at most 7 slides including title and intro. Hosted externally on a public link that needs no login. English, or English subtitles on a video. **Going over either limit makes the project ineligible for Global Judging** | Confirmed in both guides |
+| Universal Event eligibility | Two to six team members, all listed on the team's Members tab, all with the same event choice. Nobody can be added after submission closes | Confirmed in the Judging and Awards Guide |
+| Originality | A checkbox confirms the work is original and that all external resources, "including code, text and images (even if they are open source or freely available)", are listed in the References field | Confirmed |
+| AI use | Allowed, and the form asks how it was used. The guide says AI "should not be used to come up with your idea of how to solve the challenge". AI-made images and video need a visible watermark. AI-made audio, **code and data** "must acknowledge" it "in descriptive text and metadata". Generated content may not use NASA logos, flags or mission identifiers. The answer on the form is not shown to judges, but judges see the markers inside the project | Confirmed in the Project Submission Guide |
+| Results | Global Nominees 3 Dec 2026, Global Finalists and Honorable Mentions 17 Dec 2026, Global Winners 26 Jan 2027 | Confirmed in the Judging and Awards Guide |
+| Other limits | No image, video, audio or likeness of anyone under 18 in the demo or project. At least one NASA dataset or resource is needed for a Global Award. Teams are reviewed under NASA's rule on bilateral activity with China or Chinese-owned entities | Confirmed in the guides |
 
-Two official guides went live on 13 November: the Project Submission Guide and the Judging and Awards Guide. I could not open spaceappschallenge.org from this machine (certificate error), so everything above marked "search excerpt" comes from search results, not the pages themselves. **Someone must read both guides in a browser tonight and correct this table.** In particular, find the exact list of submission fields, the AI rules, and the 2026 global award names.
+Both guides, dated 13 November 2026, were read on 14 November from PDF copies the team owner saved, and the table above was corrected from them. The website still cannot be opened from the lead machine (certificate error). The participant FAQ and the terms and conditions have not been read; the rule about not starting early comes from the FAQ. The submission fields and the award names are in [DECISIONS.md](DECISIONS.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 ### What this means for tonight
 

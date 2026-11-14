@@ -30,6 +30,24 @@ app/public/data/
     validation.json          terrain and route checks with sample sizes
 ```
 
+## In use since 14 November
+
+These parts are built and the app reads them. They are still a proposal until roles A and B confirm them, but changing them now means changing `pipeline/records.py`, `pipeline/build_globe.py` and `app/src/data/contract.ts` together.
+
+```
+app/public/data/
+  sites.json                         every site for the globe
+  globe/
+    layers.json                      one record: the whole-planet image
+    tiles/image-viking/{z}/{x}/{y}.jpg
+```
+
+**`layers.json`** holds `contractVersion`, `builtUtc` and `layers`. Each layer record has every field of [CONFIDENCE.md](CONFIDENCE.md) section 1, in camelCase: `id`, `title`, `dataType`, `mission`, `instrument`, `agency`, `productId`, `sourceUrl`, `doi`, `acquiredFrom`, `acquiredTo`, `published`, `gridSpacing`, `realDetail`, `positionAccuracy`, `heightAccuracy`, `processing`, `grade`, `caveats` (a list) and `credit`. A value that was looked for and not found is the text `not found`; one that does not apply is `not applicable`. The app leaves out any layer whose mission, instrument, dates, detail, grade, caveats or credit is absent or `not found`. A layer with map tiles also has `tiles`: `path` (a pattern with `{z}`, `{x}`, `{y}`, relative to the folder holding `layers.json`), `minZoom`, `maxZoom`, `tileSizePx`, `count` and `bytes`.
+
+**Image tiles** are 256-pixel JPEG files on the Web Mercator square, addressed zoom, then column counted east, then row counted south.
+
+**`sites.json`** holds `contractVersion`, `builtUtc`, `convention`, `levels` (name and offer for each readiness level) and `sites`. Each site has `id`, `name`, `place`, `mission`, `missionYears`, `level`, `built`, `reviewedByPerson`, `lonEastDeg`, `latDeg`, `position` (what the point is, its source and address), `landing` (the landing position as its source prints it, or null), `data` and `problems` (lists of sentences), and `terrainFootprint` when the position came from a terrain model. `built` is true when `<site id>/site.json` exists.
+
 ## Grid definition
 
 To settle on Saturday. The app needs all of these from `site.json` to read a grid correctly:

@@ -17,6 +17,7 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 
 | Proposal | Recommendation | Alternative |
 |---|---|---|
+| How AI-written code and data are acknowledged, now that commits carry no AI line. The guide asks for "descriptive text and metadata" | A section in the README, [AI_USE.md](AI_USE.md), a note in the app's credits, and a metadata note in `index.html` and in the data files the pipeline writes | A plain "written with AI help" line in commit messages, which names no co-author |
 | What each link opens on | The plain link opens on the globe. A link that names a site opens on that site; for Bright Angel that is the hero scenario with its route. Use the Bright Angel link in the video and on the project page | Every link opens on the hero scenario, with a button to reach the globe |
 | Hero site | Bright Angel, Jezero crater | Gale crater boxwork: matches the challenge's example and has radiation measured in place, but many teams will choose it |
 | Product name | Tether | Homeward, Lifeline |
@@ -29,10 +30,18 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 | Licence for our code | To choose; check whether the submission guide requires open source | |
 | Whether teammates' AI tools may commit | Only when their human asks | |
 
-## Open questions to answer from the official guides
+## Answered from the official guides on 14 November
 
-- Exact submission fields and any word limits
-- Exact AI disclosure wording, and whether AI-generated media needs a watermark
-- Names and definitions of the 2026 global awards
-- Whether the code repository must be public and open source
-- Whether a public video link may be "unlisted"
+Read from the Project Submission Guide and the Judging and Awards Guide, both dated 13 November 2026.
+
+- **Submission fields:** Project Name; High-Level Project Summary; Link to Project Demo; Link to Final Project; Detailed Project Description; Use of Super Intelligence (the guide's name for AI); NASA Data; Space Agency Partner Data and Other References. No word limits are given. Images (JPG, PNG, GIF, up to 10 MB) can be placed on the page; videos and documents cannot. Everything must be in English.
+- **AI wording:** see the "AI use" row in [PLAN.md](PLAN.md) section 2. Two points need the team's attention: the guide says AI should not be used to come up with the idea, so our statement must say truthfully where the idea came from; and AI-written code and data must be acknowledged in descriptive text and metadata.
+- **Global awards, ten:** Best Use of Science, Best Use of Data, Best Use of Technology, Galactic Impact, Best Mission Concept, Most Inspirational, Best Storytelling, Global Connection, Art and Technology, Local Impact.
+- **Public or open-source repository:** neither guide requires it. The link to the final project must open with no password, permission or registration.
+- **Unlisted video:** not mentioned. The demo link must be "publicly accessible" with no login. Test it in a private window.
+- **Editing after submitting:** allowed until the deadline; only the last saved submission is judged.
+
+## Still open
+
+- The participant FAQ and the terms and conditions have not been read
+- A licence for our code

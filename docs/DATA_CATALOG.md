@@ -29,6 +29,7 @@ Tile address pattern: `https://trek.nasa.gov/tiles/Mars/EQ/<layer id>/1.0.0/defa
 | `JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0` | Jezero CTX image | 6 m |
 | `curiosity_hirise_mosaic`, `Gale_DEM_SMG_1m` | Gale image and terrain picture, 137.122 to 137.730 E, 4.925 to 4.249 S | 25 cm, 1 m |
 | `THEMIS_NightIR_ControlledMosaics_100m_v2_oct2018`, `THEMIS_DayIR_ControlledMosaics_100m_v2_oct2018` | Night and day infrared, Mars Odyssey; mosaic version dated October 2018 | 100 m |
+| `Mars_Viking_MDIM21_ClrMosaic_global_232m` | Whole-planet colour mosaic from the Viking orbiters, 1976 to 1980. The globe image in the app. Zoom 0 to 7 as JPEG | 232 m |
 | `TES_Thermal_Inertia`, `TES_Dust`, `tes_ruffdust`, `Mars_MGS_TES_Albedo_mosaic_global_7410m` | Thermal inertia, dust, albedo, Mars Global Surveyor | Kilometres |
 | `Mars_MOLA_blend200ppx_HRSC_DEM_clon0dd_200mpp_lzw`, `Mars_MGS_MOLA_ClrShade_merge_global_463m` | Global terrain, MGS MOLA with Mars Express HRSC | 200 m, 463 m |
 | `CTX_beta01_uncontrolled_5m_Caltech`, `HiRISE_Global` | Global CTX and HiRISE image mosaics, not position-corrected | 5 m, 25 cm where covered |
@@ -74,12 +75,14 @@ All folders are under `https://hirise.lpl.arizona.edu/PDS/DTM/`.
 | Viking 2 | DTEEC_002055_2280_001976_2280_A01 | 9, 2.18 GB | `PSP/ORB_002000_002099/PSP_002055_2280_PSP_001976_2280/` | Labelled "possible location for Viking Lander 2". Near: 1.2 km |
 | Pathfinder | DTEEC_002391_1995_001890_1995_A01 | 9, 1.75 GB | `PSP/ORB_002300_002399/PSP_002391_1995_PSP_001890_1995/` | Labelled "possible Mars Pathfinder landing site". Near: 4.4 km, so coverage is uncertain |
 | Spirit | DTEEC_001513_1655_001777_1650_U01 | 5, 0.96 GB | `PSP/ORB_001500_001599/PSP_001513_1655_PSP_001777_1650/` | Columbia Hills. Near: 1.9 km |
-| Opportunity, landing site | DTEEC_001414_1780_001612_1780_U01 | 5, 0.03 GB | `PSP/ORB_001400_001499/PSP_001414_1780_PSP_001612_1780/` | Very small area |
-| Opportunity, Victoria crater | DTEEC_021747_1780_022380_1780_U01 | 5, 1.05 GB | `ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780/` | |
+| Opportunity, small model | DTEEC_001414_1780_001612_1780_U01 | 5, 0.03 GB | `PSP/ORB_001400_001499/PSP_001414_1780_PSP_001612_1780/` | About 1.3 by 1.7 km. Its label says "Possibily Opportunity Rover landing site", but its footprint (2.036 to 2.065 S) does not contain the landing position NASA's catalogue gives (1.946 S, 354.473 E) |
+| Opportunity, Victoria crater | DTEEC_021747_1780_022380_1780_U01 | 5, 1.05 GB | `ESP/ORB_021700_021799/ESP_021747_1780_ESP_022380_1780/` | Its footprint contains the published landing position, near its north-west corner |
 | Opportunity, Endeavour west rim | DTEEC_018701_1775_018846_1775_U01 | 7, 2.31 GB | `ESP/ORB_018700_018799/ESP_018701_1775_ESP_018846_1775/` | Where the mission ended |
 | Opportunity, north Endeavour | DTEEC_028815_1780_028670_1780_A01 | 13, 2.00 GB | `ESP/ORB_028800_028899/ESP_028815_1780_ESP_028670_1780/` | |
 | Phoenix | DTEPC_008591_2485_008644_2485_U01 | 5, 1.86 GB | `PSP/ORB_008500_008599/PSP_008591_2485_PSP_008644_2485/` | Polar projection, unlike the others; the pipeline must handle it. Near: 0.8 km |
 | InSight | DTEEC_037262_1845_036761_1845_U01 | 5, 2.37 GB | `ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845/` | Near: 4.1 km |
+
+Read from the label at the start of each terrain file on 14 November: every model gives planetocentric latitude and east-positive longitude from 0 to 360, but **each has its own projection**. The equirectangular ones are true to scale at different latitudes (20 N for Viking 1, 45 N for Viking 2, 15 N for Pathfinder, 10 S for Spirit, the equator for Opportunity and InSight) and several use a local radius, not 3,396.19 km. Phoenix is polar stereographic. The pipeline must read the projection from each file. The landing position in NASA's catalogue falls inside the model for Viking 1, Viking 2, Spirit, Opportunity (Victoria model) and Phoenix; it falls outside for Pathfinder, whose catalogue figure is an older one with no stated frame; it was not found for InSight. The footprints are in the site configs under `sites/`.
 
 Total: 68 files, 17.06 GB. Each `.JP2` image also has a small `.LBL` label file beside it holding its acquisition details; the 58 labels were added to the server on 14 November. These are single strips a few kilometres wide, not mosaics, so each site's box is smaller than at Jezero or Gale.
 
