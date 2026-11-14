@@ -1,0 +1,57 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T11:25:50Z",
+  "id": "bright-angel",
+  "name": "Bright Angel",
+  "place": "Neretva Vallis, Jezero crater",
+  "mission": "Perseverance",
+  "level": 1,
+  "reviewedByPerson": false,
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees. Heights in metres relative to the areoid.",
+  "box": {
+    "westLonDeg": 77.2785065,
+    "eastLonDeg": 77.3318755,
+    "southLatDeg": 18.4721781,
+    "northLatDeg": 18.5227899
+  },
+  "boxSizeKm": {
+    "eastWest": 3,
+    "northSouth": 3
+  },
+  "centre": {
+    "lonEastDeg": 77.305191,
+    "latDeg": 18.497484
+  },
+  "terrainHeightM": {
+    "lowest": -2415.27,
+    "highest": -1869.78,
+    "atCentre": -2354.0
+  },
+  "readFrom": {
+    "terrain": "local working copy, first read from the team data server",
+    "image": "team data server"
+  },
+  "files": [
+    {
+      "path": "layers.json",
+      "files": 1,
+      "bytes": 3712
+    },
+    {
+      "path": "validation.json",
+      "files": 1,
+      "bytes": 921
+    },
+    {
+      "path": "tiles/image-hirise",
+      "files": 2160,
+      "bytes": 9701930
+    },
+    {
+      "path": "tiles/terrain-hirise",
+      "files": 52,
+      "bytes": 1122077
+    }
+  ],
+  "totalBytes": 10828640
+}

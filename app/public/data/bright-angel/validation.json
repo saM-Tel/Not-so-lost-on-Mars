@@ -1,0 +1,21 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T11:25:50Z",
+  "heights": {
+    "what": "Terrain height minus the height the rover logged at the same position",
+    "heightReference": "metres relative to the areoid, in both",
+    "stopsInBox": 116,
+    "stopsUsed": 116,
+    "stopsSkippedNoTerrain": 0,
+    "stopsSkippedNoLoggedHeight": 0,
+    "medianDifferenceM": -0.0,
+    "medianAbsoluteDifferenceM": 0.03,
+    "percentile90AbsoluteDifferenceM": 0.1,
+    "largestAbsoluteDifferenceM": 0.78,
+    "firstSol": 1046,
+    "lastSol": 1281,
+    "roverFile": "m20_perseverance_waypoints.json",
+    "roverFileReadFrom": "team data server",
+    "caution": "The agreement is closer than the terrain's stated accuracy, which suggests the rover's logged heights were themselves read from this terrain model. That is not confirmed. If so, this shows that we placed the terrain correctly, not that the terrain is accurate."
+  }
+}

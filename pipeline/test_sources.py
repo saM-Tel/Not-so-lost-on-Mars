@@ -99,6 +99,7 @@ def test_read_box_returns_the_cells_that_touch_the_box(tmp_path, monkeypatch):
     # Columns 10 to 19 and rows 5 to 9, in degrees
     box = sources.Box((600_010.0) * per_m, (600_020.0) * per_m, (300_000.0 - 10.0) * per_m, (300_000.0 - 5.0) * per_m)
     monkeypatch.setattr(sources, "candidate_addresses", lambda *a: [(str(folder / "fixture.tif"), "test fixture file")])
+    monkeypatch.setattr(sources, "ROWS_PER_READ", 2)  # the 5 rows arrive as blocks of 2, 2 and 1
     grid = sources.read_box("fixture.tif", "raw/fixture", "unused", box, tmp_path / "work")
     assert grid.values.shape == (5, 10)
     assert grid.values[0, 0] == 5010.0 and grid.values[-1, -1] == 9019.0

@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T09:36:38Z",
+  "builtUtc": "2026-11-14T11:25:50Z",
   "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees.",
   "levels": {
     "1": {
@@ -107,7 +107,7 @@
       "mission": "Perseverance",
       "missionYears": "2021 to now",
       "level": 1,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
       "lonEastDeg": 77.305191,
       "latDeg": 18.497484,
@@ -130,7 +130,7 @@
         "Rover photographs taken on the ground"
       ],
       "problems": [
-        "Not built yet: the site's box, home position and science targets are still to be set."
+        "Home position and science targets are still to be set, so there are no routes yet."
       ]
     },
     {

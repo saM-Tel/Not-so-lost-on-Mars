@@ -30,6 +30,9 @@ GDAL_OPTIONS = {
     "GTIFF_DIRECT_IO": "YES",
 }
 
+# How many rows of a window are fetched in one request. 500 rows of the 25 cm image is about 6 MB.
+ROWS_PER_READ = 500
+
 
 @dataclasses.dataclass(frozen=True)
 class Box:
@@ -201,7 +204,11 @@ def read_box(file_name: str, server_path: str, original_url: str, box: Box, cach
                 row1 = min(dataset.height, math.ceil((box.south_lat_deg / per_metre - t.f) / t.e))
                 if col1 <= col0 or row1 <= row0:
                     raise ValueError(f"{file_name} does not cover the box")
-                values = dataset.read(1, window=Window(col0, row0, col1 - col0, row1 - row0))
+                # Read in blocks of rows: one request for all 12,000 rows of the 25 cm image fails over the network.
+                values = np.empty((row1 - row0, col1 - col0), dtype=dataset.dtypes[0])
+                for start in range(row0, row1, ROWS_PER_READ):
+                    count = min(ROWS_PER_READ, row1 - start)
+                    values[start - row0: start - row0 + count] = dataset.read(1, window=Window(col0, start, col1 - col0, count))
                 grid = Grid(values, (t.c + col0 * t.a) * per_metre, (t.f + row0 * t.e) * per_metre,
                             t.a * per_metre, -t.e * per_metre, dataset.nodata, origin)
         except (rasterio.errors.RasterioIOError, OSError) as error:

@@ -1,0 +1,75 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-14T11:25:50Z",
+  "layers": [
+    {
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "agency": "NASA",
+      "productId": "JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_orthorectified_image_mosaic",
+      "doi": "not found",
+      "acquiredFrom": "2007-01-29",
+      "acquiredTo": "2017-01-01",
+      "published": "2020-07-24",
+      "gridSpacing": "25 cm",
+      "realDetail": "About 30 cm in our copy; objects need to be about 1 m across to be recognised",
+      "positionAccuracy": "Source images agree with each other to better than 3 m (99th percentile) and sit a median 2.1 m from the CTX base map, 95.4% within 6 m (Fergason and others 2020)",
+      "heightAccuracy": "not applicable",
+      "grade": "B",
+      "caveats": [
+        "Taken between 2007 and 2017, before the rover landed. Rover tracks and hardware are not in it, and sand may have moved.",
+        "Lit by the afternoon Sun at the time of each image. Dark patches can be shadows, not dark ground.",
+        "One black-and-white band. It shows brightness, not colour."
+      ],
+      "credit": "NASA/JPL-Caltech/University of Arizona/USGS (Fergason and others 2020)",
+      "id": "image-hirise",
+      "title": "Ground from orbit",
+      "dataType": "optical",
+      "processing": "Cut to the site's box and redrawn as map tiles for zoom 12 to 18. One tile pixel at zoom 18 is 0.30 m on the ground. Places with no data are transparent.",
+      "tiles": {
+        "path": "tiles/image-hirise/{z}/{x}/{y}.webp",
+        "minZoom": 12,
+        "maxZoom": 18,
+        "tileSizePx": 256,
+        "count": 2160,
+        "bytes": 9701930
+      }
+    },
+    {
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "agency": "NASA",
+      "productId": "JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic",
+      "doi": "not found",
+      "acquiredFrom": "2007-01-29",
+      "acquiredTo": "2017-01-01",
+      "published": "2020-07-24",
+      "gridSpacing": "1 m",
+      "realDetail": "About 3 to 5 m",
+      "positionAccuracy": "Source images agree with each other to better than 3 m (99th percentile) and sit a median 2.1 m from the CTX base map, 95.4% within 6 m (Fergason and others 2020)",
+      "heightAccuracy": "Median 0.4 m below the CTX terrain mosaic it was aligned to (Fergason and others 2020)",
+      "grade": "B",
+      "caveats": [
+        "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model.",
+        "Made from images taken between 2007 and 2017, before the rover landed. Sand may have moved since.",
+        "Where two source models meet there can be a small step that is not real."
+      ],
+      "credit": "NASA/JPL-Caltech/University of Arizona/USGS (Fergason and others 2020)",
+      "id": "terrain-hirise",
+      "title": "Terrain height",
+      "dataType": "topographic",
+      "processing": "Cut to the site's box and stored as height tiles for zoom 11 to 15, to the nearest 0.1 m. One tile pixel at zoom 15 is 2.4 m on the ground, so the 3D view is smoother than the 1 m grid. Past the edge of the box the edge height is repeated so the surface has no cliff; that is not data.",
+      "tiles": {
+        "path": "tiles/terrain-hirise/{z}/{x}/{y}.png",
+        "minZoom": 11,
+        "maxZoom": 15,
+        "tileSizePx": 256,
+        "count": 52,
+        "bytes": 1122077,
+        "encoding": "mapbox"
+      }
+    }
+  ]
+}
