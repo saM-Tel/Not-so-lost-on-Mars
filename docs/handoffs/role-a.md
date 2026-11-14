@@ -1,5 +1,15 @@
 # Role A handoff
 
+## Sat 14 Nov 13:35, role A work by Joseph, with Claude Code
+
+Done: slope checked against the rover's tilt (F9). `validate.slope_check` samples our 1 m slope at each rover stop. At Bright Angel, 116 of 116 stops: ours minus the rover's has median 0.3 degrees, typical size 1.4 degrees, 9 in 10 within 4.0 degrees, correlation 0.89. Written to `validation.json` and into the slope layer's caveats.
+Not done: a route compared with the rover's actual path; geology; science targets; mask, roughness, sky exposure.
+Broken or risky: the rover's stops are on gentle ground its drivers chose, so the check says little about slopes near the 20 degree limit. The two numbers are not the same measurement, and `validation.json` says so.
+Next: radiation dose data for F5.
+Files: pipeline/validate.py, build_site.py, test_terrain.py, pipeline/AGENTS.md, app/public/data/bright-angel/, docs/DATA_CONTRACT.md, docs/DECISIONS.md
+Other roles need to know: C, this is the strongest evidence line for the project page: "our slope from orbit agrees with the rover's own tilt to a typical 1.4 degrees at 116 stops". B, the app shows it under the layers.
+Checks: `pytest -q` passes, 40 tests; full build with real data, exit 0; `npm run check` passes, 59 tests.
+
 ## Sat 14 Nov 13:30, role A work by Joseph, with Claude Code
 
 Done: `vectors.py` writes the rover's stops (116) and the parts of its drives inside the box (90 lines) as GeoJSON, each with a full layer record. `build_site.py` also writes a record for slope as a layer, drawn by the app from the routing grid. Bright Angel rebuilt: 16.0 MB.

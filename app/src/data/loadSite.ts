@@ -1,4 +1,4 @@
-// WHAT:    Loads one built site: site.json, layers.json and the routing grid files (F1, F3). Still to add: vectors (F2).
+// WHAT:    Loads one built site: site.json, layers.json, validation.json and the routing grid files (F1, F3, F9). Still to add: vectors (F2).
 // IN:      A site id; files under public/data/<site id>/.
 // OUT:     The site in memory, or an error with a plain reason.
 // USED BY: src/main.ts, src/map/siteLayers.ts.
@@ -6,7 +6,7 @@
 // TRAPS:   PITFALLS 10.
 // OWNER:   Role B.
 
-import type { LayerRecord, SiteFile } from './contract';
+import type { LayerRecord, SiteFile, ValidationFile } from './contract';
 import { loadLayers, type LoadedLayers } from './layers';
 
 export interface LoadedSite {
@@ -18,6 +18,8 @@ export interface LoadedSite {
   image: LayerRecord | null;
   /** The terrain layer for the 3D surface, if its record is complete. */
   terrain: LayerRecord | null;
+  /** The checks of our terrain against the rover's measurements, or null when the site has none. */
+  validation: ValidationFile | null;
 }
 
 const loaded = new Map<string, Promise<LoadedSite>>();
@@ -34,10 +36,15 @@ async function fetchSite(dataUrl: string, siteId: string): Promise<LoadedSite> {
   }
   const layers = await loadLayers(`${folderUrl}layers.json`);
   const withTiles = layers.usable.filter((layer) => layer.tiles !== undefined);
+  // Optional: a site without this file simply shows no checks.
+  const validation = await fetch(`${folderUrl}validation.json`)
+    .then((r) => (r.ok ? (r.json() as Promise<ValidationFile>) : null))
+    .catch(() => null);
   return {
     site,
     layers,
     folderUrl,
+    validation,
     image: withTiles.find((layer) => layer.dataType === 'optical') ?? null,
     terrain: withTiles.find((layer) => layer.dataType === 'topographic' && layer.tiles?.encoding === 'mapbox') ?? null,
   };

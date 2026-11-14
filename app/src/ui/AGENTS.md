@@ -30,7 +30,7 @@ Add a row when you add a file. Remove it when you delete one.
 | File | What it does | Feature |
 |---|---|---|
 | `sitePicker.ts` | The list of sites beside the globe, the details card for a chosen site, and the record of the globe image | F14 |
-| `layerPanel.ts` | Layer panel in the side panel: one row per layer with a switch, opacity control, legend and information card. Built | F2 |
+| `layerPanel.ts` | Layer panel in the side panel: one row per layer with a switch, opacity control, legend and information card, then what the rover's own measurements say about our terrain. Built | F2, F9 |
 | `infoCard.ts` | Information card for a layer, built from its record: who measured it, when, detail, accuracy, what we did, grade and caveats. To add: cards for predictions | F2 |
 | `routePanel.ts` | Route card over the map: click a target, see the walk out and back with distance, climb, time and energy for three cases, and what the numbers rest on; draws the tether and judges the walk against it. Can be folded away. Holds the default slope limit. To add: several targets, oxygen, confidence, the profile | F3 |
 | `safetyPanel.ts` | Built so far: the tether's controls (walk-back limit, time since leaving home) and the line saying whether the planned walk stays inside it. To add: suit settings, dose and storm advice | F4, F5, F10 |

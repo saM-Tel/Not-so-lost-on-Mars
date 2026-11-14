@@ -53,7 +53,7 @@ app/public/data/
 ```
 site.json          identity, box, centre, terrain height range, grid definition, which source each input was read from, file sizes
 layers.json        one record per layer, as above
-validation.json    terrain checked against the rover: sample size and typical difference
+validation.json    terrain checked against the rover: `heights` and `slope`, each with sample size, typical and largest difference and a caution
 tiles/image-hirise/{z}/{x}/{y}.webp     zoom 12 to 18; transparent where there is no data
 tiles/terrain-hirise/{z}/{x}/{y}.png    zoom 11 to 15
 grid/heightM.f32, grid/slopeMaxDeg.f32  routing grids; see "Grid definition"

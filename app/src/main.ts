@@ -113,7 +113,7 @@ async function start(): Promise<void> {
       if (thisChoice !== choice) return;
       const drawn = await addOverlays(map, builtSite);
       if (thisChoice !== choice) { drawn.remove(); return; }
-      const layerPanel = createLayerPanel(picker.slot, drawn.overlays, builtSite.layers.rejected);
+      const layerPanel = createLayerPanel(picker.slot, drawn.overlays, builtSite.layers.rejected, builtSite.validation);
       const stopRoute = builtSite.site.grid
         ? startRoutePlanner(map, builtSite, {
           onOverlay: (overlay) => layerPanel.add(overlay),

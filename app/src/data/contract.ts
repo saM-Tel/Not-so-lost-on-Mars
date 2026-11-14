@@ -135,6 +135,33 @@ export interface BoxDeg {
   northLatDeg: number;
 }
 
+/** One check of our terrain against the rover's own measurements, from validation.json. Numbers are absent when too few stops were usable. */
+export interface TerrainCheck {
+  what: string;
+  stopsInBox: number;
+  stopsUsed: number;
+  caution?: string;
+  firstSol?: number;
+  lastSol?: number;
+  medianAbsoluteDifferenceM?: number;
+  percentile90AbsoluteDifferenceM?: number;
+  largestAbsoluteDifferenceM?: number;
+  medianDifferenceDeg?: number;
+  medianAbsoluteDifferenceDeg?: number;
+  percentile90AbsoluteDifferenceDeg?: number;
+  largestAbsoluteDifferenceDeg?: number;
+  correlation?: number;
+  roverTiltLargestDeg?: number;
+}
+
+/** A built site's validation.json. A check that was not run is null or absent. */
+export interface ValidationFile {
+  contractVersion: number;
+  builtUtc: string;
+  heights?: TerrainCheck | null;
+  slope?: TerrainCheck | null;
+}
+
 /** One routing grid file: `rows * cols` numbers, north row first, west cell first within a row. */
 export interface GridFile {
   name: string;

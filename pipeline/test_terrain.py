@@ -107,3 +107,25 @@ def test_a_sol_is_turned_into_an_earth_date_from_the_landing_date():
     # NASA dates the rock core taken on that sol to 21 July 2024, which is the "day out" the layer record states.
     assert vectors.sol_to_earth_date(0, "2021-02-18") == "2021-02-18"
     assert vectors.sol_to_earth_date(1215, "2021-02-18") == "2024-07-20"
+
+
+def test_slope_is_compared_with_rover_tilt_at_each_stop():
+    import validate
+    per_m = 1.0 / mars.METRES_PER_DEGREE
+    # Test fixture: slope 10 degrees everywhere except a block of 20 degrees in the south-east.
+    values = np.full((40, 40), 10.0, dtype=np.float32)
+    values[20:, 20:] = 20.0
+    grid = sources.Grid(values, 77.0, 18.0, per_m, per_m, None, "test fixture")
+    at = lambda row, col: {"lon": 77.0 + (col + 0.5) * per_m, "lat": 18.0 - (row + 0.5) * per_m}
+    stops = [
+        {**at(5, 5), "tilt": 8.0},        # ours 10, rover 8: +2
+        {**at(30, 30), "tilt": 21.0},     # ours 20, rover 21: -1
+        {**at(5, 30), "tilt": 10.0},      # ours 10, rover 10: 0
+        {**at(6, 6), "tilt": -9999},      # no tilt logged
+        {"lon": 78.0, "lat": 18.0, "tilt": 3.0},   # outside the block
+    ]
+    check = validate.slope_check(grid, stops)
+    assert (check["stopsInBox"], check["stopsUsed"], check["stopsSkippedNoTilt"]) == (4, 3, 1)
+    assert check["medianDifferenceDeg"] == 0.0
+    assert check["medianAbsoluteDifferenceDeg"] == 1.0
+    assert check["largestAbsoluteDifferenceDeg"] == 2.0

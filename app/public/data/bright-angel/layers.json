@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T13:25:49Z",
+  "builtUtc": "2026-11-14T13:34:45Z",
   "layers": [
     {
       "mission": "Mars Reconnaissance Orbiter",
@@ -90,7 +90,7 @@
         "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model.",
         "Made from images taken between 2007 and 2017, before the rover landed. Sand may have moved since.",
         "Where two source models meet there can be a small step that is not real.",
-        "Slope has not yet been checked against the tilt the rover measured, so nothing independent confirms it.",
+        "Checked against the tilt the rover measured at 116 stops: typical difference 1.4 degrees, 9 in 10 within 4.0 degrees. Rover drivers choose gentle ground, so steep slopes are less well checked.",
         "A short steep step, such as a ledge under about 3 m, can be missed."
       ],
       "credit": "NASA/JPL-Caltech/University of Arizona/USGS (Fergason and others 2020)",

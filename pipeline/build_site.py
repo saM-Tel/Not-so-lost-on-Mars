@@ -140,6 +140,21 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
           f"{grid_definition['cellNorthSouthM']} m north to south by {grid_definition['cellEastWestM']} m east to west, "
           f"{sum(entry['bytes'] for entry in grid_definition['files']) / 1e6:.1f} MB")
 
+    if rover:
+        slope_grid = sources.Grid(slope, terrain_grid.west_lon_deg, terrain_grid.north_lat_deg, terrain_grid.cell_lon_deg,
+                                  terrain_grid.cell_lat_deg, None, terrain_grid.origin)
+        slopes = validate.slope_check(slope_grid, stops)
+        slopes["baselineM"] = slope_baseline
+        slopes["caution"] = (
+            "The two are not quite the same measurement. Ours is the steepest slope of the ground over about 6 m, taken "
+            "from orbit; the rover's is how far the vehicle leaned where it stood. Rover drivers also choose gentle "
+            "ground, so these stops say little about how well steep slopes are measured."
+        )
+        checks["slope"] = slopes
+        print(f"Slope check at {slopes['stopsUsed']} of {slopes['stopsInBox']} rover stops: ours minus rover tilt, "
+              f"median {slopes.get('medianDifferenceDeg')} deg, typical {slopes.get('medianAbsoluteDifferenceDeg')} deg, "
+              f"90% within {slopes.get('percentile90AbsoluteDifferenceDeg')} deg, correlation {slopes.get('correlation')}")
+
     # Slope as a layer of its own. It is drawn by the app from the routing grid, so it has no tiles.
     slope_record = dict(site["sources"]["terrain"]["record"])
     slope_record.update({
@@ -151,7 +166,11 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
         "processing": "Steepest slope at each 1 m cell of the terrain, then the steepest of those in each routing cell. "
                       "Cells are narrower east to west at this latitude and the spacing is corrected for it.",
         "caveats": [*slope_record["caveats"],
-                    "Slope has not yet been checked against the tilt the rover measured, so nothing independent confirms it.",
+                    (f"Checked against the tilt the rover measured at {checks['slope']['stopsUsed']} stops: typical difference "
+                     f"{checks['slope'].get('medianAbsoluteDifferenceDeg')} degrees, 9 in 10 within "
+                     f"{checks['slope'].get('percentile90AbsoluteDifferenceDeg')} degrees. Rover drivers choose gentle ground, "
+                     "so steep slopes are less well checked.") if checks.get("slope") else
+                    "Slope has not been checked against anything measured on the ground at this site.",
                     "A short steep step, such as a ledge under about 3 m, can be missed."],
         "grid": "slopeMaxDeg",
     })

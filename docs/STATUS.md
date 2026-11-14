@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 13:31. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
+Last updated: Sat 14 Nov 13:35. The Mars globe with site markers works on a developer's machine (F14, in progress). Bright Angel is built and shows its image on the ground (F1, in progress). Nothing is deployed. Every source file is on the team data server.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
-| A: data and science | Joseph, covering for the team owner | Slope layer and rover layers built; next checking slope against rover tilt | Sat 11:00 |
-| B: app | Joseph, covering for the team owner | Shareable link built; next slope against rover tilt, then dose | Sat 11:00 |
+| A: data and science | Joseph, covering for the team owner | Slope checked against rover tilt; next dose data (F5) | Sat 11:00 |
+| B: app | Joseph, covering for the team owner | Validation shown in the side panel; next dose and space weather (F5) | Sat 11:00 |
 | C: story and submission | to assign | | |
 
 ## Public link
@@ -31,7 +31,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F6 Photos along the route | C, B | not started | |
 | F7 Opening state and shareable link | B | works with issues | The address bar holds the site, the walk's target and the tether settings, for example `#site=bright-angel&to=77.29271,18.50596&back=30&t=60`; opening that link restores the walk, the settings and the verdict. The plain link opens on the globe with Bright Angel marked "Start here". Issues: no chosen hero scenario yet, so the Bright Angel link without a target opens with no route; layer choices are not in the link; the 10-second test with a first-time visitor has not been done |
 | F8 Public site and repository | B | works with issues | Live. Opened in a scripted browser at 12:45: Bright Angel loaded in 1.6 s with 128 requests and none failed. Not done: README; a person opening it in a private window |
-| F9 Validation panel | A | not started | |
+| F9 Validation panel | A | works with issues | At Bright Angel, terrain slope against rover tilt and terrain height against rover height at all 116 stops in the box. Slope: typical difference 1.4 degrees, 9 in 10 within 4.0 degrees, largest in `validation.json`, correlation 0.89. Shown in the side panel under the layers, and in the slope layer's caveats. Not done: one route compared with the rover's actual path |
 | F10 Storm mode | A, B | not started | |
 | F11 Time of day | A, B | not started | |
 | F12 Thermal and mineral layers | A | not started | |

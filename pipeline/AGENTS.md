@@ -77,7 +77,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `vectors.py` | Stage 6. Built so far: the rover's stops and path inside the box as GeoJSON, each with a full layer record, and sol numbers turned into Earth dates. To add: geology and science targets | F2 |
 | `weather.py` | Stage 7: typical weather by local hour for the season, from the weather archive | F11 |
 | `photos.py` | Stage 7: index of real rover photos near the route area | F6 |
-| `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built so far: heights at every rover stop in the box. To add: slope against rover tilt | F1, F9 |
+| `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built: heights and slope at every rover stop in the box, and the reader for the rover's feeds. To add: a route against the rover's path | F1, F9 |
 | `records.py` | Stage 9: writes `layers.json` and `site.json`, including file sizes. Built so far: the layer record check and `layers.json` | F2, F14 |
 
 ## Known issues
@@ -85,4 +85,4 @@ Add a row when you add a file. Remove it when you delete one.
 - Only files on the Jezero grid can be read: equirectangular, true to scale at the equator, radius 3,396,190 m. The landing-site terrain models use other projections and are refused with a clear message.
 - A site build fails at its last step with "Access is denied" while the app's dev server is running, because the dev server holds the site folder open on Windows. Stop `npm run dev`, then build.
 - Missing terrain cells stop a build, because the mask stage is not built. Bright Angel has none.
-- The rover's logged heights agree with the terrain to a few centimetres, which suggests they were read from this same terrain model. Treat the height check as a check of position, not of terrain accuracy. Slope against rover tilt will be the independent check.
+- The rover's logged heights agree with the terrain to a few centimetres, which suggests they were read from this same terrain model. Treat the height check as a check of position, not of terrain accuracy. Slope against rover tilt is the independent check: at Bright Angel a typical difference of 1.4 degrees over 116 stops.

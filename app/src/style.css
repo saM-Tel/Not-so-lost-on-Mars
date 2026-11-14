@@ -448,6 +448,10 @@ a.source:hover {
   overflow-wrap: anywhere;
 }
 
+.validation {
+  margin-top: 0.5rem;
+}
+
 .info-card summary {
   cursor: pointer;
 }

@@ -1,6 +1,6 @@
-# WHAT:    Stage 8: checks our terrain against the rover's own measurements (F9, and the F1 height check). So far: heights.
+# WHAT:    Stage 8: checks our terrain against the rover's own measurements (F9, and the F1 height check): heights and slope.
 # IN:      Terrain heights for the box; the rover's stops with the height it logged at each.
-# OUT:     A summary with sample size and typical difference, for validation.json. Still to add: slope against rover tilt.
+# OUT:     Summaries with sample size and typical difference, for validation.json. Still to add: a route against the rover's path.
 # USED BY: build_site.py.
 # RULES:   Compares like with like: areoid heights with areoid heights. Reports every stop used; hides none.
 # TRAPS:   PITFALLS 3, 4, 5.
@@ -85,5 +85,46 @@ def height_check(terrain: sources.Grid, stops: list[dict], height_field: str) ->
             "largestAbsoluteDifferenceM": round(float(absolute.max()), 2),
             "firstSol": int(min(sols)),
             "lastSol": int(max(sols)),
+        })
+    return summary
+
+
+def slope_check(slope: sources.Grid, stops: list[dict], tilt_field: str = "tilt") -> dict:
+    """Our slope minus the tilt the rover measured, at every stop inside the block.
+
+    `slope` holds the steepest slope at each terrain cell, in degrees, with NaN where it is unknown. The rover's
+    tilt is how far the vehicle leaned from level where it stood. The two are close kin, not the same thing: ours
+    is the ground's steepest slope over a span of about 6 m, the rover's is a vehicle standing on six wheels.
+    """
+    lon = np.array([stop["lon"] for stop in stops], dtype=float)
+    lat = np.array([stop["lat"] for stop in stops], dtype=float)
+    tilt = np.array([stop.get(tilt_field, np.nan) for stop in stops], dtype=float)
+    tilt[(tilt <= -9000) | (tilt < 0)] = np.nan  # the file writes -9999 where it has no value
+    box = slope.box
+    in_box = (lon >= box.west_lon_deg) & (lon <= box.east_lon_deg) & (lat >= box.south_lat_deg) & (lat <= box.north_lat_deg)
+    sampled = slope.sample(lon, lat)
+    usable = in_box & np.isfinite(sampled) & np.isfinite(tilt)
+    ours, rovers = sampled[usable], tilt[usable]
+    summary = {
+        "what": "Our slope from the orbital terrain minus the tilt the rover measured at the same position",
+        "unit": "degrees from level, in both",
+        "stopsInBox": int(in_box.sum()),
+        "stopsUsed": int(usable.sum()),
+        "stopsSkippedNoSlope": int((in_box & ~np.isfinite(sampled)).sum()),
+        "stopsSkippedNoTilt": int((in_box & np.isfinite(sampled) & ~np.isfinite(tilt)).sum()),
+    }
+    if ours.size >= 3:
+        difference = ours - rovers
+        absolute = np.abs(difference)
+        summary.update({
+            "medianDifferenceDeg": round(float(np.median(difference)), 1),
+            "medianAbsoluteDifferenceDeg": round(float(np.median(absolute)), 1),
+            "percentile90AbsoluteDifferenceDeg": round(float(np.percentile(absolute, 90)), 1),
+            "largestAbsoluteDifferenceDeg": round(float(absolute.max()), 1),
+            "correlation": round(float(np.corrcoef(ours, rovers)[0, 1]), 2),
+            "roverTiltMedianDeg": round(float(np.median(rovers)), 1),
+            "roverTiltLargestDeg": round(float(rovers.max()), 1),
+            "ourSlopeMedianDeg": round(float(np.median(ours)), 1),
+            "ourSlopeLargestDeg": round(float(ours.max()), 1),
         })
     return summary
