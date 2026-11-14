@@ -14,6 +14,12 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 | 14 Nov | Commits carry no AI co-author line and are made under the committer's own git identity. AI use is disclosed in [AI_USE.md](AI_USE.md) and in the submission | Decided by the team owner |
 | 14 Nov | Routing grids use 4 m cells (4 x 4 cells of the 1 m terrain), stored as raw 32-bit floats: mean height and steepest slope. The pipeline marks nothing as keep-out. Layout in [DATA_CONTRACT.md](DATA_CONTRACT.md) | Matches the terrain's real detail of 3 to 5 m and keeps each file near 2.4 MB. Decided by Joseph, covering roles A and B |
 | 14 Nov | The default slope limit for a person in a suit is 20 degrees, adjustable in the suit settings. Shown as grade C | NASA's Artemis III requirement that slopes for EVA be under 20 degrees (Ortiz 2025, in [REFERENCES.md](REFERENCES.md)). Grade C because it is a lunar requirement applied to Mars and the source does not say over what distance slope is measured; ours is over about 6 m. At Bright Angel 19% of routing cells are steeper. Decided by Joseph: use values from published sources |
+| 14 Nov | The team owner took over roles A, B and C at about 15:00 after Joseph stopped, and hands back to Joseph at 16:55 | Decided by the team owner |
+| 14 Nov | Build all landing sites (F15) and the extras (F16) on the 14th, ahead of the SPEC order, coding fast with little testing and fixing afterwards | Time. Decided by the team owner |
+| 14 Nov | During fast coding, commit after each task but push only when the owner says; pushed at handover | So untested work does not reach the public site unannounced. Decided by the team owner |
+| 14 Nov | "Launch as an app" means an installable web app (manifest and service worker), not a separate desktop build | Stays static files behind one link (rule 4). Decided by the team owner, built that way |
+| 14 Nov | The helmet view is offered only when a real rover photo near the target has loaded | It was often empty. Decided by the team owner |
+| 14 Nov | Large bugs and reviews go to docs/REVIEW_QUEUE.md, for a larger model or a person to review; one app review was done and logged | Decided by the team owner |
 
 ## Proposed, waiting for the team
 

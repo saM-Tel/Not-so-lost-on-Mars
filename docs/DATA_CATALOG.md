@@ -123,7 +123,7 @@ Ranked by value for effort. None is needed for the must-have list.
 | Partner agency data: Mars Express HRSC (ESA), Trace Gas Orbiter CaSSIS (ESA), Hope probe (UAE) | Colour stereo imagery and global weather; widens the "multiple agencies" story | Medium to high | HRSC layers are in the Trek catalogue; others known |
 | Free tools from the event's Global Collaborators (GoDaddy, Google, Meteomatics, Microsoft, Miro) | Possibly a free domain name or cloud credit | Low | Named in search results; offers not read |
 
-## B2. Worth adding to the team data server (14 Nov)
+## B2. Asked of the team data server on 14 Nov (batch 3, downloading)
 
 | What | Why | Where | Size |
 |---|---|---|---|

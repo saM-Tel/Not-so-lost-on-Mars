@@ -39,6 +39,7 @@ The page takes images (JPG, PNG, GIF up to 10 MB) but not videos or documents.
 
 ## Saturday 23:00
 
+- [ ] The afternoon's features tried in a browser and the worst of REVIEW_QUEUE R1 to R20 fixed, then pushed (the public site updates on every push)
 - [ ] Backup video recorded from the working app and uploaded
 - [ ] Draft of every field saved in the submission form
 

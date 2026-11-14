@@ -1,5 +1,15 @@
 # Role C handoff
 
+## Sat 14 Nov 16:55, role C handover from the team owner, with Claude Code. START HERE
+
+Done: documents brought up to date for the handover (STATUS, DECISIONS, SITES, DATA_CATALOG, PITFALLS, REVIEW_QUEUE, AI_USE, README); the app review logged in docs/reviews/.
+Not done: the backup video (due 23:00); the project page text; a licence; the AI wording for the submission (AI_USE has the log).
+Broken or risky: features in the video may break until R1 to R20 are fixed; record after role B's first round of fixes, or record the parts that work.
+Next: record the backup video from the plain link (globe, zoom in on Bright Angel) and the Bright Angel link (walk to Cheyava Falls, tether slider, storm drill), storyboard in PLAN.md section 11; then draft the project page from README.md.
+Files: README.md, docs/SUBMISSION_CHECKLIST.md, docs/AI_USE.md
+Other roles need to know: the field tablet and helmet views are behind the switch at the top right of the map; the helmet appears only when a rover photo near the target loads.
+Checks: none run for this role.
+
 ## Sat 14 Nov 16:05, role C work by the team owner, with Claude Code
 
 Done: docs/REVIEW_QUEUE.md started for large bugs and reviews; AI_USE, REFERENCES, DATA_CATALOG, PITFALLS kept up to date for the afternoon's work.

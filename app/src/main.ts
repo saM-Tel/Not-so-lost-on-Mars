@@ -1,5 +1,6 @@
-// WHAT:    Entry point. Opens the Mars globe with a marker at every site, flies to a chosen site, and opens a built site's
-//          own image and 3D terrain, its layer panel and route planning there, and shows the space-weather banner (F14, F1, F2, F3, F5, F7).
+// WHAT:    Entry point. Opens the Mars globe with approach imagery round every site and a marker at each, flies to a chosen
+//          site, and opens a built site's own image and 3D terrain, its layer panel and route planning there; shows the
+//          space-weather banner and the link-to-Earth line; sets up installation as an app (F14, F1, F2, F3, F5, F7, F8, F16).
 // IN:      public/data/globe/layers.json, public/data/sites.json and a built site's folder; the site named in the address bar, if any.
 // OUT:     Nothing. Starts the app.
 // USED BY: index.html.

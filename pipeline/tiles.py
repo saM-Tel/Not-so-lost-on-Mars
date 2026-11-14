@@ -1,4 +1,5 @@
-# WHAT:    Stage 3: cuts image and terrain tiles in the layout MapLibre reads: whole-planet image pyramids for the globe (F14), and a site's image and terrain tiles (F1).
+# WHAT:    Stage 3: cuts image and terrain tiles in the layout MapLibre reads: whole-planet image pyramids for the globe (F14), a site's
+#          image and terrain tiles (F1), terrain with a coarser surround eased flat at its edge, and colour tiles along a ramp (F12).
 # IN:      For the globe, colour image arrays on the Web Mercator square. For a site, blocks of cells from sources.py, evenly spaced in degrees.
 # OUT:     tiles/<layer id>/{z}/{x}/{y}.<jpg, webp or png> under the output folder.
 # USED BY: build_globe.py, build_site.py.

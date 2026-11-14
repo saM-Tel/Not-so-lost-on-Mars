@@ -29,8 +29,8 @@ Add a row when you add a file. Remove it when you delete one.
 
 | File | What it does | Feature |
 |---|---|---|
-| `main.ts` | Entry point. Built so far: opens the Mars globe with a marker at every site, flies to a chosen site, opens a built site's image and 3D terrain, starts route planning there, and reads the site named in the address bar. To add: the layer and safety panels | F1, F7, F14 |
-| `style.css` | Layout and colours for the globe view and the three display modes | F13, F14 |
+| `main.ts` | Entry point: opens the Mars globe with approach imagery and a marker at every site, flies to a chosen site, opens a built site's image, 3D terrain, layer panel and route planning, reads the site named in the address bar, and adds the space-weather banner, the link-to-Earth line and installation as an app | F1, F7, F8, F14, F16 |
+| `style.css` | Layout and colours for the globe view, the side panel, the route card and its panels, the field tablet and helmet views, and the install button | F13, F14 |
 
 ## Known issues
 

@@ -111,11 +111,14 @@ def test_read_box_returns_the_cells_that_touch_the_box(tmp_path, monkeypatch):
     assert np.array_equal(again.values, grid.values) and "working copy" in again.origin
 
 
-def test_a_file_on_another_projection_is_refused(tmp_path, monkeypatch):
+def test_a_file_on_another_projection_is_warped_not_assumed(tmp_path, monkeypatch):
+    # Since 14 Nov a file on another projection is warped onto the app's grid (it used to be refused). It must never be
+    # read as if it were on the app's grid: a box it does not cover once warped is still refused, and the origin says
+    # it was warped.
     path = tmp_path / "other.tif"
     write_fixture_file(path, MARS_GRID.replace("+lat_ts=0", "+lat_ts=20"))
     monkeypatch.setattr(sources, "candidate_addresses", lambda *a: [(str(path), "test fixture file")])
-    with pytest.raises(ValueError, match="projection"):
+    with pytest.raises(ValueError, match="does not cover the box"):
         sources.read_box("other.tif", "raw/fixture", "unused", sources.Box(10.0, 10.1, 5.0, 5.1), tmp_path / "work")
 
 

@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sat 14 Nov 16:55, role B handover from the team owner to Joseph, with Claude Code. START HERE
+
+Done: everything in the 16:05 entry below, plus the link-to-Earth line (`ui/earthLink.ts`), route export as GeoJSON and "Move the rover" (`ui/routePanel.ts`), and field-view fixes (helmet only when its photo loads; map resize on a view change). All pushed.
+Not done: a person trying the afternoon's panels; review items R1 to R20.
+Broken or risky: a read-only review found real bugs, logged as R1 to R20 in docs/REVIEW_QUEUE.md with the full text in docs/reviews/2026-11-14-app-review.md. The worst: the tether verdict uses the quickest way home, not the planned one (R3, confirmed); the tether may not redraw on 3D ground when the slider moves (R1, check first); the tablet stays on "Working out the walk…" after a refused target (R6).
+Next, in order: (1) `cd app`, `npm install`, `npm run build`, `npm run preview`; open Bright Angel and try every panel, noting what breaks; (2) fix R1 to R20 group by group as the queue lists them, `npm run check` after each; (3) push, so the public site updates; (4) help with the backup video by 23:00.
+Files: app/src/ui/routePanel.ts (most of the route card), modes.ts, map/routeLayer.ts, siteLayers.ts, overlays.ts, approach.ts, main.ts, style.css
+Other roles need to know: the service worker runs only in the built site; after a new build, close every tab of it and reopen. Two old dev servers may still be running on port 5173 on the owner's laptop.
+Checks: tsc and 76 tests pass; the production build succeeds; seen in a browser only by the owner, briefly.
+
 ## Sat 14 Nov 16:05, role B work by the team owner, with Claude Code
 
 Done (coded, mostly not opened in a browser): approach layers; installable app (manifest, icon, service worker, Install button); tether slider via a canvas source and a drawing-density cap; hero scenario in the route card (targets, opens on Cheyava Falls); suit slope limit; elevation profile; oxygen; route confidence line; rover drive comparison; storm drill; when-to-go panel with Mars24 time, Sun and computed shading; field tablet and helmet concept views.

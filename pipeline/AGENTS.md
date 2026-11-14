@@ -62,7 +62,7 @@ Add a row when you add a file. Remove it when you delete one.
 | File | What it does | Feature |
 |---|---|---|
 | `requirements.txt` | Pinned Python packages | |
-| `build_site.py` | One command that builds one site from its config. Built so far: reads the box, checks terrain against the rover, cuts image and terrain tiles, measures slope, writes the routing grids, the slope layer record and the rover layers, writes `layers.json`, `validation.json` and `site.json`. To add: stage 2, the rest of stages 4 and 5, stages 6 and 7 | F1 to F6, F9 |
+| `build_site.py` | One command that builds one site from its config: box (any projection, warped), terrain check against the rover, image and terrain tiles (terrain can reach past the box), slope, routing grids, hero scenario, extra coloured layers, geology if prepared, rover layers, photos, `layers.json`, `validation.json`, `site.json`. Builds in `../data/work/<site id>/build.tmp` and moves the folder in. To add: mask, roughness, sky exposure | F1 to F7, F9, F12, F15 |
 | `build_globe.py` | Builds what the globe needs: Web Mercator tiles of the Viking colour mosaic with its layer record, and `sites.json` from every site config | F14 |
 | `build_approach.py` | Builds the approach imagery: three rings of CTX images (320 km, 40 km, 12 km) around every site, from the CTX global mosaic through Esri's OnMars service, or from a file the site config names under `approach.near` (Bright Angel: the USGS Jezero CTX mosaic). Writes `../app/public/data/approach/` | F14, F1 |
 | `build_geology.py` | Turns the USGS geologic map (SIM 3464 geodatabase) into GeoJSON in degrees for one site, in `../data/work/<site id>/geology.geojson`, which `build_site.py` then ships with a legend. Needs `fiona` (not installed; docs/REVIEW_QUEUE.md item 7). Not run yet | F2 |
@@ -70,12 +70,12 @@ Add a row when you add a file. Remove it when you delete one.
 | `test_space_weather.py` | Tests for `build_space_weather.py` on made-up notices | |
 | `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |
 | `test_mars.py` | Tests for `mars.py`, with expected values worked by hand | |
-| `config.py` | Reads and checks a site config: identity, position, what data exists, and for a site that can be built its box and sources with their dates and accuracy. To add: home and targets | all |
+| `config.py` | Reads and checks a site config: identity, position, what data exists, and for a site that can be built its box and sources with their dates and accuracy. The scenario is checked by `scenario.py`, approach sources by `build_approach.py` | all |
 | `test_config.py` | Tests for `config.py`; also loads every real config in `../sites/` | |
 | `sources.py` | Finds each source file (team data server, then local copy, then original address) and reads only the site's box from it, warping any other projection onto the app's grid | F1, F15 |
 | `test_sources.py` | Tests for `sources.py` and for the site tile cutting in `tiles.py`, on made-up fixtures | |
 | `mask.py` | Stage 2: finds missing data and seams between source terrain models | F1, F3 |
-| `tiles.py` | Stage 3: cuts image and terrain tiles in the layout MapLibre reads: whole-planet image pyramids, and a site's image (WebP) and terrain (PNG) tiles | F1, F14 |
+| `tiles.py` | Stage 3: cuts tiles in the layout MapLibre reads: whole-planet image pyramids, a site's image (WebP) and terrain (PNG) tiles, terrain with a coarser surround eased flat at its edge, and colour tiles along a ramp | F1, F12, F14 |
 | `test_tiles.py` | Tests for `tiles.py` on small made-up fixtures that stay in the test file | |
 | `test_terrain.py` | Tests for `terrain.py`, `grids.py` and `vectors.py` on made-up fixtures, with expected values worked by hand | |
 | `terrain.py` | Stage 4. Built so far: steepest slope over a baseline of at least 5 m, on the corrected cell spacing. To add: roughness and sky exposure | F2, F3, F5 |
@@ -85,7 +85,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `photos.py` | Stage 7: reads NASA's raw image feed for the left navigation camera and indexes up to six photos for each rover stop in the box. Built | F6 |
 | `scenario.py` | The hero scenario: home and science targets placed at rover stops looked up by id in the waypoints file, with reasons and sources, for `site.json` | F3, F7 |
 | `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built: heights and slope at every rover stop in the box, and the reader for the rover's feeds. To add: a route against the rover's path | F1, F9 |
-| `records.py` | Stage 9: writes `layers.json` and `site.json`, including file sizes. Built so far: the layer record check and `layers.json` | F2, F14 |
+| `records.py` | Stage 9: the layer record check, the JSON writer and `layers.json` | F2, F14 |
 
 ## Known issues
 

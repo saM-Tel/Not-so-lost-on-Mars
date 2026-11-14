@@ -140,6 +140,9 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 
 | Zooming in past the globe image's detail shows a stretched blur around a site | The approach imagery (`pipeline/build_approach.py`) puts real CTX images in three rings around every site. Rebuild it after adding or moving a site |
 | Assuming a Mars Trek layer is served from Trek's tile address | Read its `WMTSCapabilities.xml`: the CTX layer points to Esri's own service, with a different tile layout |
+| A HiRISE ortho image (JP2) read by GDAL reports a different georeferencing from its terrain model's label | Use the terrain model's projection and transform for the image (`georeferenceFrom: terrain`); they share one grid |
+| `npx tsc` run outside `app/` downloads an unrelated npm package called tsc | Run TypeScript only from `app/`: `npx --no-install tsc --noEmit` or `npm run check` |
+| Switching display modes changes the map's size but MapLibre does not notice | Call `map.resize()` after the layout changes |
 | A running dev server makes a pipeline build fail with "Access is denied" on Windows | It holds open every folder made under `app/public`. Build in `data/work/` and move the finished folder in, as `build_approach.py` does |
 
 ## 11. Presentation

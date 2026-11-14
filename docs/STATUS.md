@@ -2,15 +2,15 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 16:05. Every must-have and should-have has a first version; most of today's afternoon work is coded but not yet tried by a person. The public site is live but behind: the afternoon's commits are on the team owner's machine, not pushed. Eight of nine sites are built (Gale is not).
+Last updated: Sat 14 Nov 16:55, at handover from the team owner to Joseph. Everything below is pushed. Every feature from F1 to F16 has a first version, but most of the afternoon's work has not been tried by a person. Start with [handoffs/role-b.md](handoffs/role-b.md) and the R items in [REVIEW_QUEUE.md](REVIEW_QUEUE.md). Eight of nine sites are built (not Gale).
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
-| A: data and science | Team owner (Joseph stopped at about 14:00) | Approach imagery, landing sites, terrain round the hero site, weather, thermal | Sat 15:00 |
-| B: app | Team owner | Hero scenario, suit settings, profile, oxygen, storm drill, when to go, displays, installable app; testing next | Sat 15:00 |
-| C: story and submission | Team owner | Backup video by 23:00; project page | Sat 15:00 |
+| A: data and science | Joseph, from the owner's handover at 16:55 | Next: the batch 3 data arriving on the server (MEDA weather, RAD storm data, Gale dates), geology once fiona is installed | Sat 16:55 |
+| B: app | Joseph, from the owner's handover at 16:55 | Next: try every panel in the browser, then fix review items R1 to R20 in order | Sat 16:55 |
+| C: story and submission | Team owner and Joseph | Backup video by 23:00; README and project page | Sat 16:55 |
 
 ## Public link
 
@@ -30,14 +30,14 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F5 Dose and space weather | A, B | works with issues | The route card gives the radiation picked up on the walk, as dose equivalent in microsieverts and absorbed dose in micrograys, each with a range, from rates Curiosity measured at Gale (grade C). A banner on the map shows NASA's latest forecast of a solar eruption reaching Mars, with issue time and arrival window, live when NASA's feed answers and otherwise from a saved snapshot, labelled. Seen in a scripted browser, live. Issues: the absorbed-dose rate is from the 2014 paper as recorded in DATA_CATALOG, not re-read; terrain shielding is not included; the snapshot fallback was tested in unit tests, not by blocking the feed in a browser |
 | F6 Photos along the route | C, B | works with issues | The route card shows up to six real Perseverance navigation camera photos taken within 30 m of the planned walk, in walking order, each with sol, Earth date, local time, camera, distance from the route, stop and credit, and a link to NASA's page. The index holds 401 photos at 111 of the 116 rover stops in the box. Seen in a scripted browser: six photos loaded on the walk east along the valley. Issues: photos are not chosen by direction of travel, because we have not confirmed what the mast azimuth is measured from; the pictures load from NASA's server, so they need the network |
 | F7 Opening state and shareable link | B | works with issues | The Bright Angel link now opens on the walk to Cheyava Falls (hero scenario), coded, not tried. Layer choices not in the link; the 10-second first-visitor test not done |
-| F8 Public site and repository | B | works with issues | Live, but the afternoon's commits are not pushed. New: installable as an app (manifest, icon, service worker that keeps seen files; tried only as far as the build). Not done: private-window check; licence |
+| F8 Public site and repository | B | works with issues | Live, pushed at handover. New: installable as an app (manifest, icon, service worker that keeps seen files; tried only as far as the build). Not done: private-window check; licence |
 | F9 Validation panel | A | works with issues | Slope and height at 116 stops. New, not tried: the route card sets the rover's distance driven between home and a target beside our walk |
 | F10 Storm mode | A, B | in progress | Coded, not tried: storm drill in the route card (pick a warning time; go home or start home and shelter under steep ground); the 20 May 2024 event at Gale, 8,100 micrograys (NASA), against the walk's background dose |
 | F11 Time of day | A, B | in progress | Coded, not tried: Mars24 season, local solar time and Sun (tested against the Mars24 worked example), start-time slider, sunrise and sunset, whether the walk ends in daylight, computed sun shading; typical weather by Mars month at Gale only (Curiosity REMS). No weather at Jezero: the MEDA archive is not on the server. No dust devils |
 | F12 Thermal and mineral layers | A | in progress | Night infrared (THEMIS, USGS 2018) as a layer at Bright Angel: coded, to be built. Minerals not started: CRISM files unprocessed (REVIEW_QUEUE 10) |
-| F13 Tablet and helmet display | B, C | in progress | Coded, not tried: field tablet (big status card, three glove-sized buttons) and helmet concept view over a real rover photo |
+| F13 Tablet and helmet display | B, C | in progress | Tried briefly by the owner: janky and often empty. Fixed since: the helmet option shows only when its rover photo loads; the map resizes on a view change. Still open: R6 and R13 to R15 in REVIEW_QUEUE |
 | F15 More sites | A | in progress | Seven landing sites built as level 2 from their HiRISE terrain strips, warped from their own projections (2.6 to 6.3 MB each). Gale not built: image dates of its mosaics not found (REVIEW_QUEUE 8) |
-| F16 Extras | any | not started | |
+| F16 Extras | any | in progress | Coded, not tried: live link to Earth from NASA DSN Now; route export as GeoJSON with its Mars frame; rover drop-off (move home). Not started: two walkers, rover models in 3D, orbiter passes overhead (REVIEW_QUEUE item 10) |
 
 ## Sites
 
@@ -74,6 +74,10 @@ Set up on 13 November. Reachable from the team owner's laptop and from Joseph's 
 The first run of the new batch stopped at 02:37 UTC on 14 Nov with 12 problems, all from wrong rows in its download list (4 swapped sizes, 8 wrong file names). The list was corrected and rerun on the server with 0 problems. The mineral list had every size overstated; the server's script was changed to take sizes from the files themselves and the run then finished with 0 problems. Sizes were checked, not checksums.
 
 ## Waiting on someone
+
+- **Batch 3 on the team data server,** asked for at about 16:30 and taking a few hours: Perseverance MEDA weather for sols 3 to 64, 672 to 733 and 1340 to 1402 (`/raw/meda/`), Curiosity RAD data for sols 4185 to 4195 around the 20 May 2024 storm (`/raw/rad/`), and the Gale mosaics' metadata (`/raw/gale/metadata/`). The server's Claude session reports what arrived; see [../data/AGENTS.md](../data/AGENTS.md).
+- **The team owner:** approve installing `fiona` in the pipeline, for the geology layer (REVIEW_QUEUE item 7).
+- **Anyone:** the backup video by 23:00 (SUBMISSION_CHECKLIST).
 
 - The third teammate: install Tailscale, accept the share of the data server, put the address in `.env`, and confirm a file listing loads. Joseph has done this.
 - The team: confirm or change the two open proposals in DECISIONS.md (what each link opens on; how AI-written code is acknowledged).

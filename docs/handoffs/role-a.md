@@ -1,5 +1,19 @@
 # Role A handoff
 
+## Sat 14 Nov 16:55, role A handover from the team owner to Joseph, with Claude Code. START HERE
+
+Done: see the 16:05 entry below. Since then: nothing new in the pipeline; batch 3 was asked of the data server's own Claude session (prompt kept by the owner).
+Not done: Gale; geology; minerals; weather at Jezero.
+Broken or risky: Esri's CTX service leaves some approach tiles as no data; the level 2 images borrow their terrain model's georeferencing (check alignment, REVIEW_QUEUE item 9). The pipeline has not been reviewed (the app review stopped before it).
+Next, when batch 3 lands on the server (a few hours from 16:30; list `/raw/meda/`, `/raw/rad/`, `/raw/gale/metadata/`):
+- MEDA: read one sol's PDS4 label and the docs in `/raw/meda/docs/`, then extend `weather.py` with a station for `bright-angel` (typical values by local hour for today's season, solar longitude about 22 degrees, with sol counts); the app's "When to go" panel shows `weather/<site id>.json` if it exists, but its reader expects the Gale month format, so adapt `ui/timeSlider.ts` to hourly values.
+- RAD: turn the dose-rate files for sols 4185 to 4195 into a small time series for the storm replay in `safety/storm.ts` (absorbed dose in gray; label it measured at Gale).
+- Gale: copy the image dates word for word into a build section for `sites/gale-crater.yaml` (follow `bright-angel.yaml`, rover file `msl_curiosity_waypoints.json`), then `build_site.py`, then `build_approach.py --site gale-crater` if needed.
+- Geology: once the owner approves `fiona==1.10.1`, run `build_geology.py ../sites/bright-angel.yaml`, then `build_site.py ../sites/bright-angel.yaml`.
+Files: pipeline/weather.py, build_site.py, build_geology.py, sources.py; sites/gale-crater.yaml
+Other roles need to know: stop `npm run dev` if a build fails with "Access is denied" (builds now go through data/work, so it should not happen).
+Checks: pytest 44 pass; every build ran with real data except geology.
+
 ## Sat 14 Nov 16:05, role A work by the team owner, with Claude Code
 
 Done: approach imagery for all nine sites (`build_approach.py`, CTX rings, 6.3 MB); seven landing sites built as level 2 (`sources.py` now warps any projection; dates from the HiRISE archive labels); CTX 20 m terrain round Bright Angel out to 10 km; hero scenario (`scenario.py`); Gale weather by Mars month (`weather.py`); thermal layer config and colour tiles; `build_geology.py` written.

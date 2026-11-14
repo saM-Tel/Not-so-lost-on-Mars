@@ -24,6 +24,7 @@ Role C keeps this folder in order. Each document has its own rule for who change
 | How we work together | [WORKFLOW.md](WORKFLOW.md) | Team agreement |
 | Strategy, schedule, cut lines | [PLAN.md](PLAN.md) | Team agreement |
 | Sources and AI use | [REFERENCES.md](REFERENCES.md), [AI_USE.md](AI_USE.md) | Everyone, every session |
+| Large bugs and reviews waiting for someone | [REVIEW_QUEUE.md](REVIEW_QUEUE.md) | Anyone; move an item to Done with its commit |
 | What to submit | [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) | Role C |
 
 ## Rules for this folder

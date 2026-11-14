@@ -1,4 +1,5 @@
-// WHAT:    Adds a built site's image and 3D terrain to the map, and takes them away again (F1). Still to add: overlay layers with opacity control (F2).
+// WHAT:    Adds a built site's image and 3D terrain (which may reach past the box, from a coarser model) to the map and takes
+//          them away again (F1), and draws computed sun shading for a chosen Sun position (F11).
 // IN:      The map; a loaded site.
 // OUT:     Map sources and layers; the map's terrain setting.
 // USED BY: src/main.ts.

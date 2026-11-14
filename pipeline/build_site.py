@@ -1,6 +1,7 @@
-# WHAT:    One command that builds one site from its config. So far: reads the box, checks terrain against the rover, cuts image and
-#          terrain tiles, measures slope, writes the routing grids, and writes layers.json, validation.json and site.json (F1, F3).
-#          Still to add: stage 2, the rest of stages 4 and 5, and stages 6 and 7.
+# WHAT:    One command that builds one site from its config: reads the box (warping other projections), checks terrain against the
+#          rover, cuts image and terrain tiles (terrain may reach past the box from a coarser model), measures slope, writes the
+#          routing grids, the hero scenario, extra coloured layers, geology if prepared, the rover layers and photos, and
+#          layers.json, validation.json and site.json (F1 to F4, F6, F7, F9, F12, F15). Still to add: stage 2 (mask), roughness, sky exposure.
 # IN:      Path to a site config in ../sites/.
 # OUT:     ../app/public/data/<site id>/, written to a temporary folder and renamed when complete; sites.json is then rewritten.
 # USED BY: People and AI sessions from the command line: python build_site.py ../sites/<site id>.yaml [--dry-run]

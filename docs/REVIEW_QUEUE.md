@@ -8,6 +8,45 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 
 ## Open
 
+### From the app review of 14 Nov, about 16:45 (items R1 to R20)
+
+A larger model (Claude Fable) read the app's map, route, safety, time and display-mode code; full text with line numbers in [reviews/2026-11-14-app-review.md](reviews/2026-11-14-app-review.md). It did not read the pipeline, the service worker, `vite.config.ts`, `photos.ts`, `photoStrip.ts`, `layerPanel.ts`, `urlState.ts`, `zoomSelect.ts` or `scaleBar.ts`, and ran nothing. **None of these is fixed yet.** Work them in this order (the review's fix plan), run `npm run check` after each group, and move each to Done with its commit.
+
+**Group 1, `app/src/map/routeLayer.ts`**
+- **R1 (high, suspected): tether picture may stay stale on 3D ground.** The canvas source's `play()` may not refresh MapLibre's cached terrain textures. Check: at Bright Angel drag "Time since leaving home" past 7 h without moving the map. If the line does not move, clear the render-to-texture cache after drawing (look for `freeRtt` in `app/node_modules/maplibre-gl/src/`), then `map.triggerRepaint()`; use `play(); pause();` instead of pausing on the next render.
+- **R2 (medium): keep-out is re-added above the tether after a restart and forgets the panel's switch and opacity.** In `showKeepOut`, update the existing image source (`updateImage`) and leave the layer alone; add it before `route-tether` the first time.
+
+**Group 2, `app/src/ui/routePanel.ts`**
+- **R3 (high, confirmed): the tether verdict and tablet margin use the quickest way home, not the planned way back.** Use `Math.max(farthest along the out line, farthest along the back line, backS)`; set the tablet alert in the "not enough time" branch too.
+- **R4 (medium): a restart (slope limit, moved rover) leaves the old tether, verdict, table, storm advice and daylight line on screen,** for good if home becomes unusable. One `restart()` that clears all of them and hides the tether until new fields arrive.
+- **R5 (medium): the rover comparison ignores a moved rover; the confidence line hard-codes Bright Angel's "9 in 10 within 4.0 degrees" and "Perseverance".** Skip the comparison when home was moved; read the figures from `loaded.validation` and the name from `loaded.site.mission`, and leave the sentence out when absent (the level 2 sites have no rover check).
+- **R6 (medium): the tablet shows "Working out the walk…" forever after a refused target.** Pass the refusal message to the field view; clear the storm alert when a new target is chosen.
+- **R7 (medium, suspected): the address bar is rewritten on every slider frame;** Safari throws after 100 calls in 30 s, which would stop the tether redrawing. Debounce to 300 ms in a try/catch.
+- **R8 (speed): skip tether redraws when the allowed time has not changed** (with a 1-hour limit it is 3,600 s for the first 7 hours).
+
+**Group 3, layer order (slots)**: `main.ts`, `approach.ts`, `siteLayers.ts`, `overlays.ts`, `routeLayer.ts`
+- **R9 (medium): sun shading darkens the analysis layers; the rover-stop circles split the draped layers.** Add hidden anchor layers in `main.ts` after the approach rings (`slot-image`, `slot-shading`, `slot-overlays`, `slot-keep-out`, `slot-tether`, `slot-route`, `slot-points`) and insert every layer before its slot. Target order, bottom to top: globe; rings (all wide, all mid, all near); site image; sun shading; thermal, slope, geology, rover path; keep-out; tether; route lines; rover stops; site columns and pins. Check with `map.getStyle().layers.map(l => l.id)`.
+- **R10 (medium to low): sun shading uses Earth-scaled slopes and ignores the Sun's height.** Multiply the shading source's three factors and `baseShift` by `MAPLIBRE_METRES_PER_MARS_METRE`; set `hillshade-method` if the installed style spec has it.
+- **R11 (low): rings sorted by site first** (latent: a later site's wide ring could cover an earlier site's finer rings); sort by ring first. **R12 (low, suspected):** rings may appear one zoom late; try layer `minzoom: tiles.minZoom - 1`.
+
+**Group 4, `app/src/ui/modes.ts` and `app/src/style.css`** (check at 360 px and 1,024 px wide)
+- **R13 (medium): the tablet card covers the walk and the bottom widgets.** After entering tablet mode and resizing, fit the map to the walk with bottom padding the card's height; hide `.earth-link` and `.weather-banner` in tablet mode.
+- **R14 (low to medium, honesty): the helmet arrow is rotated over a photo whose look direction is not confirmed.** Keep the bearing as text, or a small compass marked N.
+- **R15 (low): widgets overlap:** the link-to-Earth line sits on the scale bar (move it to `bottom: 96px`); below about 1,120 px the mode switch covers the route card's Hide button (move it to the bottom right there).
+
+**Group 5, `flight.ts`, `tether.ts`, `overlays.ts`**
+- **R16 (low to medium, suspected): a flight promise can resolve at the start of a flight** when a second site is clicked mid-flight (`moveend` from the stopped flight). Call `flyTo` first, then wait for `moveend`; return at once on the `jumpTo` path.
+- **R17 (speed): `tetherPicture` allocates per cell.** Inline the four neighbours, write through a `Uint32Array`, reuse buffers; time it with `performance.now()`.
+- **R18 (speed): the slope picture is built at site open though it starts hidden** (2.4 MB fetch and a PNG encode). Build it when first switched on.
+
+**Small items**
+- **R19 (low):** problem boxes in `main.ts` never go away, stack, and use a red border for non-danger messages; keep-out also marks no-data cells but its text says only "steeper than"; "before sunset" is printed as a clock, not a duration (`timeSlider.ts`); the tablet's Storm button is outlined red all the time; headers of `routePanel.ts` and `style.css` still say "Still to add" for built things.
+- **R20 (speed, later):** rings only for the site in focus (3 sources, not 27; see item 6 below); skip `tidyNames` in `siteMarkers.ts` while markers are hidden.
+
+Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `sources.py` warping, `tiles.py` terrain easing, `build_site.py`), `app/pwa/sw.js` and `vite.config.ts`, `layerPanel.ts`, `urlState.ts`, `photos.ts`.
+
+### Earlier items
+
 ### 10. Features started but blocked on a source or a decision (high to medium)
 - **F12 minerals:** Mars Trek does not serve its CRISM mineral layers as tiles. The six CRISM MTRDR products (10.9 GB) are on the server, unprocessed; a person should pick the summary parameters to show (for example the hydrated-mineral ones) and check whether any product covers Bright Angel (77.305 E, 18.497 N).
 - **F6 photos by direction of travel:** NASA's feed gives a mast azimuth, but what it is measured from (rover body or north) is not confirmed. Until it is, photos are not chosen by direction.

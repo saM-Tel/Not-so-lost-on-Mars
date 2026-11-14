@@ -1,7 +1,7 @@
 # WHAT:    Stage 9: writes layers.json and site.json, including file sizes. So far: the layer record check and the JSON writer.
 # IN:      Layer records as dictionaries; source details from the config.
 # OUT:     layers.json under the output folder.
-# USED BY: build_globe.py. build_site.py will use it too.
+# USED BY: build_globe.py, build_site.py, build_approach.py, weather.py, build_space_weather.py.
 # RULES:   Every layer record is complete per docs/CONFIDENCE.md. A field that cannot be found is marked missing, not guessed.
 # TRAPS:   PITFALLS 2.
 # OWNER:   Role A.

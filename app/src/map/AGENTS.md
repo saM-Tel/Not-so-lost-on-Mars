@@ -36,9 +36,9 @@ Add a row when you add a file. Remove it when you delete one.
 | `flight.ts` | Camera moves: globe to a site, a site back to the globe, and the slow idle turn of the globe | F14, F7 |
 | `zoomSelect.ts` | Selects a site when the person zooms in on it by hand: from zoom 4 inwards, the nearest site within the middle of the view | F14 |
 | `zoomSelect.test.ts` | Tests for choosing the site in focus, on made-up positions | |
-| `siteLayers.ts` | Adds a built site's image and 3D terrain to the map and takes them away again. To add: overlay layers with opacity control | F1, F2 |
+| `siteLayers.ts` | Adds a built site's image and 3D terrain (terrain may reach past the box, `tiles.bounds`) and takes them away again; computed sun shading for a Sun position (hillshade under the route layers) | F1, F11 |
 | `legend.ts` | Legends for map layers (named colours or a ramp) and the colour-blind-safe ramp the slope layer is drawn with | F2 |
-| `overlays.ts` | A built site's layers as things the layer panel can switch and fade: the ground image, slope drawn from the routing grid, the rover's path and stops. To add: geology | F2 |
+| `overlays.ts` | A built site's layers as things the layer panel can switch and fade: the ground image, slope drawn from the routing grid, the rover's path and stops, and any tiled or polygon layer the pipeline coloured itself (night-time warmth, geology), with the legend from its record | F2, F12 |
 | `scaleBar.ts` | Our own scale bar, correct for Mars; shown from zoom 7 inwards | F1 |
 | `scaleBar.test.ts` | Tests for the scale bar's arithmetic | |
 | `routeLayer.ts` | Draws keep-out ground in red, the tether picture (a canvas the map reads directly, so the time slider stays smooth), home, the target, and the route out and back | F3, F4 |

@@ -39,6 +39,17 @@ Checked on 13 November against the Mars Trek catalogue and the PDS search servic
 
 The one model chosen for each site (four for Opportunity), with its address and size, is listed in [DATA_CATALOG.md](DATA_CATALOG.md) under "Other landing sites".
 
+## Built so far (14 Nov, 16:55)
+
+| Site | Level | What is built |
+|---|---|---|
+| Bright Angel, Jezero | 1 | 3 km box: 25 cm image, 1 m terrain with CTX 20 m terrain round it to 10 km, routing grids, rover stops and path, photos, terrain checks, hero scenario (home and three targets at rover stops), night infrared layer |
+| Chryse Planitia, Utopia Planitia, Ares Vallis, Columbia Hills, Meridiani, Arctic plain, Elysium Planitia | 2 | 2 km box at the centre of one HiRISE terrain strip: 1 m image and terrain warped from the strip's own projection, routing grids. Automatic, not reviewed |
+| Gale crater | 1 planned | Not built: the image dates of its mosaics were not found (REVIEW_QUEUE item 8; the metadata is in batch 3 on the server). Typical weather from Curiosity is built |
+| All nine | | Approach imagery: CTX rings of 320, 40 and 12 km |
+
+The owner moved the level 2 builds ahead of Three Forks and Gale on 14 November (DECISIONS).
+
 ## Order of work
 
 1. **Mars globe with every site marked.** A marker per site showing its level and what data exists. It uses one global image only, and it makes the "any site" claim visible from the first screen. The team owner put this first on 14 November.
