@@ -7,7 +7,7 @@
 // TRAPS:   PITFALLS 6, 11.
 // OWNER:   Role B.
 
-import { Marker, type CanvasSource, type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl';
+import { Marker, type CanvasSource, type GeoJSONSource, type ImageSource, type Map as MapLibreMap } from 'maplibre-gl';
 import type { GridDefinition } from '../data/contract';
 import type { LonLat } from '../mars/geometry';
 
@@ -26,6 +26,8 @@ export interface RouteLayer {
   setKeepOut(visible: boolean, opacity: number): void;
   /** Draw the tether from a picture with four bytes per grid cell (src/safety/tether.ts). */
   showTether(picture: Uint8ClampedArray, definition: GridDefinition): void;
+  /** Take the tether off the screen until the next showTether, for when it no longer matches the settings. */
+  hideTether(): void;
   showHome(position: LonLat): void;
   /** Small named pins at the scenario's science targets. */
   showTargets(targets: { name: string; lonEastDeg: number; latDeg: number }[]): void;
@@ -56,6 +58,18 @@ function corners(definition: GridDefinition): [[number, number], [number, number
   const east = west + definition.cols * definition.cellLonDeg;
   const south = north - definition.rows * definition.cellLatDeg;
   return [[west, north], [east, north], [east, south], [west, south]];
+}
+
+/**
+ * Make the map draw its draped layers again. On 3D ground MapLibre 6 draws them into textures it keeps for each
+ * terrain tile, and it only renews those when a source reports new tiles. A canvas source whose picture changed
+ * reports nothing, so without this the old tether stays on screen until the camera moves (review item R1).
+ * `releaseAllRTT` is the call MapLibre itself makes when an image source changes (maplibre-gl/src/ui/map.ts).
+ */
+function refreshDraped(map: MapLibreMap): void {
+  const terrain = (map as unknown as { terrain?: { tileManager?: { releaseAllRTT?: () => void } } | null }).terrain;
+  terrain?.tileManager?.releaseAllRTT?.();
+  map.triggerRepaint();
 }
 
 export function addRouteLayer(map: MapLibreMap): RouteLayer {
@@ -100,17 +114,20 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
         picture.data[i * 4 + 3] = 255;
       }
       context.putImageData(picture, 0, 0);
-      if (map.getLayer(KEEP_OUT_ID)) map.removeLayer(KEEP_OUT_ID);
-      if (map.getSource(KEEP_OUT_ID)) map.removeSource(KEEP_OUT_ID);
-      map.addSource(KEEP_OUT_ID, {
-        type: 'image', url: canvas.toDataURL('image/png'),
-        coordinates: corners(definition),
-      });
-      // Beneath the route lines, and see-through so the ground still shows.
+      const url = canvas.toDataURL('image/png');
+      const existing = map.getSource(KEEP_OUT_ID) as ImageSource | undefined;
+      if (existing) {
+        // After a restart (a new slope limit, a moved rover) only the picture changes. The layer keeps its place
+        // beneath the tether, and the switch and opacity the layer panel gave it.
+        existing.updateImage({ url, coordinates: corners(definition) });
+        return;
+      }
+      map.addSource(KEEP_OUT_ID, { type: 'image', url, coordinates: corners(definition) });
+      // Beneath the tether and the route lines, and see-through so the ground still shows.
       map.addLayer({
         id: KEEP_OUT_ID, type: 'raster', source: KEEP_OUT_ID,
         paint: { 'raster-opacity': 0.4, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 },
-      }, `${LINES_ID}-edge`);
+      }, map.getLayer(TETHER_ID) ? TETHER_ID : `${LINES_ID}-edge`);
     },
     setKeepOut(visible, opacity) {
       if (!map.getLayer(KEEP_OUT_ID)) return;
@@ -133,9 +150,11 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
       context.putImageData(tetherImage, 0, 0);
       const source = map.getSource(TETHER_ID) as CanvasSource | undefined;
       if (source) {
-        // A paused canvas source shows a still copy. Play it for one frame so the map takes the new picture.
+        // A paused canvas source shows a still copy: play then pause makes it take the new picture once.
         source.play();
-        void map.once('render', () => source.pause());
+        source.pause();
+        if (map.getLayer(TETHER_ID)) map.setLayoutProperty(TETHER_ID, 'visibility', 'visible');
+        refreshDraped(map);
         return;
       }
       map.addSource(TETHER_ID, { type: 'canvas', canvas: tetherCanvas, coordinates: corners(definition), animate: false });
@@ -144,6 +163,11 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
         id: TETHER_ID, type: 'raster', source: TETHER_ID,
         paint: { 'raster-opacity': 0.9, 'raster-fade-duration': 0 },
       }, `${LINES_ID}-edge`);
+    },
+    hideTether() {
+      if (!map.getLayer(TETHER_ID)) return;
+      map.setLayoutProperty(TETHER_ID, 'visibility', 'none');
+      refreshDraped(map);
     },
     showHome(position) {
       home?.remove();

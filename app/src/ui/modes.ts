@@ -33,7 +33,8 @@ export interface FieldState {
 }
 
 export interface ModeSwitch {
-  setState(state: FieldState | null): void;
+  /** Show a planned walk, or with null that there is none. `message` says why there is none, when a target was refused. */
+  setState(state: FieldState | null, message?: string | null): void;
   remove(): void;
 }
 
@@ -51,6 +52,8 @@ export function createModeSwitch(actions: {
 }): ModeSwitch {
   let mode: Mode = 'planner';
   let state: FieldState | null = null;
+  /** Why there is no walk to show, when the last target was refused. */
+  let noWalkMessage: string | null = null;
   /** The helmet view is offered only once a real rover photo near the target has loaded: it has nothing else to show. */
   let helmetReady = false;
 
@@ -117,9 +120,11 @@ export function createModeSwitch(actions: {
     tablet.hidden = mode !== 'tablet';
     helmet.hidden = mode !== 'helmet';
     if (!state) {
-      tabletStatus.replaceChildren(el('p', 'field-card__big', 'Working out the walk…'),
+      tabletStatus.replaceChildren(
+        el('p', 'field-card__big', noWalkMessage ? 'No walk to this point' : 'Working out the walk…'),
+        ...(noWalkMessage ? [el('p', 'field-card__row', noWalkMessage)] : []),
         el('p', 'field-card__row', 'Press Next target, or choose one in the planner.'));
-      readout.textContent = 'No walk planned.';
+      readout.textContent = noWalkMessage ?? 'No walk planned.';
       alertLine.textContent = '';
       return;
     }
@@ -161,7 +166,7 @@ export function createModeSwitch(actions: {
   };
   render();
   return {
-    setState(next) { state = next; render(); },
+    setState(next, message = null) { state = next; noWalkMessage = next ? null : message; render(); },
     remove() {
       document.body.classList.remove('mode-tablet', 'mode-helmet');
       bar.remove();

@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GridDefinition } from '../data/contract';
 import { allowedTimeHomeS, timeLeftS, WALK_DURATION_S } from './budget';
-import { farthestFromHomeS, tetherPicture } from './tether';
+import { farthestFromHomeS, tetherPicture, walkFarthestFromHomeS } from './tether';
 
 /** Test fixture: one row of six cells; home is the west cell and each cell east is 10 minutes further from home. */
 const cols = 6;
@@ -76,6 +76,14 @@ describe('how far from home a route gets', () => {
   it('finds the longest time-to-home along a line', () => {
     const line: [number, number][] = [[77.30005, 18.49995], [77.30015, 18.49995], [77.30035, 18.49995]];
     expect(farthestFromHomeS(cautiousS, definition, line)).toBe(1800);
+  });
+
+  it('judges a walk by its planned way back when that is slower than the quickest way home', () => {
+    const out: [number, number][] = [[77.30005, 18.49995], [77.30035, 18.49995]];   // quickest way home from its end: 1,800 s
+    const back: [number, number][] = [[77.30035, 18.49995], [77.30045, 18.49995]];  // passes a cell 2,400 s from home
+    expect(walkFarthestFromHomeS(cautiousS, definition, out, back, 1000)).toBe(2400);
+    // A planned way back of 62 minutes counts in full, though the quickest way home is shorter.
+    expect(walkFarthestFromHomeS(cautiousS, definition, out, out, 3720)).toBe(3720);
   });
 
   it('says there is no way home from a point outside the grid', () => {

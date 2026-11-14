@@ -23,7 +23,7 @@ import { allowedTimeHomeS, DEFAULT_WALK_BACK_LIMIT_S, timeLeftS, WALK_DURATION_S
 import { walkDose } from '../safety/dose';
 import { OXYGEN_BASIS, oxygenForEnergy } from '../safety/oxygen';
 import { stormAdvice } from '../safety/storm';
-import { farthestFromHomeS, tetherPicture } from '../safety/tether';
+import { tetherPicture, walkFarthestFromHomeS } from '../safety/tether';
 import { formatDistance, formatDose, formatDuration, formatEnergy, formatHeight, formatRange } from './format';
 import { createPhotoStrip } from './photoStrip';
 import { profileChart } from './profileChart';
@@ -155,15 +155,19 @@ export function startRoutePlanner(
     const backS = caseValue(lastAnswer.back, 'cautious', 'timeS');
     // By the time the walker reaches the far end, this much of the walk has gone.
     const allowedThereS = allowedTimeHomeS({ ...settings, elapsedS: settings.elapsedS + outS });
-    const farthestS = farthestFromHomeS(tetherFields.cautiousS, definition, lastAnswer.out.line);
-    if (settings.elapsedS + outS + backS > settings.elapsedS + timeLeftS(settings.elapsedS)) {
+    // Judged along the walk as planned: the way back drawn on the map can be slower than the quickest way home.
+    const farthestS = walkFarthestFromHomeS(tetherFields.cautiousS, definition, lastAnswer.out.line, lastAnswer.back.line, backS);
+    let alert: string | null = null;
+    if (outS + backS > timeLeftS(settings.elapsedS)) {
+      alert = 'Not enough time left for this walk.';
       tether.showVerdict({ inside: false, text: `Not enough time left. Out and back takes ${formatDuration(outS + backS)} in the cautious case and ${formatDuration(timeLeftS(settings.elapsedS))} is left.` });
     } else if (farthestS > allowedThereS) {
-      tether.showVerdict({ inside: false, text: `This walk leaves the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case; the most allowed by then is ${formatDuration(allowedThereS)}. Choose a nearer target.` });
+      alert = 'This walk leaves the tether. Choose a nearer target.';
+      tether.showVerdict({ inside: false, text: `This walk leaves the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case, along the planned way out and back; the most allowed by then is ${formatDuration(allowedThereS)}. Choose a nearer target.` });
     } else {
-      tether.showVerdict({ inside: true, text: `This walk stays inside the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case; ${formatDuration(allowedThereS)} is allowed.` });
+      tether.showVerdict({ inside: true, text: `This walk stays inside the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case, along the planned way out and back; ${formatDuration(allowedThereS)} is allowed.` });
     }
-    updateField(lastAnswer, settings.elapsedS, outS, backS, allowedThereS, farthestS);
+    updateField(lastAnswer, settings.elapsedS, outS, backS, allowedThereS, farthestS, alert);
   };
 
   /** The field tablet and helmet views (F13): cautious values for the planned walk. */
@@ -174,6 +178,7 @@ export function startRoutePlanner(
   let fieldPhoto: { key: string; photo: FieldState['photo'] } | null = null;
   const updateField = (
     answer: Extract<RouteAnswer, { ok: true }>, elapsedS: number, outS: number, backS: number, allowedThereS: number, farthestS: number,
+    verdictAlert: string | null,
   ): void => {
     const homeAt: [number, number] = homeOverride ?? (loaded.site.home ? [loaded.site.home.lonEastDeg, loaded.site.home.latDeg] : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg]);
     const named = (loaded.site.targets ?? []).find((t) => Math.abs(t.lonEastDeg - answer.target[0]) < 1e-4 && Math.abs(t.latDeg - answer.target[1]) < 1e-4);
@@ -184,8 +189,8 @@ export function startRoutePlanner(
       homeFromTargetS: backS,
       tetherMarginS: allowedThereS - farthestS,
       tetherAllowedS: allowedThereS,
-      stayAtTargetS: farthestS <= allowedThereS ? WALK_DURATION_S - elapsedS - outS - backS : 0,
-      alert: stormAlert ?? (farthestS > allowedThereS ? 'This walk leaves the tether. Choose a nearer target.' : null),
+      stayAtTargetS: verdictAlert === null ? WALK_DURATION_S - elapsedS - outS - backS : 0,
+      alert: stormAlert ?? verdictAlert,
       photo: null,
     };
     const key = `${answer.target[0].toFixed(6)},${answer.target[1].toFixed(6)}`;
@@ -232,19 +237,32 @@ export function startRoutePlanner(
   });
 
   /** Draw the tether for the settings now chosen. Several changes in one frame are drawn once. */
+  /** What the tether on screen was drawn from, so a slider move that changes nothing is not drawn again (R8). */
+  let drawn: { fields: TetherFields; allowedS: number } | null = null;
+  let urlTimer = 0;
   const drawTether = (): void => {
     cancelAnimationFrame(redraw);
     redraw = requestAnimationFrame(() => {
       const definition = loaded.site.grid;
       if (stopped || !tetherFields || !definition) return;
       const settings = tether.settings();
-      // Keep the address bar in step, so the link can be shared. Defaults are left out to keep it short.
-      updateUrlState({
-        walkBackMin: settings.walkBackLimitS === DEFAULT_WALK_BACK_LIMIT_S ? null : settings.walkBackLimitS / 60,
-        elapsedMin: settings.elapsedS / 60,
-      });
+      // Keep the address bar in step, so the link can be shared. Defaults are left out to keep it short. Written a
+      // moment after the slider rests: some browsers refuse an address that changes many times a second (R7).
+      window.clearTimeout(urlTimer);
+      urlTimer = window.setTimeout(() => {
+        try {
+          updateUrlState({
+            walkBackMin: settings.walkBackLimitS === DEFAULT_WALK_BACK_LIMIT_S ? null : settings.walkBackLimitS / 60,
+            elapsedMin: settings.elapsedS / 60,
+          });
+        } catch { /* the address bar is a convenience; the tether must go on drawing without it */ }
+      }, 300);
       const allowedS = allowedTimeHomeS(settings);
-      layer.showTether(tetherPicture(tetherFields.cautiousS, tetherFields.expectedS, allowedS, definition.rows, definition.cols), definition);
+      // With a one-hour limit the allowed time is the same for the first seven hours of the walk.
+      if (drawn?.fields !== tetherFields || drawn.allowedS !== allowedS) {
+        layer.showTether(tetherPicture(tetherFields.cautiousS, tetherFields.expectedS, allowedS, definition.rows, definition.cols), definition);
+        drawn = { fields: tetherFields, allowedS };
+      }
       showVerdict();
     });
   };
@@ -274,9 +292,14 @@ export function startRoutePlanner(
       if (slope[row * definition.cols + col]! > slopeLimitDeg - CONFIDENCE_MARGIN_DEG) near += stepM;
     }
     const share = total > 0 ? near / total : 0;
+    // The rover check of our slope, where this site has one. Without it the margin is an assumption, and says so.
+    const check = loaded.validation?.slope;
+    const basis = check?.percentile90AbsoluteDifferenceDeg !== undefined
+      ? `9 in 10 of the ${check.stopsUsed} rover stops here agreed with our slope within ${check.percentile90AbsoluteDifferenceDeg} degrees`
+      : 'an assumed margin: our slope has not been checked against a rover at this site';
     line.textContent = near === 0
-      ? `Route confidence: the whole walk stays more than ${CONFIDENCE_MARGIN_DEG} degrees below the slope limit, so an error in our slope as large as the rover check found would not make it too steep (grade C).`
-      : `Route confidence: weakest stretch. ${formatDistance(near)} of the walk (${(share * 100).toFixed(0)}%) crosses ground within ${CONFIDENCE_MARGIN_DEG} degrees of the slope limit, where our slope from orbit may be off by that much (9 in 10 rover stops agreed within 4.0 degrees). Check those stretches on the ground (grade C).`;
+      ? `Route confidence: the whole walk stays more than ${CONFIDENCE_MARGIN_DEG} degrees below the slope limit (${basis}), so an error that large in our slope would not make it too steep (grade C).`
+      : `Route confidence: weakest stretch. ${formatDistance(near)} of the walk (${(share * 100).toFixed(0)}%) crosses ground within ${CONFIDENCE_MARGIN_DEG} degrees of the slope limit, where our slope from orbit may be off by that much (${basis}). Check those stretches on the ground (grade C).`;
     return line;
   };
 
@@ -299,14 +322,15 @@ export function startRoutePlanner(
     const line = el('p', 'route-card__note');
     const home = loaded.site.home;
     const target = (loaded.site.targets ?? []).find((t) => Math.abs(t.lonEastDeg - answer.target[0]) < 1e-4 && Math.abs(t.latDeg - answer.target[1]) < 1e-4);
-    if (!home || !target) return line;
+    // The comparison is between two rover stops. Once the crew rover has been moved, home is no longer one of them.
+    if (!home || !target || homeOverride) return line;
     void roverStops.then((stops) => {
       const a = stops.get(home.stop);
       const b = stops.get(target.stop);
       if (!a || !b) return;
       const drivenM = Math.abs(b.drivenTotalM - a.drivenTotalM);
       line.textContent =
-        `Checked against the rover: Perseverance drove ${formatDistance(drivenM)} between these two stops (sols ${Math.min(a.sol, b.sol)} to ${Math.max(a.sol, b.sol)}), ` +
+        `Checked against the rover: the ${loaded.site.mission} rover drove ${formatDistance(drivenM)} between these two stops (sols ${Math.min(a.sol, b.sol)} to ${Math.max(a.sol, b.sol)}), ` +
         `against ${formatDistance(answer.out.stats.distanceM)} for our walk out. The rover's drive includes stops and detours for science, so it is a check on scale, not a race (F9, measured).`;
     });
     return line;
@@ -387,6 +411,7 @@ export function startRoutePlanner(
       photos.show(null);
       updateUrlState({ target: null });
       status.textContent = REFUSALS[answer.reason] ?? 'No route was found.';
+      modes.setState(null, status.textContent);
       return;
     }
     layer.showRoute({ target: answer.target, out: answer.out.line, back: answer.back.line });
@@ -461,14 +486,29 @@ export function startRoutePlanner(
   let firstStart = true;
   let lastTarget: [number, number] | null = null;
   const about = el('p', 'route-card__note');
-  const suit = suitSettings((limitDeg) => {
-    slopeLimitDeg = limitDeg;
+  /**
+   * Work out the ways from home again, after a new slope limit or a moved rover. Everything worked out from the old
+   * ones leaves the screen at once: the route, the tether, the verdict, the table, the photos, the storm advice and
+   * the daylight line. If home turns out to be unusable they must not stay behind (R4).
+   */
+  const restart = (): void => {
     stopWorker();
     tetherFields = null;
     lastAnswer = null;
+    drawn = null;
     layer.showRoute(null);
+    layer.hideTether();
+    result.replaceChildren();
+    photos.show(null);
+    when.setWalk(null);
+    showVerdict();
+    showStorm();
     planTo = () => {};
     void begin();
+  };
+  const suit = suitSettings((limitDeg) => {
+    slopeLimitDeg = limitDeg;
+    restart();
   });
 
   /** Start the route worker for the current slope limit, draw keep-out ground and the tether, and plan a walk. */
@@ -563,6 +603,8 @@ export function startRoutePlanner(
       planTo = (position) => {
         const request = ++latest;
         lastTarget = position;
+        // A storm alert belongs to the walk it was raised for.
+        stormAlert = null;
         status.textContent = 'Working out the walk…';
         void client.route(position).then((answer) => {
           if (!stopped && request === latest) showAnswer(answer);
@@ -575,12 +617,7 @@ export function startRoutePlanner(
             placingHome = false;
             moveRover.textContent = 'Move the rover: click a new spot';
             homeOverride = [event.lngLat.lng, event.lngLat.lat];
-            stopWorker();
-            tetherFields = null;
-            lastAnswer = null;
-            layer.showRoute(null);
-            planTo = () => {};
-            void begin();
+            restart();
             return;
           }
           planTo([event.lngLat.lng, event.lngLat.lat]);
@@ -604,6 +641,7 @@ export function startRoutePlanner(
   return () => {
     stopped = true;
     cancelAnimationFrame(redraw);
+    window.clearTimeout(urlTimer);
     stopWorker();
     if (onClick) map.off('click', onClick);
     map.getCanvas().style.cursor = '';

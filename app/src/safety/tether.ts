@@ -79,3 +79,15 @@ export function farthestFromHomeS(timeHomeS: Float32Array, definition: GridDefin
   }
   return worst;
 }
+
+/**
+ * How far from home, in cautious walking time, the planned walk gets: seconds. It is the largest of the quickest
+ * time home from any point on the way out, the same along the way back, and the time the planned way back itself
+ * takes. The planned way back is the least-effort route, which can be slower than the quickest one, and it is the
+ * one the walker will follow, so the tether must hold for it too (review item R3).
+ */
+export function walkFarthestFromHomeS(
+  timeHomeS: Float32Array, definition: GridDefinition, outLine: readonly LonLat[], backLine: readonly LonLat[], plannedBackS: number,
+): number {
+  return Math.max(farthestFromHomeS(timeHomeS, definition, outLine), farthestFromHomeS(timeHomeS, definition, backLine), plannedBackS);
+}
