@@ -41,8 +41,8 @@ The one model chosen for each site (four for Opportunity), with its address and 
 
 ## Order of work
 
-1. **Bright Angel, Jezero** (level 1). The hero. Fully curated: named targets, chosen photos, validation. Nothing else starts until its must-haves work.
-2. **Site picker with every site at level 4.** A Mars overview with a pin per site showing its level and what data exists. Cheap, because it uses global layers only, and it makes the "any site" claim visible from the first screen.
+1. **Mars globe with every site marked.** A marker per site showing its level and what data exists. It uses one global image only, and it makes the "any site" claim visible from the first screen. The team owner put this first on 14 November.
+2. **Bright Angel, Jezero** (level 1). The hero. Fully curated: named targets, chosen photos, validation. No other site is built until its must-haves work.
 3. **Three Forks, Jezero** (level 1). Same files as the hero, so nearly free.
 4. **Gale crater boxwork** (level 1). The example in the challenge statement, and the only site with radiation measured in place.
 5. **Level 2 sites, built by the pipeline without curation.** Columbia Hills first, then Endeavour, then InSight. Each is a config file and a pipeline run. They carry an "automatic build, not reviewed" label.

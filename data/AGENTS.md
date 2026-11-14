@@ -62,7 +62,7 @@ Sizes marked "measured" were read from the servers on 13 November. The rest are 
 | Jezero context image and terrain | 0.05 GB, measured | |
 | Jezero geologic map | 0.35 GB zipped, measured; about 1 GB unpacked, estimate | Unpack it on the server |
 | Weather archive | About 23 MB per sol, measured | One season is about 1.4 GB. The full archive is about 43 GB |
-| Jezero mineral products, 6 | About 11.2 GB, measured | |
+| Jezero mineral products, 6 | 10.94 GB, measured from the files on 14 November | The search service overstates it as 11.2 GB |
 | Gale terrain mosaic | 3.87 GB, measured | |
 | Gale image mosaic | 24.4 GB, measured | |
 | Seven other landing sites, 10 terrain model folders | 17.06 GB, measured | |

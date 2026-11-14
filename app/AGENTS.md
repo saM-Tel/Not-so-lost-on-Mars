@@ -45,7 +45,7 @@ public/data/   pipeline outputs
 - A layer appears only if its record in `layers.json` is complete.
 - Every number on screen comes with its range and source, per [../docs/CONFIDENCE.md](../docs/CONFIDENCE.md).
 - The site is served under the repository name on GitHub Pages. Set the base path and use relative addresses.
-- The app opens on the hero scenario with a route already shown (feature F7).
+- The plain link opens on the Mars globe (feature F14). A link that names a built site opens on that site with its route already shown (feature F7).
 - No new dependency without a reason in the commit message. None after Sunday 12:00.
 - Read sections 3, 4, 6, 10 and 11 of [../docs/PITFALLS.md](../docs/PITFALLS.md) before starting.
 

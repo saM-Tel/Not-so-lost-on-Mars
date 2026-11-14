@@ -21,7 +21,7 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Mars Trek map services | https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars |
 | Mars 2020 Jezero landing site terrain and image mosaics, USGS | https://astrogeology.usgs.gov/search/map/mars-2020-jezero-crater-landing-site-products |
 | HiRISE LPL PDS archive, 1 m terrain models and ortho images for the seven landing sites (Viking 1, Viking 2, Pathfinder, Spirit, Opportunity, Phoenix, InSight) | https://hirise.lpl.arizona.edu/PDS/DTM/ |
-| MRO CRISM targeted products (Jezero mineral observations, 6 products, about 11.2 GB), PDS Geosciences Node | https://pds-geosciences.wustl.edu/mro/mro-m-crism-5-rdr-mptargeted-v1/ |
+| MRO CRISM targeted products (Jezero mineral observations, 6 products, 10.94 GB), PDS Geosciences Node | https://pds-geosciences.wustl.edu/mro/mro-m-crism-5-rdr-mptargeted-v1/ |
 | Mars Sample Return terrain and image mosaics, USGS, 2025 (accuracy figures) | https://astrogeology.usgs.gov/search/map/mars-sample-return-terrain-relative-navigation-hirise-dtm-mosaic |
 | USGS planetary data catalogue | https://stac.astrogeology.usgs.gov/api/collections |
 | Sun and Stack 2020, Geologic map of Jezero crater and the Nili Planum region, USGS SIM 3464, doi 10.3133/sim3464 | https://pubs.usgs.gov/publication/sim3464 |

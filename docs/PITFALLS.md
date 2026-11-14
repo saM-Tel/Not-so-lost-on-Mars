@@ -135,7 +135,8 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 
 | Trap | Do this |
 |---|---|
-| Opening on an empty map | Open on the hero scenario with a route and tether |
+| Opening on an empty map | The globe opens with every site marked and one line of explanation. A site link opens on the hero scenario with a route and tether |
+| A globe that looks like Earth | Switch off MapLibre's blue atmosphere glow. Use a real Mars mosaic with its credit |
 | Rainbow colours; red used for decoration | Colour-blind-safe ramps; red for danger only |
 | Overlays unreadable on orange ground | Test every layer on the real imagery |
 | Jargon on screen | Plain words. Spell out terms on first use |

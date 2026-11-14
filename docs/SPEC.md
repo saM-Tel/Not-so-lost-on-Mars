@@ -6,6 +6,12 @@ Each feature states the astronaut's question it answers. If you cannot say which
 
 ## Must have (Saturday 23:00)
 
+### F14. Mars globe and site picker
+Question: "Where on Mars can this work, and where do I start?"
+- The app opens on a 3D globe of Mars with a tall marker at every NASA landing site, each showing its readiness level and available data, per [SITES.md](SITES.md). Clicking a marker flies down to the site and opens its details. At a built site the fly-in ends on the metre-scale map.
+- Checks: every marker position has a cited source; a site that is not built says so and offers no route; the globe image shows its mission, dates and credit; markers never use red; the fly-in to Bright Angel ends on the hero scenario; "All sites" returns to the globe.
+- The team owner moved this up from "should have" on 14 November and it is built first. It keeps its number so other documents still match.
+
 ### F1. Hero site map
 Question: "What is this place like?"
 - 25 cm imagery and 3D terrain for a 3 × 3 km box at Bright Angel, Jezero.
@@ -38,8 +44,9 @@ Question: "What will I see when I get there?"
 
 ### F7. Opening state and shareable link
 Question for the judge: "What is this?"
-- The link opens on the hero scenario with a route, the tether and one line of explanation already on screen. The address bar holds the state so any view can be shared.
-- Checks: a first-time visitor understands the product within 10 seconds without clicking; reloading a copied link restores the same view.
+- The plain link opens on the globe (F14) with one line of explanation and Bright Angel marked as the place to start. A link that names a site opens on that site; for Bright Angel that is the hero scenario with a route and the tether already on screen. The address bar holds the state so any view can be shared.
+- Checks: a first-time visitor understands the product within 10 seconds without clicking, on the plain link and on the Bright Angel link; reloading a copied link restores the same view.
+- The split between the two links is proposed, not yet agreed. See [DECISIONS.md](DECISIONS.md).
 
 ### F8. Public site and repository
 - Checks: the link works in a private browser window; the README explains what it is, how to run it and where the data comes from.
@@ -64,10 +71,6 @@ Question: "When should I go?"
 
 ### F13. Field tablet and helmet display
 - The same data in two reduced layouts, described below.
-
-### F14. Site picker
-Question: "Where else could this work?"
-- A Mars overview with every NASA landing site, each showing its readiness level and available data, per [SITES.md](SITES.md).
 
 ## Stretch
 

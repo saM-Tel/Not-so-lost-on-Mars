@@ -81,14 +81,14 @@ All folders are under `https://hirise.lpl.arizona.edu/PDS/DTM/`.
 | Phoenix | DTEPC_008591_2485_008644_2485_U01 | 5, 1.86 GB | `PSP/ORB_008500_008599/PSP_008591_2485_PSP_008644_2485/` | Polar projection, unlike the others; the pipeline must handle it. Near: 0.8 km |
 | InSight | DTEEC_037262_1845_036761_1845_U01 | 5, 2.37 GB | `ESP/ORB_037200_037299/ESP_037262_1845_ESP_036761_1845/` | Near: 4.1 km |
 
-Total: 68 files, 17.06 GB. These are single strips a few kilometres wide, not mosaics, so each site's box is smaller than at Jezero or Gale.
+Total: 68 files, 17.06 GB. Each `.JP2` image also has a small `.LBL` label file beside it holding its acquisition details; the 58 labels were added to the server on 14 November. These are single strips a few kilometres wide, not mosaics, so each site's box is smaller than at Jezero or Gale.
 
 ### Jezero geology and minerals: addresses found on 13 November
 
 | Source | Address | Size | Notes |
 |---|---|---|---|
 | Jezero geologic map package | `https://pubs.usgs.gov/sim/3464/sim3464_database.zip` | 349,336,873 bytes | |
-| CRISM mineral products, 6 | From the PDS search service: `https://oderest.rsl.wustl.edu/live2/?query=product&target=mars&ihid=MRO&iid=CRISM&pt=MTRDR&westlon=77.25&eastlon=77.50&minlat=18.40&maxlat=18.55&results=fmp&output=JSON` | 690 files, about 11.2 GB | Acquired 29 Jan 2007, 26 Feb 2007, 21 Apr 2007, 19 May 2007, 27 Jun 2007 and 14 Aug 2011. Whether any covers Bright Angel (77.305 E, 18.497 N) is not checked |
+| CRISM mineral products, 6 | From the PDS search service: `https://oderest.rsl.wustl.edu/live2/?query=product&target=mars&ihid=MRO&iid=CRISM&pt=MTRDR&westlon=77.25&eastlon=77.50&minlat=18.40&maxlat=18.55&results=fmp&output=JSON` | 690 files, 10.94 GB (10,943,277,624 bytes, summed from each file's own size on 14 November; the search service's size field overstates it as 11.2 GB) | Acquired 29 Jan 2007, 26 Feb 2007, 21 Apr 2007, 19 May 2007, 27 Jun 2007 and 14 Aug 2011. Whether any covers Bright Angel (77.305 E, 18.497 N) is not checked |
 
 ## B. Extra resources that could strengthen the project
 

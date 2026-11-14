@@ -197,6 +197,7 @@ The feature numbers match [SPEC.md](SPEC.md).
 
 **Must have (done by Saturday 23:00)**
 
+- F14. Mars globe with a marker at every NASA landing site; click to fly in (moved up and built first; decided 14 November)
 - F1. Hero site with 25 cm imagery and 3D terrain
 - F2. Layer panel with an information card per layer: slope, keep-out areas, geology, rover path
 - F3. Route planner with three-case statistics and elevation profile
@@ -213,7 +214,6 @@ The feature numbers match [SPEC.md](SPEC.md).
 - F11. Time-of-day slider with typical weather and shadows
 - F12. Thermal and mineral layers
 - F13. Tablet and helmet-display modes
-- F14. Site picker with every NASA landing site at overview level
 
 **Stretch**
 
