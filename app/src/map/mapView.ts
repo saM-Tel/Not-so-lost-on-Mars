@@ -87,6 +87,9 @@ export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
     minZoom: 0.6,
     maxPitch: 80,
     renderWorldCopies: false,
+    // Phone and high-density laptop screens report 2.5 to 3 device pixels per CSS pixel. Drawing the globe, the
+    // 3D terrain and every overlay at that density costs up to twice the work of 2 and looks no sharper on a map.
+    pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
     // Credit stays written out in full; it is never folded away behind a button.
     attributionControl: { compact: false },
   });

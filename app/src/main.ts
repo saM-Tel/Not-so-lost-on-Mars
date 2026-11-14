@@ -10,6 +10,7 @@
 import { loadLayers } from './data/layers';
 import { loadSite } from './data/loadSite';
 import { loadSites } from './data/loadSites';
+import { addApproachLayers, loadApproachLayers } from './map/approach';
 import { flyIntoSite, flyToGlobe, flyToSite, startIdleTurn } from './map/flight';
 import { createGlobeMap } from './map/mapView';
 import { addOverlays } from './map/overlays';
@@ -17,6 +18,7 @@ import { addScaleBar } from './map/scaleBar';
 import { removeSiteLayers, showSiteLayers } from './map/siteLayers';
 import { addSiteMarkers } from './map/siteMarkers';
 import { watchZoomSelect } from './map/zoomSelect';
+import { setUpInstall } from './ui/install';
 import { createLayerPanel } from './ui/layerPanel';
 import { startRoutePlanner } from './ui/routePanel';
 import { createSitePicker } from './ui/sitePicker';
@@ -38,9 +40,10 @@ async function start(): Promise<void> {
   const container = document.getElementById('map');
   if (!container) throw new Error('The page has no map element.');
 
-  const [globe, loaded] = await Promise.all([
+  const [globe, loaded, approachRings] = await Promise.all([
     loadLayers(`${DATA_URL}globe/layers.json`),
     loadSites(`${DATA_URL}sites.json`),
+    loadApproachLayers(`${DATA_URL}approach/layers.json`),
   ]);
   const image = globe.usable.find((layer) => layer.tiles !== undefined);
   if (!image) {
@@ -64,6 +67,8 @@ async function start(): Promise<void> {
   });
   if (import.meta.env.DEV) (window as unknown as { tetherMap: unknown }).tetherMap = map;
   await new Promise<void>((resolve) => { void map.once('load', () => resolve()); });
+  // Sharp land around every site while zooming in. Added before the markers and the site image, so both sit on top.
+  addApproachLayers(map, approachRings, `${DATA_URL}approach/`);
   addScaleBar(map);
   addWeatherBanner(container, DATA_URL);
 
@@ -160,6 +165,7 @@ async function start(): Promise<void> {
   else stopIdleTurn = startIdleTurn(map);
 }
 
+setUpInstall();
 start().catch((error: unknown) => {
   showProblem(error instanceof Error ? error.message : String(error));
 });

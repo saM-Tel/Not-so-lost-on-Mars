@@ -16,6 +16,7 @@ Run these inside `pipeline/`. Use a standard Python 3.12 from python.org. The Py
 
 - Create the Python environment and install: `py -3.12 -m venv .venv`, then `.venv\Scripts\python -m pip install -r requirements.txt`. On macOS or Linux: `python3.12 -m venv .venv`, then `.venv/bin/python -m pip install -r requirements.txt`
 - Build a site: `.venv\Scripts\python build_site.py ../sites/<site id>.yaml`. Add `--dry-run` to check the config and print the box without reading or writing. The first build of Bright Angel reads about 190 MB from the team data server in three to four minutes; the cells are then kept in `../data/work/<site id>/` and a rebuild takes about a minute
+- Build the approach imagery around every site: `.venv\Scripts\python build_approach.py`, or `--site <site id>` for one site, keeping the others. The first run fetches about 75 tiles per site from Esri's OnMars CTX service and keeps them in `../data/work/approach/`; a rerun takes seconds. It prints a "note:" for any tile the service fails to give, which is left as no data
 - Refresh the space-weather snapshot: `.venv\Scripts\python build_space_weather.py`. Run it shortly before the submission so the fallback is fresh
 - Build the globe image and site list: `.venv\Scripts\python build_globe.py` Add `--only image` or `--only sites` to build one of the two. The image step fetches 512 tiles from Mars Trek on the first run and keeps them in `../data/work/globe/`. Run the sites step after changing any file in `../sites/`
 - Check, the one command that must pass before any push: `.venv\Scripts\python -m pytest -q`, then `.venv\Scripts\python build_site.py ../sites/bright-angel.yaml --dry-run`
@@ -63,6 +64,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `requirements.txt` | Pinned Python packages | |
 | `build_site.py` | One command that builds one site from its config. Built so far: reads the box, checks terrain against the rover, cuts image and terrain tiles, measures slope, writes the routing grids, the slope layer record and the rover layers, writes `layers.json`, `validation.json` and `site.json`. To add: stage 2, the rest of stages 4 and 5, stages 6 and 7 | F1 to F6, F9 |
 | `build_globe.py` | Builds what the globe needs: Web Mercator tiles of the Viking colour mosaic with its layer record, and `sites.json` from every site config | F14 |
+| `build_approach.py` | Builds the approach imagery: three rings of CTX images (320 km, 40 km, 12 km) around every site, from the CTX global mosaic through Esri's OnMars service, or from a file the site config names under `approach.near` (Bright Angel: the USGS Jezero CTX mosaic). Writes `../app/public/data/approach/` | F14, F1 |
 | `build_space_weather.py` | Saves a snapshot of NASA's notices that forecast a solar eruption reaching Mars, with its fetch time. One request per run | F5 |
 | `test_space_weather.py` | Tests for `build_space_weather.py` on made-up notices | |
 | `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |

@@ -13,8 +13,12 @@ OWNER:   Role B.
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tether: not so lost on Mars</title>
-    <!-- No icon file yet; this stops the browser asking for one that is not there. -->
-    <link rel="icon" href="data:," />
+    <meta name="description" content="Plan a walk on Mars for a suited astronaut and see how far you can go and still get home." />
+    <meta name="theme-color" content="#07080c" />
+    <!-- The manifest and the service worker (src/ui/install.ts) make the site installable as an app. -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>

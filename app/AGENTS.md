@@ -61,7 +61,10 @@ Add a row when you add a file. Remove it when you delete one.
 | `index.html` | The single page; holds the map element and loads `src/main.ts` | F7, F14 |
 | `package.json` | Dependencies and the commands above | |
 | `tsconfig.json` | TypeScript settings: strict, no output | |
-| `vite.config.ts` | Build settings; relative base path for GitHub Pages | F8 |
+| `vite.config.ts` | Build settings; relative base path for GitHub Pages; a small plugin that writes the service worker into the build with its version and the files to keep at install | F8 |
+| `pwa/sw.js` | The service worker template: keeps the app and the map files already seen on the device; live NASA feeds always go to the network | F8 |
+| `pwa/make_icons.py` | Draws the PNG app icons from simple shapes, the same as `public/icons/icon.svg`. Run once after changing the icon | F8 |
+| `public/manifest.webmanifest`, `public/icons/` | What makes the site installable: name, colours and icons | F8 |
 | `run-tests.mjs` | Starts Vitest from a folder path with a capital drive letter; used by `npm test` and `npm run check` | |
 | `src/` | Entry point and styles: see [src/AGENTS.md](src/AGENTS.md) | |
 | `src/mars/` | See [src/mars/AGENTS.md](src/mars/AGENTS.md) | F1, F3, F11, F14 |
@@ -72,6 +75,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `src/ui/` | See [src/ui/AGENTS.md](src/ui/AGENTS.md) | F2 to F7, F10, F11, F13, F14 |
 
 ## Known issues
+
+- The service worker runs only in the built site (`npm run build`, then `npm run preview`, or the public link), never in `npm run dev`. To see a change on a device that has the app installed, close every window of it and open it again: a new version takes over only when no window still uses the old one.
 
 - Tests sit beside the file they test, as `<name>.test.ts`.
 - On Windows, running `npx vitest` directly fails on every test with "Cannot read properties of undefined (reading 'config')" when the terminal's folder is spelled with a lowercase drive letter (`c:\...`), as VS Code's terminal often spells it. Use `npm test` or `npm run check`; they go through `run-tests.mjs`, which avoids it.

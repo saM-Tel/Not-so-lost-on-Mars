@@ -24,6 +24,8 @@ export interface TileSet {
   bytes?: number;
   /** For terrain tiles: how heights are stored. 'mapbox' means -10000 + (red * 65536 + green * 256 + blue) * 0.1 metres. */
   encoding?: string;
+  /** The area the tiles cover, when it is smaller than the planet (approach imagery). */
+  bounds?: BoxDeg;
 }
 
 /** One layer's record: the fields of docs/CONFIDENCE.md section 1. Every field is always present. */
@@ -54,6 +56,9 @@ export interface LayerRecord {
   grid?: string;
   /** For a layer of points or lines: where its GeoJSON file is, relative to the folder that holds layers.json. */
   vector?: { path: string; geometry: 'point' | 'line'; count: number; bytes: number };
+  /** Approach imagery only: the site the ring surrounds, and which ring it is. */
+  siteId?: string;
+  ring?: 'wide' | 'mid' | 'near';
 }
 
 export interface LayersFile {

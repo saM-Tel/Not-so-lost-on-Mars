@@ -7,7 +7,7 @@
 // TRAPS:   PITFALLS 6, 11.
 // OWNER:   Role B.
 
-import { Marker, type GeoJSONSource, type ImageSource, type Map as MapLibreMap } from 'maplibre-gl';
+import { Marker, type CanvasSource, type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl';
 import type { GridDefinition } from '../data/contract';
 import type { LonLat } from '../mars/geometry';
 
@@ -57,6 +57,8 @@ function corners(definition: GridDefinition): [[number, number], [number, number
 }
 
 export function addRouteLayer(map: MapLibreMap): RouteLayer {
+  let tetherCanvas: HTMLCanvasElement | null = null;
+  let tetherImage: ImageData | null = null;
   let home: Marker | null = null;
   let target: Marker | null = null;
 
@@ -113,22 +115,27 @@ export function addRouteLayer(map: MapLibreMap): RouteLayer {
       map.setPaintProperty(KEEP_OUT_ID, 'raster-opacity', opacity);
     },
     showTether(picture, definition) {
-      const canvas = document.createElement('canvas');
-      canvas.width = definition.cols;
-      canvas.height = definition.rows;
-      const context = canvas.getContext('2d');
+      // One canvas, drawn into again on every change and read by the map directly. Turning it into a PNG
+      // address on each change (as before) took tens of milliseconds and made the time slider stutter.
+      if (!tetherCanvas || tetherCanvas.width !== definition.cols || tetherCanvas.height !== definition.rows) {
+        tetherCanvas = document.createElement('canvas');
+        tetherCanvas.width = definition.cols;
+        tetherCanvas.height = definition.rows;
+        tetherImage = null;
+      }
+      const context = tetherCanvas.getContext('2d');
       if (!context) return;
-      const image = context.createImageData(definition.cols, definition.rows);
-      image.data.set(picture);
-      context.putImageData(image, 0, 0);
-      const url = canvas.toDataURL('image/png');
-      const coordinates = corners(definition);
-      const source = map.getSource(TETHER_ID) as ImageSource | undefined;
+      tetherImage ??= context.createImageData(definition.cols, definition.rows);
+      tetherImage.data.set(picture);
+      context.putImageData(tetherImage, 0, 0);
+      const source = map.getSource(TETHER_ID) as CanvasSource | undefined;
       if (source) {
-        source.updateImage({ url, coordinates });
+        // A paused canvas source shows a still copy. Play it for one frame so the map takes the new picture.
+        source.play();
+        void map.once('render', () => source.pause());
         return;
       }
-      map.addSource(TETHER_ID, { type: 'image', url, coordinates });
+      map.addSource(TETHER_ID, { type: 'canvas', canvas: tetherCanvas, coordinates: corners(definition), animate: false });
       // Above the keep-out shading, beneath the route lines.
       map.addLayer({
         id: TETHER_ID, type: 'raster', source: TETHER_ID,

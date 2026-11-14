@@ -31,6 +31,7 @@ Add a row when you add a file. Remove it when you delete one.
 | File | What it does | Feature |
 |---|---|---|
 | `mapView.ts` | Creates the MapLibre map: globe view with the global Mars image, the corrections MapLibre needs for Mars, and the "Full map" button that hides the side panel | F14, F1 |
+| `approach.ts` | Adds the approach imagery: three rings of real orbital images around every site, each limited to its bounds and zooms, so the land around a site stays sharp while zooming in | F14, F1 |
 | `siteMarkers.ts` | Draws a tall column, a name and a pulse at each landing site on the globe, and reports clicks | F14 |
 | `flight.ts` | Camera moves: globe to a site, a site back to the globe, and the slow idle turn of the globe | F14, F7 |
 | `zoomSelect.ts` | Selects a site when the person zooms in on it by hand: from zoom 4 inwards, the nearest site within the middle of the view | F14 |
@@ -40,12 +41,13 @@ Add a row when you add a file. Remove it when you delete one.
 | `overlays.ts` | A built site's layers as things the layer panel can switch and fade: the ground image, slope drawn from the routing grid, the rover's path and stops. To add: geology | F2 |
 | `scaleBar.ts` | Our own scale bar, correct for Mars; shown from zoom 7 inwards | F1 |
 | `scaleBar.test.ts` | Tests for the scale bar's arithmetic | |
-| `routeLayer.ts` | Draws keep-out ground in red, the tether picture, home, the target, and the route out and back | F3, F4 |
+| `routeLayer.ts` | Draws keep-out ground in red, the tether picture (a canvas the map reads directly, so the time slider stays smooth), home, the target, and the route out and back | F3, F4 |
 
 ## Known issues
 
 - MapLibre 6 looks for its worker file beside its own module. Under Vite that address is wrong, so `mapView.ts` sets it with `setWorkerUrl`. Without it the map stays blank.
 - MapLibre 6 has no default export. Import names: `import { Map } from 'maplibre-gl'`.
 - A polygon cannot change size with zoom, so `siteMarkers.ts` keeps one set of columns for each half step of zoom. Column heights are scaled by the Earth to Mars radius ratio like every other height.
-- Terrain files hold true heights relative to the areoid. `siteLayers.ts` subtracts the box's lowest height at draw time only, because outside the box the map has no terrain and sits at zero; without that the site would lie at the bottom of a pit about 2.3 km deep. The box still stands apart from its surroundings at its edges until context terrain is added.
+- Terrain files hold true heights relative to the areoid. `siteLayers.ts` subtracts the box's lowest height at draw time only, because outside the box the map has no terrain and sits at zero; without that the site would lie at the bottom of a pit about 2.3 km deep. The box still stands apart from its surroundings at its edges until context terrain is added; with the approach imagery around it this now shows clearly (docs/REVIEW_QUEUE.md, item 1).
+- `mapView.ts` caps the drawing density at 2 device pixels per CSS pixel. Above that the map costs much more to draw and looks no sharper.
 - A browser screenshot taken with a "virtual time" budget does not show the columns while the globe is turning. Use a scripted browser that waits in real time.

@@ -45,4 +45,6 @@ Each config holds what the globe needs: identity, readiness level, the position 
 
 A position is given in one of two ways, both copied digit for digit from the source: `from: point` with a longitude and latitude, or `from: terrain-footprint` with the four edges of a terrain model, in which case the marker stands at the footprint's centre. `pipeline/config.py` converts the longitude and refuses a position with no source.
 
+A config may also have `approach.near`: a file for the near ring of approach imagery, with the same fields as a source (`file`, `serverPath`, `originalUrl`, `record`). Without it the near ring comes from the CTX global mosaic. `bright-angel.yaml` names the USGS Jezero CTX mosaic, which the HiRISE map was aligned to.
+
 After changing a config, run `build_globe.py --only sites` in `pipeline/` to rewrite `app/public/data/sites.json`.

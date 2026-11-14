@@ -41,9 +41,14 @@ app/public/data/
   globe/
     layers.json                      one record: the whole-planet image
     tiles/image-viking/{z}/{x}/{y}.jpg
+  approach/
+    layers.json                      three rings of orbital images around every site
+    tiles/image-ctx-<site>-<ring>/{z}/{x}/{y}.webp
 ```
 
 **`layers.json`** holds `contractVersion`, `builtUtc` and `layers`. Each layer record has every field of [CONFIDENCE.md](CONFIDENCE.md) section 1, in camelCase: `id`, `title`, `dataType`, `mission`, `instrument`, `agency`, `productId`, `sourceUrl`, `doi`, `acquiredFrom`, `acquiredTo`, `published`, `gridSpacing`, `realDetail`, `positionAccuracy`, `heightAccuracy`, `processing`, `grade`, `caveats` (a list) and `credit`. A value that was looked for and not found is the text `not found`; one that does not apply is `not applicable`. The app leaves out any layer whose mission, instrument, dates, detail, grade, caveats or credit is absent or `not found`. A layer drawn from a routing grid has `grid`, the name of the grid file (so far only `slopeMaxDeg`, for the layer `slope-hirise`). A layer of points or lines has `vector`: `path` (relative to the folder holding `layers.json`), `geometry` (`point` or `line`), `count` and `bytes`. A layer with map tiles also has `tiles`: `path` (a pattern with `{z}`, `{x}`, `{y}`, relative to the folder holding `layers.json`), `minZoom`, `maxZoom`, `tileSizePx`, `count` and `bytes`.
+
+**`approach/layers.json`** (added 14 Nov, written by `pipeline/build_approach.py`) holds the approach imagery: three rings of orbital images around every site, so the land around a site is sharp while zooming in. Same layout as any `layers.json`, with records named `image-ctx-<site id>-<ring>`. Each record also has `siteId`, `ring` (`wide`, `mid` or `near`) and `tiles.bounds` (`westLonDeg`, `eastLonDeg`, `southLatDeg`, `northLatDeg`), the box the tiles cover. Tiles are 256-pixel WebP files at `approach/tiles/<layer id>/{z}/{x}/{y}.webp`, transparent where the source has no data. The app adds each ring as a raster source limited to its bounds and zooms, under the site's own image. The file is optional: without it the globe works as before.
 
 **`space-weather.json`** holds `contractVersion`, `fetchedUtc`, `periodFromUtc`, `periodToUtc`, `noticesRead`, `source` (`name`, `url`, `credit`, `disclaimer`) and `forecasts`, newest notice first. Each forecast has `arrivalUtc`, `windowHours` (the uncertainty the notice states, or null), `kind` (the notice's own words, or null), `issuedUtc`, `messageId` and `messageUrl`. Written by `pipeline/build_space_weather.py`; the app reads it only when NASA's live feed cannot be read.
 

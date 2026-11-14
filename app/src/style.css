@@ -486,6 +486,29 @@ body.map-full #map {
   inset: 0;
 }
 
+/* "Install app": shown only while the browser offers installation (src/ui/install.ts). Top right of the map, to the
+   left of the zoom buttons, clear of the scale bar and the credit line along the bottom. */
+.install-button {
+  position: absolute;
+  right: 56px;
+  top: 10px;
+  z-index: 3;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.install-button:hover,
+.install-button:focus-visible {
+  border-color: var(--level-1);
+}
+
 .maplibregl-ctrl-group button.full-map-button {
   width: auto;
   min-height: 29px;
