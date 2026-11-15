@@ -1,8 +1,8 @@
 {
   "contractVersion": 1,
-  "fetchedUtc": "2026-11-14T13:41:59Z",
-  "periodFromUtc": "2026-10-31",
-  "periodToUtc": "2026-11-14",
+  "fetchedUtc": "2026-11-15T14:04:28Z",
+  "periodFromUtc": "2026-11-01",
+  "periodToUtc": "2026-11-15",
   "noticesRead": 16,
   "source": {
     "name": "NASA DONKI notifications, written by the Moon to Mars Space Weather Analysis Office",
