@@ -5,13 +5,14 @@
 // OUT:     A page element; calls `onGaps` with the stretches to glow, or null.
 // USED BY: src/ui/routePanel.ts.
 // RULES:   Predicted, with the fetch time; thresholds assumed (grade D) and said so; only confirmed roles counted. Times in
-//          Earth UTC and Mars local true solar time. The gap colour is not red: a gap is a risk to plan for, not danger.
+//          Earth UTC and Mars local true solar time. Once the saved predictions end, a labelled replay of them (with
+//          their real dates), never relabelled as today. The gap colour is not red: a gap is a risk, not danger.
 // TRAPS:   PITFALLS 4, 11.
 // OWNER:   Role B.
 
 import {
-  elevationAt, IMAGING_MIN_ELEVATION_DEG, LINK_MIN_ELEVATION_DEG, loadGlobeOrbiters, loadSitePasses, stretchesInGaps, walkCoverage,
-  type GlobeOrbiters, type SitePasses,
+  elevationAt, IMAGING_MIN_ELEVATION_DEG, isCounted, LINK_MIN_ELEVATION_DEG, loadGlobeOrbiters, loadSitePasses, predictionClock,
+  predictionWindow, stretchesInGaps, walkCoverage, type GlobeOrbiters, type SitePasses,
 } from '../data/orbiters';
 import { localTrueSolarTimeHours } from '../mars/time';
 import { sunAt } from '../mars/sun';
@@ -42,6 +43,14 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
 }
 
 const MINUTE_MS = 60_000;
+const SLIDER_MAX_MIN = 24 * 60;
+/** In a replay, room kept after the replayed moment for the slider's 24 h and a walk of up to 24 h. */
+const REPLAY_MARGIN_MS = 2 * SLIDER_MAX_MIN * MINUTE_MS;
+
+/** A UTC time with its year, as "2026-11-14 21:22 UTC": a replay shows past dates, so the year matters. */
+function utcWithYear(ms: number): string {
+  return `${new Date(ms).toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+}
 
 export function createOrbitPanel(options: {
   dataUrl: string; siteId: string; lonEastDeg: number; latDeg: number;
@@ -54,12 +63,14 @@ export function createOrbitPanel(options: {
   slider.type = 'range';
   slider.id = `orbit-start-${options.siteId}`;
   slider.min = '0';
-  slider.max = String(24 * 60);
+  slider.max = String(SLIDER_MAX_MIN);
   slider.step = '15';
   slider.value = '0';
   const sliderLabel = el('label', undefined, 'Set out in ');
   sliderLabel.htmlFor = slider.id;
   const startText = el('span', 'orbit__start');
+  const replayNote = el('p', 'route-card__note orbit__replay');
+  replayNote.hidden = true;
   const row = el('p', 'tether__row');
   row.append(sliderLabel, slider, startText);
   const linkLine = el('p', 'orbit__line');
@@ -69,7 +80,7 @@ export function createOrbitPanel(options: {
   basis.append(el('summary', undefined, 'How this is worked out'));
   const basisList = el('ul');
   basis.append(basisList);
-  box.append(intro, row, linkLine, imageLine, timeline, basis);
+  box.append(intro, replayNote, row, linkLine, imageLine, timeline, basis);
 
   let globe: GlobeOrbiters | null = null;
   let site: SitePasses | null = null;
@@ -84,13 +95,15 @@ export function createOrbitPanel(options: {
       `Predicted, not tracked: orbit predictions from each mission's navigation team, served by JPL Horizons and saved ${g ? formatUtc(new Date(g.builtUtc)) : 'never'}. ${g?.source.caveats[1] ?? ''}`,
       `Link: counted when an orbiter that relays for surface missions is ${LINK_MIN_ELEVATION_DEG} degrees or more above the horizon. Assumed (grade D): no sourced figure was found.`,
       `Could see you: an orbiter with a camera within ${90 - IMAGING_MIN_ELEVATION_DEG} degrees of straight overhead while the Sun is up. Assumed (grade D). In view does not mean a camera is pointed at you.`,
-      `Counted for links: ${g?.orbiters.filter((o) => o.relay === true).map((o) => o.short).join(', ') || 'none'}. Counted for cameras: ${g?.orbiters.filter((o) => o.camera).map((o) => `${o.short} (${o.camera})`).join(', ') || 'none'}. Shown but not counted, as their roles were not confirmed from a source: ${g?.orbiters.filter((o) => o.relay !== true).map((o) => o.short).join(', ') || 'none'}. ${g?.leftOut.map((l) => `${l.name} left out: ${l.why}`).join(' ') ?? ''}`,
+      `Counted for links: ${g?.orbiters.filter((o) => o.relay === true).map((o) => o.short).join(', ') || 'none'}. Counted for cameras: ${g?.orbiters.filter((o) => o.camera).map((o) => `${o.short} (${o.camera})`).join(', ') || 'none'}. Shown but not counted, as their roles were not confirmed from a source: ${g?.orbiters.filter((o) => !isCounted(o)).map((o) => o.short).join(', ') || 'none'}. ${g?.leftOut.map((l) => `${l.name} left out: ${l.why}`).join(' ') ?? ''}`,
+      'Once the saved predictions end, this part replays them: the window covered by every counted orbiter plays again from its start, at real speed, in a loop, and every time shown is the predicted time in that window, with its date.',
       'On the map, the stretches walked with no link glow purple. Approximate: the walking time is spread along the route by distance.',
     ].map((text) => el('li', undefined, text)));
   });
 
   const sunUp = (utc: Date): boolean => sunAt(utc, options.lonEastDeg, options.latDeg).elevationDeg > 0;
-  const when = (utc: Date): string => `${formatUtc(utc)}, ${formatMarsClock(localTrueSolarTimeHours(utc, options.lonEastDeg))} local solar time`;
+  const when = (utc: Date, replay: boolean): string =>
+    `${replay ? `predicted for ${utcWithYear(utc.getTime())}` : formatUtc(utc)}, ${formatMarsClock(localTrueSolarTimeHours(utc, options.lonEastDeg))} local solar time`;
 
   /** A bar of segments, each [first minute, minute after last] of `total`, with a class and a title. */
   const bar = (label: string, segments: { from: number; to: number; className: string; title: string }[], total: number, rowClass = ''): HTMLElement => {
@@ -110,8 +123,19 @@ export function createOrbitPanel(options: {
 
   const render = (): void => {
     const offsetMin = Number(slider.value);
-    const start = new Date(Math.floor(Date.now() / MINUTE_MS) * MINUTE_MS + offsetMin * MINUTE_MS);
-    startText.textContent = offsetMin === 0 ? ' now' : ` ${formatDuration(offsetMin * 60)}`;
+    const nowMs = Math.floor(Date.now() / MINUTE_MS) * MINUTE_MS;
+    const saved = globe && site ? predictionWindow(globe.orbiters, site.orbiters) : null;
+    const clock = saved ? predictionClock(nowMs, saved.startMs, saved.endMs, REPLAY_MARGIN_MS) : { tMs: nowMs, replay: false };
+    const start = new Date(Math.floor(clock.tMs / MINUTE_MS) * MINUTE_MS + offsetMin * MINUTE_MS);
+    replayNote.hidden = !(clock.replay && saved && globe);
+    if (clock.replay && saved && globe) {
+      replayNote.textContent = `Replay: these are the saved predictions for ${utcWithYear(saved.startMs)} to ` +
+        `${utcWithYear(saved.endMs)} (fetched ${utcWithYear(Date.parse(globe.builtUtc))}). Live predictions ended ` +
+        `${utcWithYear(saved.endMs)}. Times below are predicted times in that window, not today's.`;
+    }
+    startText.textContent = clock.replay
+      ? ` ${formatDuration(offsetMin * 60)} (replay: predicted for ${utcWithYear(start.getTime())})`
+      : offsetMin === 0 ? ' now' : ` ${formatDuration(offsetMin * 60)}`;
     timeline.replaceChildren();
     stretches = null;
     if (!globe || !site) {
@@ -130,8 +154,14 @@ export function createOrbitPanel(options: {
     const coverage = walkCoverage(site, globe.orbiters, start, total, sunUp);
     const end = new Date(start.getTime() + total * MINUTE_MS);
     if (coverage.minutes.some((m) => !m.known)) {
-      const lastEnd = new Date(Math.min(...site.orbiters.map((o) => Date.parse(o.endUtc))));
-      linkLine.textContent = `No prediction for all of this walk: the saved predictions end ${formatUtc(lastEnd)}. Choose an earlier start.`;
+      const firstStart = saved?.startMs ?? Math.min(...site.orbiters.map((o) => Date.parse(o.startUtc)));
+      const lastEnd = saved?.endMs ?? Math.max(...site.orbiters.map((o) => Date.parse(o.endUtc)));
+      linkLine.textContent = start.getTime() < firstStart
+        ? `No saved prediction covers this walk: the saved predictions start ${utcWithYear(firstStart)}.`
+        : `No saved prediction covers all of this walk: the saved predictions end ${utcWithYear(lastEnd)}.` +
+          (offsetMin > 0 ? ' Choose an earlier start.'
+            : clock.replay ? ' The walk is longer than the part of the replay left; it starts again from the beginning soon.'
+            : ' Once they have ended, this part replays them, with their dates.');
       imageLine.textContent = '';
       options.onGaps(null);
       return;
@@ -150,7 +180,7 @@ export function createOrbitPanel(options: {
 
     // Timeline: start and end, the two counted rows, then each orbiter above the horizon.
     const axis = el('div', 'orbit__axis');
-    axis.append(el('span', undefined, when(start)), el('span', undefined, when(end)));
+    axis.append(el('span', undefined, when(start, clock.replay)), el('span', undefined, when(end, clock.replay)));
     const covered = (gapList: [number, number][]): { from: number; to: number }[] => {
       const result: { from: number; to: number }[] = [];
       let at = 0;
@@ -177,16 +207,22 @@ export function createOrbitPanel(options: {
         if (up) peak = Math.max(peak, up.elevationDeg);
         if ((!up || i === total - 1) && from >= 0) {
           const to = up ? i + 1 : i;
-          segments.push({ from, to, className: `orbit-seg orbit-seg--pass${orbiter.relay === true || orbiter.camera ? '' : ' orbit-seg--unconfirmed'}`,
+          segments.push({ from, to, className: `orbit-seg orbit-seg--pass${isCounted(orbiter) ? '' : ' orbit-seg--unconfirmed'}`,
             title: `${orbiter.name}: above the horizon for ${formatDuration((to - from) * 60)}, up to ${peak} degrees` });
           from = -1;
         }
       });
-      const label = orbiter.relay === true || orbiter.camera ? orbiter.short : `${orbiter.short}*`;
+      const label = isCounted(orbiter) ? orbiter.short : `${orbiter.short}*`;
       timeline.append(bar(label, segments, total));
     }
-    if (globe.orbiters.some((o) => o.relay !== true && !o.camera)) {
+    if (globe.orbiters.some((o) => !isCounted(o))) {
       timeline.append(el('p', 'route-card__note', '* Shown, not counted: role not confirmed from a source.'));
+    }
+    const missing = [...new Set(coverage.minutes.flatMap((m) => m.missing))];
+    if (missing.length > 0) {
+      const names = missing.map((id) => globe!.orbiters.find((o) => o.id === id)?.short ?? id).join(', ');
+      timeline.append(el('p', 'route-card__note',
+        `No saved prediction for ${names} during part of this walk: not counted then, so a link or a view from it may be missed.`));
     }
     stretches = stretchesInGaps(walk.legs, coverage.linkGaps);
     options.onGaps(open ? stretches : null);
@@ -208,13 +244,17 @@ export function createOrbitPanel(options: {
     relaysAt(utc) {
       if (!globe || !site) return null;
       const names: string[] = [];
+      let known = false;
       for (const orbiter of site.orbiters) {
-        const elevation = elevationAt(orbiter, utc);
-        if (elevation === null) return null;
         const track = globe.orbiters.find((o) => o.id === orbiter.id);
-        if (track?.relay === true && elevation >= LINK_MIN_ELEVATION_DEG) names.push(track.short);
+        const elevation = elevationAt(orbiter, utc);
+        // Only relay orbiters decide the link: one with no prediction now is skipped, and the moment is unknown
+        // (null, "no prediction") unless some relay orbiter has data. A camera-only orbiter never makes it known.
+        if (elevation === null || !track || track.relay !== true) continue;
+        known = true;
+        if (elevation >= LINK_MIN_ELEVATION_DEG) names.push(track.short);
       }
-      return names;
+      return known ? names : null;
     },
   };
 }

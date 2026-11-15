@@ -3,10 +3,11 @@
 //          minute, whether a relay orbiter is high enough for a link and whether a camera orbiter is high overhead in
 //          daylight.
 // IN:      public/data/orbiters/globe.json and orbiters/<site id>.json (docs/DATA_CONTRACT.md); a time; thresholds.
-// OUT:     Positions, track lines and coverage timelines. Nothing outside the saved prediction window: there it is null.
+// OUT:     Positions, track lines, coverage timelines, and the clock (predictionClock) that replays the saved window once
+//          it has ended. Nothing outside the saved prediction window: there it is null.
 // USED BY: src/map/orbiters.ts, src/ui/orbitPanel.ts.
 // RULES:   Predicted, never "live" or "measured". Only orbiters whose role was confirmed from a source count for links
-//          or imaging; the others are shown but not counted. The elevation thresholds are assumed, and say so.
+//          or imaging; the others are shown but not counted. Thresholds assumed, and say so. A replay keeps real times.
 // TRAPS:   PITFALLS 4.
 // OWNER:   Role B.
 
@@ -83,6 +84,48 @@ export function loadSitePasses(dataUrl: string, siteId: string): Promise<SitePas
 
 const MINUTE_MS = 60_000;
 
+/** True when a source confirmed the orbiter relays for surface missions or carries a camera: only these are counted. */
+export function isCounted(track: Pick<OrbiterTrack, 'relay' | 'camera'>): boolean {
+  return track.relay === true || Boolean(track.camera);
+}
+
+export interface PredictionWindow {
+  startMs: number;
+  endMs: number;
+}
+
+/**
+ * The stretch of time covered by the saved prediction of every counted orbiter (`isCounted`). The windows are read from
+ * `passes` when given (a site's file), else from the tracks. Null when no orbiter is counted or the windows do not overlap.
+ */
+export function predictionWindow(
+  tracks: readonly OrbiterTrack[], passes?: readonly Pick<OrbiterPasses, 'id' | 'startUtc' | 'endUtc'>[],
+): PredictionWindow | null {
+  const counted = new Set(tracks.filter(isCounted).map((t) => t.id));
+  const windows = (passes ?? tracks).filter((w) => counted.has(w.id));
+  if (windows.length === 0) return null;
+  const startMs = Math.max(...windows.map((w) => Date.parse(w.startUtc)));
+  const endMs = Math.min(...windows.map((w) => Date.parse(w.endUtc)));
+  return Number.isFinite(startMs) && Number.isFinite(endMs) && startMs < endMs ? { startMs, endMs } : null;
+}
+
+/**
+ * The moment of the saved predictions to show at `nowMs`, and whether that is a replay.
+ * - Inside the window (start <= now <= end): now itself; not a replay.
+ * - After the window: a replay. The saved window plays again from its start at real speed, in a loop:
+ *   tMs = start + ((now - end) mod L), with L = end - start - replayMarginMs. The margin keeps room after tMs for a walk
+ *   planned ahead; when it leaves no room, L = end - start. tMs is a real predicted time and must be shown as one.
+ * - Before the window: now itself, not a replay; the callers find no prediction and say so. Nothing is invented.
+ */
+export function predictionClock(
+  nowMs: number, windowStartMs: number, windowEndMs: number, replayMarginMs = 0,
+): { tMs: number; replay: boolean } {
+  if (!(nowMs > windowEndMs) || !(windowEndMs > windowStartMs)) return { tMs: nowMs, replay: false };
+  const full = windowEndMs - windowStartMs;
+  const length = full - replayMarginMs > 0 ? full - replayMarginMs : full;
+  return { tMs: windowStartMs + ((nowMs - windowEndMs) % length), replay: true };
+}
+
 /** Longitude difference b - a, folded into -180 to 180. */
 function lonStep(a: number, b: number): number {
   return ((b - a + 540) % 360) - 180;
@@ -154,7 +197,12 @@ export interface Coverage {
     imaging: string[];
     /** Every orbiter above the horizon, counted or not, with its elevation. */
     up: { id: string; elevationDeg: number }[];
-    /** False when this minute is outside some orbiter's prediction. */
+    /** Counted orbiters with no saved prediction at this minute; they are left out of `link` and `imaging` then. */
+    missing: string[];
+    /**
+     * False unless a relay orbiter and a camera orbiter (of the roles any orbiter has) both have a saved prediction at
+     * this minute; when no orbiter is counted, false when none has data.
+     */
     known: boolean;
   }[];
   /** Stretches with no link, and with no chance of an orbital image, as [first minute, minute after the last]. */
@@ -213,20 +261,36 @@ export function walkCoverage(
   site: SitePasses, tracks: readonly OrbiterTrack[], startUtc: Date, durationMin: number, sunUp: (utc: Date) => boolean,
 ): Coverage {
   const role = new Map(tracks.map((t) => [t.id, t]));
+  const anyCounted = site.orbiters.some((o) => { const t = role.get(o.id); return t !== undefined && isCounted(t); });
+  const anyRelay = site.orbiters.some((o) => role.get(o.id)?.relay === true);
+  const anyCamera = site.orbiters.some((o) => Boolean(role.get(o.id)?.camera));
   const minutes: Coverage['minutes'] = [];
   for (let m = 0; m < Math.max(1, Math.ceil(durationMin)); m++) {
     const utc = new Date(startUtc.getTime() + m * MINUTE_MS);
     const day = sunUp(utc);
-    const entry: Coverage['minutes'][number] = { link: [], imaging: [], up: [], known: true };
+    const entry: Coverage['minutes'][number] = { link: [], imaging: [], up: [], missing: [], known: false };
+    // Each role is known only while an orbiter with that role has data: a camera-only orbiter must not turn
+    // "no relay prediction" into "no link", nor a relay-only one turn "no camera prediction" into "not seen".
+    let linkKnown = !anyRelay;
+    let imagingKnown = !anyCamera;
+    let anyData = false;
     for (const orbiter of site.orbiters) {
       const elevation = elevationAt(orbiter, utc);
-      if (elevation === null) { entry.known = false; continue; }
+      const counted = !anyCounted || isCounted(role.get(orbiter.id) ?? { relay: null, camera: null });
+      if (elevation === null) {
+        if (counted && anyCounted) entry.missing.push(orbiter.id);
+        continue;
+      }
+      anyData = true;
+      if (role.get(orbiter.id)?.relay === true) linkKnown = true;
+      if (role.get(orbiter.id)?.camera) imagingKnown = true;
       if (elevation <= 0) continue;
       entry.up.push({ id: orbiter.id, elevationDeg: elevation });
       const track = role.get(orbiter.id);
       if (track?.relay === true && elevation >= LINK_MIN_ELEVATION_DEG) entry.link.push(orbiter.id);
       if (track?.camera && day && elevation >= IMAGING_MIN_ELEVATION_DEG) entry.imaging.push(orbiter.id);
     }
+    entry.known = anyCounted ? linkKnown && imagingKnown : anyData;
     minutes.push(entry);
   }
   return {

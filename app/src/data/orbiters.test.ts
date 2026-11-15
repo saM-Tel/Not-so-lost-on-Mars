@@ -1,4 +1,4 @@
-// WHAT:    Tests for src/data/orbiters.ts: positions between saved points, track lines, elevations and walk coverage.
+// WHAT:    Tests for src/data/orbiters.ts: positions, track lines, elevations, walk coverage and the replay clock.
 // IN:      Nothing. Every track and pass below is a made-up test fixture.
 // OUT:     Pass or fail.
 // USED BY: npm test.
@@ -8,8 +8,8 @@
 
 import { describe, expect, it } from 'vitest';
 import {
-  elevationAt, IMAGING_MIN_ELEVATION_DEG, LINK_MIN_ELEVATION_DEG, positionAt, stretchesInGaps, trackAround, walkCoverage,
-  type OrbiterTrack, type SitePasses,
+  elevationAt, IMAGING_MIN_ELEVATION_DEG, isCounted, LINK_MIN_ELEVATION_DEG, positionAt, predictionClock, predictionWindow,
+  stretchesInGaps, trackAround, walkCoverage, type OrbiterTrack, type SitePasses,
 } from './orbiters';
 
 const FIXTURE_TRACK: OrbiterTrack = {
@@ -87,5 +87,78 @@ describe('walkCoverage', () => {
     expect(coverage.minutes[4]!.up.map((u) => u.id)).toEqual(['relay-fixture', 'unconfirmed-fixture']);
     const night = walkCoverage(FIXTURE_SITE, [FIXTURE_TRACK], new Date('2026-01-01T00:00:00Z'), 10, () => false);
     expect(night.imagingGaps).toEqual([[0, 10]]);
+  });
+});
+
+describe('walkCoverage when one window ends first', () => {
+  // Fixture: "mro-fixture" (relay) is predicted only to 00:05; "odyssey-fixture" (relay) to 00:20, up for the whole time.
+  const tracks: OrbiterTrack[] = [
+    { ...FIXTURE_TRACK, id: 'mro-fixture', endUtc: '2026-01-01T00:05:00Z' },
+    { ...FIXTURE_TRACK, id: 'odyssey-fixture', endUtc: '2026-01-01T00:20:00Z' },
+    FIXTURE_UNCONFIRMED,
+  ];
+  const site: SitePasses = {
+    builtUtc: '2026-01-01T00:00:00Z', siteId: 'fixture',
+    orbiters: [
+      { id: 'mro-fixture', startUtc: '2026-01-01T00:00:00Z', endUtc: '2026-01-01T00:05:00Z', stepMin: 1, passes: [] },
+      { id: 'odyssey-fixture', startUtc: '2026-01-01T00:00:00Z', endUtc: '2026-01-01T00:20:00Z', stepMin: 1,
+        passes: [{ startUtc: '2026-01-01T00:00:00Z', elevationDeg: Array<number>(21).fill(30) }] },
+      // Uncounted, predicted only to 00:02: it must never make a minute unknown.
+      { id: 'unconfirmed-fixture', startUtc: '2026-01-01T00:00:00Z', endUtc: '2026-01-01T00:02:00Z', stepMin: 1, passes: [] },
+    ],
+  };
+  it('keeps a minute known while any counted orbiter has data, and lists the missing one', () => {
+    const coverage = walkCoverage(site, tracks, new Date('2026-01-01T00:00:00Z'), 15, () => true);
+    expect(coverage.minutes.every((m) => m.known)).toBe(true);
+    expect(coverage.linkGaps).toEqual([]);
+    expect(coverage.minutes[3]!.missing).toEqual([]);
+    expect(coverage.minutes[10]!.missing).toEqual(['mro-fixture']);
+  });
+  it('a camera-only orbiter with data does not make a minute with no relay prediction known', () => {
+    // Fixture: the only relay ("relay-only-fixture") is predicted to 00:02; "camera-only-fixture" to 00:20.
+    const relayOnly: OrbiterTrack = { ...FIXTURE_TRACK, id: 'relay-only-fixture', camera: null };
+    const cameraOnly: OrbiterTrack = { ...FIXTURE_TRACK, id: 'camera-only-fixture', relay: null };
+    const passes: SitePasses = {
+      builtUtc: '2026-01-01T00:00:00Z', siteId: 'fixture',
+      orbiters: [
+        { id: 'relay-only-fixture', startUtc: '2026-01-01T00:00:00Z', endUtc: '2026-01-01T00:02:00Z', stepMin: 1, passes: [] },
+        { id: 'camera-only-fixture', startUtc: '2026-01-01T00:00:00Z', endUtc: '2026-01-01T00:20:00Z', stepMin: 1, passes: [] },
+      ],
+    };
+    const coverage = walkCoverage(passes, [relayOnly, cameraOnly], new Date('2026-01-01T00:00:00Z'), 5, () => true);
+    expect(coverage.minutes.map((m) => m.known)).toEqual([true, true, true, false, false]);
+  });
+  it('is unknown only when no counted orbiter has data', () => {
+    const coverage = walkCoverage(site, tracks, new Date('2026-01-01T00:18:00Z'), 5, () => true);
+    expect(coverage.minutes.map((m) => m.known)).toEqual([true, true, true, false, false]);
+  });
+  it('the common window of counted orbiters ends with the first to end', () => {
+    expect(isCounted(FIXTURE_UNCONFIRMED)).toBe(false);
+    expect(isCounted({ relay: null, camera: 'Fixture camera' })).toBe(true);
+    expect(predictionWindow(tracks, site.orbiters)).toEqual({
+      startMs: Date.parse('2026-01-01T00:00:00Z'), endMs: Date.parse('2026-01-01T00:05:00Z'),
+    });
+    expect(predictionWindow([FIXTURE_UNCONFIRMED])).toBeNull();
+  });
+});
+
+describe('predictionClock', () => {
+  // Fixture window: 10:00 to 20:00 of an arbitrary day, in milliseconds from 0.
+  const start = 10 * 3_600_000;
+  const end = 20 * 3_600_000;
+  it('inside the window: now, not a replay', () => {
+    expect(predictionClock(15 * 3_600_000, start, end)).toEqual({ tMs: 15 * 3_600_000, replay: false });
+    expect(predictionClock(end, start, end)).toEqual({ tMs: end, replay: false });
+  });
+  it('after the window: replays it from its start, looping', () => {
+    expect(predictionClock(end + 1_000, start, end)).toEqual({ tMs: start + 1_000, replay: true });
+    expect(predictionClock(end + 12 * 3_600_000, start, end)).toEqual({ tMs: start + 2 * 3_600_000, replay: true });
+    // With a 4 h margin the loop is 6 h long, so tMs stays at least 4 h before the end.
+    expect(predictionClock(end + 7 * 3_600_000, start, end, 4 * 3_600_000)).toEqual({ tMs: start + 3_600_000, replay: true });
+    // A margin longer than the window is ignored.
+    expect(predictionClock(end + 1_000, start, end, 99 * 3_600_000)).toEqual({ tMs: start + 1_000, replay: true });
+  });
+  it('before the window: now, not a replay, so the caller shows no data', () => {
+    expect(predictionClock(start - 1_000, start, end)).toEqual({ tMs: start - 1_000, replay: false });
   });
 });
