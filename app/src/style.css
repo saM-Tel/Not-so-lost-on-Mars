@@ -2110,3 +2110,14 @@ body {
     font-size: 0.8rem;
   }
 }
+
+/* First person takes the whole screen, whatever columns were open. */
+body.walk-first-person #map {
+  inset: 0 !important;
+}
+
+/* Clear of the heading and the "simulated" badge in the middle of the top edge. */
+.visor__leave {
+  right: auto;
+  left: 4%;
+}

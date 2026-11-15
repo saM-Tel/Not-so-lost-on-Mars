@@ -116,5 +116,8 @@ export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
   // Zoom and compass only. MapLibre's scale control is left out on purpose: it assumes Earth.
   map.addControl(new NavigationControl({ visualizePitch: true }), 'top-right');
   map.addControl(fullMapControl(map), 'top-right');
+  // The map's box changes size whenever a panel opens, folds or hides (the walk column, full map, the field views,
+  // first person). MapLibre only watches the window, so the map is told here, whatever caused the change.
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => map.resize()).observe(container);
   return map;
 }
