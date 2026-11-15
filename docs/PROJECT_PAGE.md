@@ -48,7 +48,7 @@ One full link (starting `https://`) to the video, 30 seconds or less. It must op
 
 ---
 
-Draft video made Sun 15 Nov 14:19: `tether-demo-draft-1.mp4`, 29.5 s, 1280 x 720, no sound, in `demo-video/` beside the repository on Joseph's laptop (not in git, and not on the team owner's laptop). A script Claude Code wrote recorded it from the public site: it drove a headless browser and captured its screen, sped the scenes up 1.2 to 4.9 times, and added the subtitles and end card. Every picture in it is the live app showing real NASA data; nothing in it is generated imagery. **The team decides** whether that is acceptable under "no AI-generated video", or records the same shot list by hand. If the team counts it as AI-generated video, the guide requires a visible watermark on it.
+Draft video made Sun 15 Nov 14:19: `tether-demo-draft-1.mp4`, 29.5 s, 1280 x 720, no sound, in the repository at `docs/demo/tether-demo-draft-1.mp4`, with a note on how it was made (`docs/demo/README.md`; added by Joseph at 17:56). A script Claude Code wrote recorded it from the public site: it drove a headless browser and captured its screen, sped the scenes up 1.2 to 4.9 times, and added the subtitles and end card. Every picture in it is the live app showing real NASA data; nothing in it is generated imagery. **The team decides** whether that is acceptable under "no AI-generated video", or records the same shot list by hand. If the team counts it as AI-generated video, the guide requires a visible watermark on it.
 
 The 30-second shot list, recorded from the live app at the Bright Angel link. Subtitles, no voice needed:
 
