@@ -26,6 +26,8 @@ The challenge asks for a hyperlocal, layered map of a real place on Mars that he
 
 **[FILL]** A public link to the video (30 seconds or less) or to the slides (7 or fewer, including title and intro). Open it in a private window before submitting.
 
+Draft video made Sun 15 Nov 14:19: `tether-demo-draft-1.mp4`, 29.5 s, 1280 x 720, no sound, in `demo-video/` beside the repository on Joseph's laptop (not in git). It follows the shot list below, recorded from the public site by a script Claude Code wrote, which drove a headless browser and captured its screen; the scenes are sped up 1.2 to 4.9 times and the subtitles and end card were added by the same script. Every picture in it is the live app showing real NASA data; nothing in it is generated imagery. **The team decides** whether that is acceptable under "no AI-generated video", or records the same shot list by hand. It still needs uploading somewhere public, and its link put above.
+
 A 30-second shot list, all recorded from the live app at the Bright Angel link. Subtitles, no voice needed:
 
 | Seconds | On screen | Subtitle |

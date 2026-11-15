@@ -108,7 +108,7 @@ The first run of the new batch stopped at 02:37 UTC on 14 Nov with 12 problems, 
 
 - **Batch 3 on the team data server:** MEDA arrived (173 sols) and is used since 15 Nov (F11). The RAD folder and the Gale mosaic labels are on the server too, not read yet. As asked at about 16:30 on 14 Nov: Perseverance MEDA weather for sols 3 to 64, 672 to 733 and 1340 to 1402 (`/raw/meda/`), Curiosity RAD data for sols 4185 to 4195 around the 20 May 2024 storm (`/raw/rad/`), and the Gale mosaics' metadata (`/raw/gale/metadata/`). The server's Claude session reports what arrived; see [../data/AGENTS.md](../data/AGENTS.md).
 - **The team owner:** fill the [FILL] marks in [PROJECT_PAGE.md](PROJECT_PAGE.md): the video link, where the idea came from, the references.
-- **The team owner:** the backup video (overdue since Saturday 23:00; being done next).
+- **The team owner:** the backup video. A draft exists since Sun 15 Nov 14:19 (Joseph's laptop, `demo-video/tether-demo-draft-1.mp4`, see PROJECT_PAGE.md): the team decides whether to use it or record by hand, then uploads it and puts the link in the form.
 
 - The third teammate: install Tailscale, accept the share of the data server, put the address in `.env`, and confirm a file listing loads. Joseph has done this.
 
