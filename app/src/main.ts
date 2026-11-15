@@ -92,8 +92,13 @@ async function start(): Promise<void> {
   // Sharp land around the site in focus while zooming in, beneath the site image and the markers.
   watchApproachRings(map, approachRings, `${DATA_URL}approach/`, SLOT.rings);
   addScaleBar(map);
-  addWeatherBanner(container, DATA_URL);
-  addEarthLink(container);
+  // The link to Earth and the space-weather line share one column at the bottom right of the map, so opening the
+  // forecast pushes the link up instead of covering it.
+  const notes = document.createElement('div');
+  notes.className = 'map-notes';
+  container.append(notes);
+  addEarthLink(notes);
+  addWeatherBanner(notes, DATA_URL);
   // The orbiters on the globe (F18), loaded after the globe so they never hold it up; absent file, no orbiters.
   const orbitersReady = loadGlobeOrbiters(DATA_URL);
   void orbitersReady.then((orbiters) => { if (orbiters) addOrbiters(map, orbiters); });

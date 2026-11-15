@@ -12,7 +12,7 @@ import { describe, expect, it } from 'vitest';
 import type { GridDefinition } from '../data/contract';
 import { distanceM, type LonLat } from '../mars/geometry';
 import { speedMps, stepCost, WALK_CASES } from '../route/cost';
-import { alongTimeline, cellIndex, routeTimeline, walkFreely, withStopPauses, withStopTimes, type WalkerGround } from './walker';
+import { alongTimeline, cellIndex, routeTimeline, walkFreely, wayHome, withStopPauses, withStopTimes, type WalkerGround } from './walker';
 
 const CELL_DEG = 4 / 59_274.9; // about 4 m on Mars, north to south
 const FIXTURE_DEFINITION = {
@@ -104,5 +104,32 @@ describe('withStopPauses', () => {
   it('leaves a timeline without stops as it was', () => {
     const timeline = { points: [[0, 0], [1, 0]] as [number, number][], timesS: [0, 10] };
     expect(withStopPauses(timeline, [])).toEqual({ ...timeline, pauses: [] });
+  });
+});
+
+describe('wayHome', () => {
+  // Fixture: a 20 x 20 field of time home, home at cell (10, 2); a wall of keep-out (no way home) at column 5, rows 0
+  // to 15, so the way from the east must go round its south end.
+  function fixtureField(): Float32Array {
+    const field = new Float32Array(400);
+    for (let r = 0; r < 20; r++) for (let c = 0; c < 20; c++) field[r * 20 + c] = 10 * Math.hypot(r - 10, c - 2);
+    for (let r = 0; r <= 15; r++) field[r * 20 + 5] = Infinity;
+    return field;
+  }
+  it('walks down the field to home and never through a keep-out cell', () => {
+    const field = fixtureField();
+    // Distances round the wall, worked out properly: a field from home that the wall blocks.
+    for (let r = 0; r < 20; r++) for (let c = 6; c < 20; c++) field[r * 20 + c] = 1000 + 10 * Math.hypot(r - 16, c - 5) + (100 - r);
+    const way = wayHome(field, FIXTURE_DEFINITION, centre(10, 8))!;
+    expect(way).not.toBeNull();
+    const cells = way.map((p) => cellIndex(FIXTURE_DEFINITION, p));
+    expect(cells[0]).toBe(10 * 20 + 8);
+    expect(cells.every((c) => Number.isFinite(field[c]!))).toBe(true);
+    expect(field[cells[cells.length - 1]!]).toBe(0);
+  });
+  it('gives nothing outside the grid or where there is no way home', () => {
+    const field = fixtureField();
+    expect(wayHome(field, FIXTURE_DEFINITION, [0, 0])).toBeNull();
+    expect(wayHome(field, FIXTURE_DEFINITION, centre(3, 5))).toBeNull();
   });
 });

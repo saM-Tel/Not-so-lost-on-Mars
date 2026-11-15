@@ -3,7 +3,8 @@
 //          camera following and a readout of time gone, walk home from here, tether margin, relay in view and the Sun.
 //          The tether shrinks as time goes, from the time since leaving home set in the card, which is put back on Stop.
 //          First person: a deliberately low-resolution view from the astronaut's eyes, 1.7 m above the 3D ground, under
-//          a helmet visor (src/ui/visor.ts) labelled as simulated, with the speed-up shown.
+//          a helmet visor (src/ui/visor.ts) labelled as simulated, with the speed-up shown. While steering, the quickest
+//          walkable way home is drawn on the ground in blue and the visor's arrow follows it.
 // IN:      The map; the site's ground, tether field, home, planned route with its stops, relay predictions and the start
 //          time chosen in "Link and view from orbit", through `WalkWorld`.
 // OUT:     A page element; the astronaut on the map (src/map/astronaut.ts); the tether's time since leaving home.
@@ -22,7 +23,7 @@ import { bearingDeg, destination, distanceM, type LonLat } from '../mars/geometr
 import { sunAt } from '../mars/sun';
 import { localTrueSolarTimeHours } from '../mars/time';
 import {
-  alongTimeline, cellIndex, routeTimeline, walkFreely, withStopPauses, type RouteTimeline, type StopPause, type WalkerGround,
+  alongTimeline, cellIndex, routeTimeline, walkFreely, wayHome, withStopPauses, type RouteTimeline, type StopPause, type WalkerGround,
 } from '../safety/walker';
 import { formatDuration } from './format';
 import { createVisor, type Visor, type VisorSnapshot } from './visor';
@@ -53,6 +54,8 @@ export interface WalkThrough {
   routeChanged(): void;
   /** Whether the first-person view is on; the map ignores clicks for routes meanwhile. */
   isFirstPerson(): boolean;
+  /** Open the first-person view under the visor, putting the astronaut at home if it is not placed yet. */
+  enterFirstPerson(): void;
   remove(): void;
 }
 
@@ -85,6 +88,12 @@ const FIRST_PERSON_SKY: SkySpecification = {
   'sky-color': '#b48a63', 'horizon-color': '#d8b48c', 'fog-color': '#c9a27a',
   'sky-horizon-blend': 0.6, 'horizon-fog-blend': 0.7, 'fog-ground-blend': 0.75, 'atmosphere-blend': 0,
 };
+
+/** The way home on the ground: blue, not red (red is danger only). */
+const WAY_SOURCE = 'walk-way-home';
+const WAY_COLOUR = '#5cc8ff';
+/** The visor's arrow points at the way home this far ahead, metres. */
+const WAY_AHEAD_M = 12;
 
 const STOPS = {
   'keep-out': 'Keep-out ground ahead: too steep for the suit, or no terrain data. Go round it.',
@@ -148,6 +157,43 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrou
   let visor: Visor | null = null;
   let saved: { maxPitch: number; maxZoom: number; pixelRatio: number; sky: SkySpecification | undefined; handlers: Handler[] } | null = null;
   const held = new Set<string>();
+  /** The quickest walkable way home from where the astronaut stands, and the cell and field it was worked out for. */
+  let way: LonLat[] | null = null;
+  let wayFor: { cell: number; field: Float32Array | null } = { cell: -1, field: null };
+
+  /** Draw the way home on the map, or take it away with null. */
+  const drawWay = (line: LonLat[] | null): void => {
+    const data = { type: 'FeatureCollection' as const, features: line && line.length > 1
+      ? [{ type: 'Feature' as const, properties: {}, geometry: { type: 'LineString' as const, coordinates: line } }] : [] };
+    const source = map.getSource(WAY_SOURCE) as { setData?(d: unknown): void } | undefined;
+    if (source?.setData) { source.setData(data); return; }
+    if (!line) return;
+    map.addSource(WAY_SOURCE, { type: 'geojson', data });
+    map.addLayer({
+      id: WAY_SOURCE, type: 'line', source: WAY_SOURCE,
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': WAY_COLOUR, 'line-width': 4, 'line-opacity': 0.9 },
+    });
+  };
+
+  /** Work the way home out again when the astronaut reaches another cell or the tether field changes. */
+  const updateWay = (): void => {
+    const ground = world.ground();
+    const field = world.timeHomeS();
+    if (!position || !ground || !field || mode !== 'steer') { if (way) { way = null; drawWay(null); } wayFor = { cell: -1, field: null }; return; }
+    const cell = cellIndex(ground.definition, position);
+    if (cell === wayFor.cell && field === wayFor.field) return;
+    wayFor = { cell, field };
+    way = wayHome(field, ground.definition, position);
+    drawWay(way);
+  };
+
+  /** Bearing along the way home a few metres ahead of the astronaut, or null. */
+  const wayBearing = (): number | null => {
+    if (!position || !way || way.length < 2) return null;
+    const ahead = way.find((p) => distanceM(position!, p) >= WAY_AHEAD_M) ?? way[way.length - 1]!;
+    return distanceM(position, ahead) > 0.5 ? bearingDeg(position, ahead) : null;
+  };
 
   /** Everything the readout and the visor show, worked out once a frame. */
   const snapshot = (): VisorSnapshot | null => {
@@ -162,6 +208,7 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrou
       headingDeg: heading,
       homeKnown: home !== null,
       homeBearingDeg: home ? bearingDeg(position, home) : null,
+      wayHomeBearingDeg: home ? wayBearing() : null,
       homeDistanceM: home ? distanceM(position, home) : 0,
       timeHomeS,
       allowedS: world.allowedS(baseS + elapsedS),
@@ -291,6 +338,7 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrou
     astronaut?.move(position, heading);
     if (firstPerson) placeCamera(); else if (mode !== 'idle' && (held.size > 0 || mode === 'route')) map.jumpTo({ center: position });
     syncTether(mode === 'idle');
+    updateWay();
     const s = snapshot();
     showReadout(s);
     if (s) visor?.update(s);
@@ -370,6 +418,7 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrou
     if (firstPerson) leaveFirstPerson();
     mode = 'idle';
     timeline = null;
+    updateWay();
     stopLoop();
     listen(false);
     restoreTether();
@@ -438,7 +487,8 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrou
     putAt(world.home()!, 19.5, 60);
     mode = 'steer';
     listen(true);
-    status.textContent = 'At home. Steer with the arrow keys or W, A, S, D.';
+    status.textContent = 'At home. Steer with the arrow keys or W, A, S, D. The blue line is the quickest walkable way home.';
+    updateWay();
     if (firstPerson) run(); else showReadout(snapshot());
   });
 
@@ -474,11 +524,14 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrou
       status.textContent = 'The planned walk changed, so the playback stopped. Steer with the arrow keys, or walk the new route.';
     },
     isFirstPerson: () => firstPerson,
+    enterFirstPerson,
     remove() {
       removed = true;
       halt();
       astronaut?.remove();
       astronaut = null;
+      if (map.getLayer(WAY_SOURCE)) map.removeLayer(WAY_SOURCE);
+      if (map.getSource(WAY_SOURCE)) map.removeSource(WAY_SOURCE);
     },
   };
 }

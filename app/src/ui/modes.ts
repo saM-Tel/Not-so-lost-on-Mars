@@ -1,5 +1,7 @@
 // WHAT:    Switches between the habitat planner, the field tablet and the helmet display (F13). The tablet is the map with
-//          one large status card and three large buttons; the helmet is a concept view drawn over a real rover photograph.
+//          one large status card and three large buttons. The helmet button opens the walk-through's first-person view
+//          under the simulated visor (src/ui/walkThrough.ts), when the route card gives `onHelmet` (owner's request,
+//          15 Nov); without it, a concept view drawn over a real rover photograph.
 // IN:      The field state worked out by src/ui/routePanel.ts for the planned walk; the person's choice of mode.
 // OUT:     A mode switch, the tablet card and the helmet view; body classes that hide the planner's panels.
 // USED BY: src/ui/routePanel.ts.
@@ -50,6 +52,8 @@ export function createModeSwitch(actions: {
   onNextTarget(): void; onGoHome(): void; onStorm(): void;
   /** Called after the layout changes, so the map can take its new size. */
   onLayoutChange?(): void;
+  /** The helmet button opens this (the first-person view under the visor) in place of the photo concept view. */
+  onHelmet?(): void;
 }): ModeSwitch {
   let mode: Mode = 'planner';
   let state: FieldState | null = null;
@@ -65,7 +69,10 @@ export function createModeSwitch(actions: {
   for (const [id, label] of [['planner', 'Planner'], ['tablet', 'Field tablet'], ['helmet', 'Helmet (concept)']] as const) {
     const button = el('button', 'mode-switch__button', label);
     button.type = 'button';
-    button.addEventListener('click', () => setMode(id));
+    button.addEventListener('click', () => {
+      if (id === 'helmet' && actions.onHelmet) { setMode('planner'); actions.onHelmet(); return; }
+      setMode(id);
+    });
     buttons.set(id, button);
     bar.append(button);
   }
@@ -115,7 +122,8 @@ export function createModeSwitch(actions: {
 
   const render = (): void => {
     if (mode === 'helmet' && !helmetReady) mode = 'planner';
-    buttons.get('helmet')!.hidden = !helmetReady;
+    // The first-person helmet needs no photo, so it is always offered when the route card gives it.
+    buttons.get('helmet')!.hidden = actions.onHelmet ? false : !helmetReady;
     for (const [id, button] of buttons) button.setAttribute('aria-pressed', String(id === mode));
     document.body.classList.toggle('mode-tablet', mode === 'tablet');
     document.body.classList.toggle('mode-helmet', mode === 'helmet');
@@ -158,7 +166,7 @@ export function createModeSwitch(actions: {
       photo.removeAttribute('src');
       helmetReady = false;
       if (mode === 'helmet') { mode = 'planner'; render(); return; }
-      buttons.get('helmet')!.hidden = true;
+      buttons.get('helmet')!.hidden = !actions.onHelmet;
     }
   };
 

@@ -1,5 +1,6 @@
 // WHAT:    The walk-through's rules (F19): how far the astronaut walks in a given time on the slope underfoot, where it may
-//          not go, and where it is at a given time when it walks the planned route, standing at each stop for its time.
+//          not go, and where it is at a given time when it walks the planned route, standing at each stop for its time;
+//          the quickest walkable way home from where it stands, down the tether's time-to-home field.
 // IN:      The routing grid (heights, keep-out cells); a position, a bearing and a time step; route lines; stops with
 //          their times.
 // OUT:     New positions, what stopped a step, and a timeline of the route with cautious times: with time at stops added
@@ -183,4 +184,40 @@ export function withStopPauses(
     }
   });
   return { points, timesS, pauses };
+}
+
+/**
+ * The quickest walkable way home from a position (F19): down the tether's cautious time-to-home field, one cell at a
+ * time to the neighbour (of eight) with the least time left, until home (the cell with no time left) is reached.
+ * Keep-out cells have no way home in the field, so the way never crosses them. Returns cell centres from the
+ * position's cell to home, or null outside the grid or where there is no walkable way home.
+ */
+export function wayHome(timeHomeS: Float32Array, definition: GridDefinition, from: LonLat): LonLat[] | null {
+  const { rows, cols } = definition;
+  let cell = cellIndex(definition, from);
+  if (cell < 0 || !Number.isFinite(timeHomeS[cell]!)) return null;
+  const centre = (i: number): LonLat => [
+    definition.northWestCorner.lonEastDeg + ((i % cols) + 0.5) * definition.cellLonDeg,
+    definition.northWestCorner.latDeg - (Math.floor(i / cols) + 0.5) * definition.cellLatDeg,
+  ];
+  const way: LonLat[] = [centre(cell)];
+  for (let step = 0; step < rows * cols && timeHomeS[cell]! > 0; step++) {
+    const row = Math.floor(cell / cols);
+    const col = cell % cols;
+    let best = cell;
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const r = row + dr;
+        const c = col + dc;
+        if ((dr === 0 && dc === 0) || r < 0 || c < 0 || r >= rows || c >= cols) continue;
+        const next = r * cols + c;
+        if (timeHomeS[next]! < timeHomeS[best]!) best = next;
+      }
+    }
+    // A cell with no neighbour nearer home is a flat spot in the field: stop rather than loop.
+    if (best === cell) break;
+    cell = best;
+    way.push(centre(cell));
+  }
+  return way;
 }

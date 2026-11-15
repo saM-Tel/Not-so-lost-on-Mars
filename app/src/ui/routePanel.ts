@@ -502,6 +502,11 @@ export function startRoutePlanner(
     });
   };
   const modes = createModeSwitch({
+    // The Helmet button shows the visor in the walk-through's first-person view (owner's request, 15 Nov).
+    onHelmet: () => {
+      parts.walkthrough.open = true;
+      walk.enterFirstPerson();
+    },
     onLayoutChange: () => {
       map.resize();
       const card = document.querySelector<HTMLElement>('.field-card');

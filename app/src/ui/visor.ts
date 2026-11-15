@@ -18,6 +18,8 @@ export interface VisorSnapshot {
   homeKnown: boolean;
   /** Bearing from the astronaut to home, degrees from north; null when at home. */
   homeBearingDeg: number | null;
+  /** Bearing along the quickest walkable way home, a few metres ahead; null when it is not known. */
+  wayHomeBearingDeg: number | null;
   homeDistanceM: number;
   /** Cautious walk home from here, seconds: null before the tether is worked out, Infinity when cut off. */
   timeHomeS: number | null;
@@ -61,7 +63,8 @@ export function createVisor(onLeave: () => void): Visor {
   homeArrow.textContent = '↑';
   const homeText = el('p', 'visor__big');
   const homeSub = el('p', 'visor__small');
-  left.append(el('p', 'visor__label', 'Home'), homeArrow, homeText, homeSub);
+  const homeLabel = el('p', 'visor__label', 'Home');
+  left.append(homeLabel, homeArrow, homeText, homeSub);
 
   const right = el('div', 'visor__panel visor__panel--right');
   const marginLabel = el('p', 'visor__label', 'Tether margin');
@@ -83,7 +86,7 @@ export function createVisor(onLeave: () => void): Visor {
   leave.type = 'button';
   leave.addEventListener('click', onLeave);
   const note = el('p', 'visor__note',
-    'Concept of a helmet display, simulated from orbital terrain: not a real view. Ground beyond the mapped area is flat; the sky colour is for illustration. Cautious values.');
+    'Concept of a helmet display, simulated from orbital terrain: not a real view. Ground beyond the mapped area is flat; the sky colour is for illustration. The arrow and the blue line follow the quickest walkable way home. Cautious values.');
   visor.append(top, left, right, bottom, leave, note);
 
   return {
@@ -103,12 +106,16 @@ export function createVisor(onLeave: () => void): Visor {
         homeArrow.textContent = '⌂';
         homeText.textContent = 'At home';
       } else {
+        // The arrow follows the walkable way home, drawn on the ground in blue; a straight line could cross keep-out.
+        const bearing = s.wayHomeBearingDeg ?? s.homeBearingDeg;
         homeArrow.textContent = '↑';
-        homeArrow.style.transform = `rotate(${(s.homeBearingDeg - s.headingDeg + 360) % 360}deg)`;
-        homeText.textContent = formatDistance(s.homeDistanceM);
+        homeArrow.style.transform = `rotate(${(bearing - s.headingDeg + 360) % 360}deg)`;
+        homeText.textContent = `${formatDistance(s.homeDistanceM)} away`;
       }
       const cutOff = s.timeHomeS !== null && !Number.isFinite(s.timeHomeS);
-      homeSub.textContent = s.timeHomeS === null ? 'walk home: no data yet' : cutOff ? 'no walkable way home' : `walk home ${formatDuration(s.timeHomeS)}`;
+      homeLabel.textContent = s.wayHomeBearingDeg !== null ? 'Way home' : 'Home';
+      homeSub.textContent = s.timeHomeS === null ? 'walk home: no data yet' : cutOff ? 'no walkable way home'
+        : `walk home ${formatDuration(s.timeHomeS)}${s.wayHomeBearingDeg !== null ? ' along the blue line' : ''}`;
       homeSub.classList.toggle('visor__danger', cutOff);
 
       if (s.timeHomeS === null || cutOff) {
