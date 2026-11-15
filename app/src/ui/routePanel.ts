@@ -132,6 +132,9 @@ export function startRoutePlanner(
     const folded = card.classList.toggle('route-card--folded');
     fold.textContent = folded ? 'Show' : 'Hide';
     fold.setAttribute('aria-expanded', String(!folded));
+    // On a wide screen the card is a column beside the map; folding it gives that width back to the map.
+    document.body.classList.toggle('walk-folded', folded);
+    requestAnimationFrame(() => map.resize());
   });
   const heading = el('header', 'route-card__header');
   heading.append(el('h2', undefined, 'Plan a walk'), fold);
@@ -165,7 +168,14 @@ export function startRoutePlanner(
   parts.walk.append(result);
   fill(parts.photos, photos.element);
   card.append(heading, summary, ...Object.values(parts));
-  map.getContainer().append(card);
+  // The card belongs to the page, not to the map: on a wide screen it is a column of its own on the right, so the map
+  // and everything drawn over it (controls, scale bar, banners) stay clear of it.
+  document.body.append(card);
+  document.body.classList.add('has-walk');
+  requestAnimationFrame(() => map.resize());
+  // On a phone the open card would cover the whole map, so it starts folded: the status line and the tether verdict
+  // stay in view, and Show opens the rest.
+  if (window.matchMedia('(max-width: 720px)').matches) fold.click();
 
   const layer = addRouteLayer(map);
   // Link and view from orbit (F18): the stretches with no link glow on the map only while this part is open.
@@ -933,6 +943,8 @@ export function startRoutePlanner(
     walk.remove();
     layer.remove();
     card.remove();
+    document.body.classList.remove('has-walk', 'walk-folded');
+    requestAnimationFrame(() => map.resize());
     modes.remove();
   };
 }

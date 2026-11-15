@@ -1812,3 +1812,301 @@ body.walk-first-person .scale-bar {
   .visor__panel--right { right: 4%; }
   .visor__bottom { bottom: 12%; }
 }
+
+/* ==== Interface pass, Sun 15 Nov: one clear layout, quieter chrome ====
+   Wide screen: three columns. Site and layers on the left, the map in the middle, the walk on the right.
+   Nothing is drawn over the map except what belongs on it. */
+
+:root {
+  --walk-width: 25rem;
+  --panel: rgba(13, 15, 22, 0.94);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scroll bars that match the panels, in place of the browser's white ones. */
+.panel,
+.route-card {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(241, 236, 228, 0.28) transparent;
+}
+
+.route-card {
+  z-index: 3;
+}
+
+/* Between a phone and a wide screen the card floats over the map, to the right of the side panel. */
+@media (min-width: 721px) and (max-width: 1099px) {
+  .route-card {
+    left: calc(var(--panel-width) + 12px);
+    width: min(24rem, calc(100% - var(--panel-width) - 82px));
+  }
+  body.map-full .route-card {
+    left: 12px;
+  }
+}
+
+/* On a phone the map is the top 55% of the screen, and the card stays inside it. */
+@media (max-width: 720px) {
+  .route-card {
+    left: 12px;
+    width: min(25rem, calc(100% - 70px));
+    max-height: calc(55% - 110px);
+  }
+  body.map-full .route-card {
+    max-height: calc(100% - 170px);
+  }
+}
+
+@media (min-width: 1100px) {
+  body.has-walk:not(.walk-folded):not(.mode-tablet):not(.mode-helmet) #map {
+    inset: 0 var(--walk-width) 0 var(--panel-width);
+  }
+  body.has-walk.map-full:not(.walk-folded):not(.mode-tablet):not(.mode-helmet) #map {
+    inset: 0 var(--walk-width) 0 0;
+  }
+  body.has-walk:not(.walk-folded) .route-card {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: var(--walk-width);
+    max-height: none;
+    padding: 1rem 1.1rem 2rem;
+    border: 0;
+    border-left: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  /* The app's toolbar belongs to the map, so it moves in with the map's right edge. */
+  body.has-walk:not(.walk-folded):not(.mode-tablet):not(.mode-helmet) .map-toolbar {
+    right: calc(var(--walk-width) + 56px);
+  }
+  /* Folded: a small card at the top left of the map. */
+  body.has-walk.walk-folded .route-card {
+    top: 12px;
+    left: calc(var(--panel-width) + 12px);
+    width: 20rem;
+  }
+  body.has-walk.walk-folded.map-full .route-card {
+    left: 12px;
+  }
+}
+
+/* The credit line: one line along the bottom, opening in full when pointed at or tapped.
+   Every layer's card gives its credit too. */
+.maplibregl-ctrl-bottom-right {
+  max-width: 100%;
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-attrib {
+  max-width: 100%;
+  background: rgba(8, 9, 14, 0.72);
+  color: var(--text-dim);
+  font-size: 0.68rem;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: inherit;
+}
+
+.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.maplibregl-ctrl-attrib:hover .maplibregl-ctrl-attrib-inner,
+.maplibregl-ctrl-attrib:focus-within .maplibregl-ctrl-attrib-inner {
+  white-space: normal;
+}
+
+/* With the credits on one line, the widgets above them sit lower. */
+.scale-bar {
+  bottom: 30px;
+}
+
+.weather-banner {
+  bottom: 30px;
+}
+
+/* The scale bar keeps the bottom left to itself; the two status lines stack at the bottom right. */
+.earth-link {
+  right: 12px;
+  bottom: 84px;
+  left: auto;
+  max-width: min(24rem, calc(100% - 24px));
+}
+
+@media (max-width: 700px) {
+  .weather-banner { bottom: 66px; }
+  .earth-link { bottom: 120px; }
+}
+
+/* ---- Several stops and the margin chart (F3): styles that were missing ---- */
+
+.stops__title {
+  margin: 0.7rem 0 0.2rem;
+  font-size: 0.85rem;
+}
+
+.stops__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.3rem 0;
+}
+
+.stops__toggle input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.stops__list {
+  margin: 0.3rem 0;
+  padding-left: 1.4rem;
+}
+
+.stops__item {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.stops__item > * {
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.stops__name {
+  font-weight: 600;
+}
+
+.stops__stay {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.stops__stay input {
+  width: 3.6rem;
+  margin-right: 0.25rem;
+  padding: 0.15rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font: inherit;
+}
+
+.stops__button {
+  min-width: 1.9rem;
+  min-height: 1.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.stops__button:hover,
+.stops__button:focus-visible {
+  border-color: var(--accent);
+}
+
+.route-pin--stop {
+  padding: 0.05rem 0.4rem;
+  background: #ffffff;
+  font-size: 0.72rem;
+}
+
+.margin-chart {
+  margin: 0.5rem 0 0;
+}
+
+.margin-chart__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(8, 9, 14, 0.6);
+}
+
+.margin-chart__trace {
+  fill: none;
+  stroke: var(--level-1);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.margin-chart__zero {
+  stroke: var(--text-dim);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.margin-chart__stop {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.margin-chart__dot {
+  fill: #ffffff;
+  stroke: #08090e;
+  stroke-width: 1;
+}
+
+/* Outside the tether is a danger to the crew, so these two may be red. */
+.margin-chart__dot--outside {
+  fill: var(--danger);
+}
+
+.margin-chart__line {
+  margin: 0.3rem 0;
+  font-weight: 600;
+}
+
+.margin-chart__line--outside {
+  color: var(--danger);
+}
+
+/* Links readable on the dark panels: the browser's default blue is too dark here. */
+.panel a,
+.route-card a,
+.earth-link a,
+.weather-banner a,
+.field-card a {
+  color: var(--level-1);
+  text-underline-offset: 2px;
+}
+
+.panel a:visited,
+.route-card a:visited {
+  color: #9fd4f5;
+}
+
+/* On a phone the map is small: the link-to-Earth line gives way to the map and the forecast line. */
+@media (max-width: 720px) {
+  .earth-link {
+    display: none;
+  }
+  .weather-banner {
+    bottom: 30px;
+    max-width: calc(100% - 190px);
+  }
+}
+
+/* Folded on a phone: the heading and the tether verdict only. */
+@media (max-width: 720px) {
+  .route-card--folded .route-card__status {
+    display: none;
+  }
+  .route-card--folded {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
+  }
+}

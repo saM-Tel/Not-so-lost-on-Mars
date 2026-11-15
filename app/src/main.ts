@@ -134,6 +134,8 @@ async function start(): Promise<void> {
 
     if (!site?.built) {
       // The globe, or a site with no map of its own: show the markers and no site layers.
+      document.body.classList.remove('has-walk', 'walk-folded');
+      map.resize();
       removeSiteLayers(map);
       markers.setVisible(true);
       if (camera === 'fly') await (site ? flyToSite(map, site) : flyToGlobe(map));
@@ -146,6 +148,10 @@ async function start(): Promise<void> {
       for (const message of notShown) showProblem(message);
       // The column and the name would stand in the middle of the ground the person came to see.
       markers.setVisible(false);
+      // On a wide screen the walk column takes its place beside the map now, so the camera is framed for the
+      // width the map will keep, not for a width it is about to lose.
+      document.body.classList.toggle('has-walk', Boolean(builtSite.site.grid));
+      map.resize();
       // A camera flight started while the person is still zooming fights their hand; they keep control.
       if (camera === 'fly') await flyIntoSite(map, builtSite.site);
       if (thisChoice !== choice) return;
