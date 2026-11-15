@@ -168,9 +168,12 @@ def passes(orbiter: dict, site: dict, start: dt.datetime, stop: dt.datetime) -> 
     table = rows(text)
     if not table:
         raise ValueError(f"Horizons gave no sky positions for {orbiter['name']} at {site['id']}: {text[-400:]}")
-    # Check the site Horizons used: its echoed longitude must be ours, west-positive.
+    # Check the site Horizons used: its echoed longitude must be ours, west-positive. If Horizons stops echoing it
+    # (its wording changed), the build stops: a silent skip could save passes for the wrong place (review item S23).
     echoed = re.search(r"Center geodetic\s*:\s*([-\d.]+),", text)
-    if echoed and abs(((float(echoed.group(1)) - lon_w) + 180) % 360 - 180) > 1e-3:
+    if not echoed:
+        raise ValueError(f"Horizons did not echo the site position for {site['id']}, so its longitude cannot be checked")
+    if abs(((float(echoed.group(1)) - lon_w) + 180) % 360 - 180) > 1e-3:
         raise ValueError(f"Horizons used a different site longitude for {site['id']}: {echoed.group(1)} W, wanted {lon_w:.5f} W")
     found, current = [], None
     for r in table:
