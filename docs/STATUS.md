@@ -2,7 +2,7 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sat 14 Nov 16:55, at handover from the team owner to Joseph. Everything below is pushed. Every feature from F1 to F16 has a first version, but most of the afternoon's work has not been tried by a person. Start with [handoffs/role-b.md](handoffs/role-b.md) and the R items in [REVIEW_QUEUE.md](REVIEW_QUEUE.md). Eight of nine sites are built (not Gale).
+Last updated: Sun 15 Nov 00:28, by Joseph with Claude Code. Feature freeze is today at 12:00 and the submission at 21:00. Every feature from F1 to F19 has a first version and is pushed. The route planner, which failed to start at every site from Saturday 21:52, is fixed (7a3a388). An interface pass put the walk card in its own column (32cc581). Batch 3 data is on the server and not yet used. Not started: the backup video and the project page.
 
 ## Now
 
@@ -77,8 +77,8 @@ All nine have a config in `sites/` with a cited position, and appear on the glob
 
 ## Broken right now
 
-- **Sat 14 Nov 21:55, seen by the team owner:** opening a site shows 'Source "overlay-thermal-themis" already exists.' Not investigated; suspected cause and a fix to try are in [handoffs/role-c.md](handoffs/role-c.md), newest entry. Fix first on Sunday.
-- The Several stops list and the margin chart (F3, items 10 and 11 of the evening plan) have no styles yet.
+- Fixed Sun 15 Nov 00:28 (7a3a388): the note 'Source "overlay-thermal-themis" already exists' on opening a site. The cause was not a double open. The route planner threw "Cannot access 'stops' before initialization" on every site since d3b62d1, so it never started, and the layers it left behind gave the note on the next open. Seen fixed in a scripted browser.
+- Fixed Sun 15 Nov 00:28 (32cc581): styles for the Several stops list and the margin chart. Written from the class names; the list and chart themselves have not been looked at with stops in them.
 
 Nothing known broken, but most of the afternoon's work has not been opened in a browser. Large items for review are in [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
 

@@ -1,5 +1,15 @@
 # Role B handoff
 
+## Sun 15 Nov 00:28, role B work by Joseph, with Claude Code. START HERE
+
+Done: (1) the route planner failed to start at every site since Saturday 21:52: `ui/routePanel.ts` drew the stops list before `stops`, `addingStops`, `shownStops` and `planVia` were declared. Declarations moved up; `main.ts` now removes a site's layers even when the planner fails to start. (2) Interface pass: on screens 1,100 px and wider the walk card is a column on the right (`body.has-walk`), the map sits between it and the side panel, and the toolbar moves with the map; on a phone the card starts folded; the credit line is one line; scroll bars and links match the theme; the stops list and margin chart have styles. (3) Saturday evening: review items R1 to R8, R13 to R19 (see REVIEW_QUEUE, Done).
+Not done: the evening's features have still not been tried one by one (several stops, margin chart, orbit panel, walk-through, first person, orbiters on the globe); tablet and helmet views not reworked; the level 2 sites not opened since the layout change.
+Broken or risky: the walk card is now a child of the page, not of the map, so anything that assumed it sits inside the map box should be checked (the tablet and helmet views hide it; first person hides it). The headless test browser on this laptop draws no frames when the screen is asleep unless started with `--disable-gpu`.
+Next: open each part of the walk column and the walk-through in the browser and fix what breaks; then batch 3 data with role A; then the backup video.
+Files: app/src/ui/routePanel.ts, app/src/main.ts, app/src/style.css
+Other roles need to know: C, screenshots for the project page can be taken now: the layout holds at 1,400 px.
+Checks: `npm run check` passes: types, 90 tests, build. Seen in a scripted browser on the dev server at 1,400 x 900 and 390 x 800: site opens with no note, walk to Cheyava Falls planned, three columns, folded card on the phone.
+
 ## Sat 14 Nov 16:55, role B handover from the team owner to Joseph, with Claude Code. START HERE
 
 Done: everything in the 16:05 entry below, plus the link-to-Earth line (`ui/earthLink.ts`), route export as GeoJSON and "Move the rover" (`ui/routePanel.ts`), and field-view fixes (helmet only when its photo loads; map resize on a view change). All pushed.
