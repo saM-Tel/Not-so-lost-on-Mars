@@ -47,6 +47,7 @@ Question for the judge: "What is this?"
 - The plain link opens on the globe (F14) with one line of explanation and Bright Angel marked as the place to start. A link that names a site opens on that site; for Bright Angel that is the hero scenario with a route and the tether already on screen. The address bar holds the state so any view can be shared.
 - Checks: a first-time visitor understands the product within 10 seconds without clicking, on the plain link and on the Bright Angel link; reloading a copied link restores the same view.
 - The split between the two links is proposed, not yet agreed. See [DECISIONS.md](DECISIONS.md).
+- A walk through several stops keeps its stops and the minutes at each in the link, in place of the target (decided 15 Nov, DECISIONS.md).
 
 ### F8. Public site and repository
 - Checks: the link works in a private browser window; the README explains what it is, how to run it and where the data comes from.
@@ -99,6 +100,7 @@ Question: "Can I see at a glance whether I can get home, and trust what I see?"
   - A figure 1.8 m tall, drawn from a few simple raised shapes on the 3D ground (no new library), that the person steers with the arrow keys or W, A, S, D, or that walks the planned route on its own ("Walk the route") at a chosen speed-up, with the camera following.
   - It moves at the walking model's cautious speed for the slope underfoot, in Mars gravity, and cannot enter keep-out ground. A readout follows it: time gone, walk home from here (cautious), tether margin, whether a relay is in view (F18) and the Sun.
   - It is a demonstration of the tether, not a game: no score, no levels, no winning. (Out of scope below lists "a game mode"; the owner asked for this, and it stays inside that line.)
+  - Walking the planned route stands still at each stop for its time, so the clock, the margin and the relay times match the route card (decided 15 Nov, DECISIONS.md).
   - Checks: the figure is 1.8 m tall on the map's scale; walking time matches the route card's cautious time for the same path within 5%; it never stands on a keep-out cell; the readout's walk home equals the tether field at that cell.
 - Optional idea from Joseph, 14 November. Not scheduled; to pick up only if the must-haves and should-haves are done.
   - Day and night along the walk: whether the Sun is up at the start and for the whole walk, and when it sets. This extends F11 (time of day), which already plans Sun height and shadows.

@@ -1,6 +1,23 @@
 # Role C handoff
 
-## Sun 15 Nov 02:30, team owner with Claude Code. START HERE
+## Sun 15 Nov, about 09:30, team owner with Claude Code, after Joseph's handover. START HERE
+
+Done (pushed with 740a81e, b3a151e and the docs commit after them):
+- Caught up and reported.
+- Decided S7 and S13 at the owner's request ("use your best judgment"); recorded in DECISIONS and SPEC.
+- Read the participant terms the owner pasted; their rules are summarised in DECISIONS.
+- Brought the README up to date: several stops, link from orbit, walk-through, honest limits, and a licence section listing every third-party licence.
+- Added `LICENSE` (Apache 2.0; the owner agreed to push it).
+- Wrote `docs/PROJECT_PAGE.md`, a draft of every field of the project page with a 30-second shot list.
+- Updated STATUS, REVIEW_QUEUE, REFERENCES (terms read, Fiona) and SUBMISSION_CHECKLIST (terms rules).
+Not done: the backup video (the owner is doing it); the [FILL] marks in PROJECT_PAGE.md (video link, where the idea came from, references); the private-window check; the two open proposals in DECISIONS.
+Broken or risky: the licence was chosen by the AI on the owner's instruction to follow the terms; the owner agreed to push it.
+Next: the video from the live site, once the deploy of this push has finished. Then fill PROJECT_PAGE.md and paste it into the form.
+Files: README.md, LICENSE, docs/PROJECT_PAGE.md, DECISIONS.md, SPEC.md, STATUS.md, REVIEW_QUEUE.md, REFERENCES.md, SUBMISSION_CHECKLIST.md, AI_USE.md, AGENTS.md (root and docs), handoffs.
+Other roles need to know: the AI statement on the project page must say truthfully where the idea came from; only a person can write that.
+Checks: `npm run check` passes (108 tests); pytest passes (54).
+
+## Sun 15 Nov 02:30, team owner with Claude Code
 
 Done: read every doc and planned bug fixes with the owner; read-only agents listed suspected bugs in Saturday night's code; fixes outside Joseph's files are in role B's handoff (orbiter replay after 30 Nov, service worker, route errors). The rest is S0 to S24 in REVIEW_QUEUE.
 Not done: backup video; project page; nothing from tonight seen in a browser.
@@ -21,7 +38,7 @@ Files: app/src/ui (routePanel, walkThrough, visor, orbitPanel), app/src/route (w
 Other roles need to know: Joseph, role B's files changed a lot tonight; pull before editing. The plan with every item's status is in STATUS.md, "Evening work plan".
 Checks: `npm run check` passes (types, 90 tests, build) at 21:52. `pytest -q` passed (54) at 21:23; the pipeline has not changed since.
 
-## Sat 14 Nov 21:35, team owner with Claude Code (app and pipeline work for the evening plan). START HERE
+## Sat 14 Nov 21:35, team owner with Claude Code (app and pipeline work for the evening plan)
 
 Done (all pushed; plan and statuses in STATUS.md, "Evening work plan"): zoom 12 glitch; R9 to R12 and R20; sun shading; geology at Bright Angel; level 2 terrain edges eased; globe as one overview picture; F17 two passes; F18 orbiters (globe, and link and view timeline in the route card); F19 walk-through astronaut.
 Not done: F17 at phone and laptop widths, and the tablet and helmet views by eye; the backup video (owner: Sunday).
@@ -41,7 +58,7 @@ Files: docs/SPEC.md, STATUS.md, REVIEW_QUEUE.md, DATA_CATALOG.md, PITFALLS.md, A
 Other roles need to know: A and B, F18 needs a pipeline step: Horizons does not answer browser calls. Send a Mars site longitude as a negative east longitude (corrected 21:35; PITFALLS 4).
 Checks: `npm run check`: types, unit tests and build pass.
 
-## Sat 14 Nov 16:55, role C handover from the team owner, with Claude Code. START HERE
+## Sat 14 Nov 16:55, role C handover from the team owner, with Claude Code
 
 Done: documents brought up to date for the handover (STATUS, DECISIONS, SITES, DATA_CATALOG, PITFALLS, REVIEW_QUEUE, AI_USE, README); the app review logged in docs/reviews/.
 Not done: the backup video (due 23:00); the project page text; a licence; the AI wording for the submission (AI_USE has the log).

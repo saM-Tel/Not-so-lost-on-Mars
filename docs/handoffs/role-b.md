@@ -1,6 +1,23 @@
 # Role B handoff
 
-## Sun 15 Nov 02:30, role B work by the team owner, with Claude Code. START HERE, Joseph
+## Sun 15 Nov, about 09:20, role B work by the team owner with Claude Code, after Joseph's handover. START HERE
+
+Done (740a81e, pushed): S0 to S18 from REVIEW_QUEUE, plus the GeoJSON stops (S19) and the small visor fixes (S20). Details in REVIEW_QUEUE, Done.
+- `ui/routePanel.ts`: failed route requests now say so. A `wanted` flag replans the right walk after a restart. Clearing the stops goes back to one target. Time at stops counts in radiation, daylight and the tablet. The verdict, the margin chart and the field views read one check (`walkMargins`). Stops go in the link.
+- `ui/walkThrough.ts` (rewritten): keys, Stop puts the tether time back, the clock comes from the orbit panel's start, playback stands at stops, mouse and touch are off in first person, and the loop runs only while moving.
+- `safety/tether.ts`: `marginsAlongWalk` counts the planned way back.
+- `safety/walker.ts`: `withStopPauses`; a missing height carries the last one.
+- `ui/urlState.ts`: `stops=`.
+- `ui/orbitPanel.ts`: `startUtc()`.
+- `ui/visor.ts`: "Home not known", heading rounding.
+Not done: the low items S19 to S22 and S24; item 12 of the evening plan (way home from here); smoothing.
+Broken or risky: nothing seen broken. The tether check runs on the walker's cautious timeline, which can differ by a few minutes from the table's cautious times (safety/AGENTS.md, Known issues). In first person the camera stops updating once the ground under the eyes has loaded and no key is held; if higher-detail terrain loads later it could sit a little off the ground until the next step.
+Next: the owner looks by eye at the walk column at 1,440 px and on a phone, adds two stops, plays the walk-through in first person.
+Files: app/src/ui/routePanel.ts, walkThrough.ts, visor.ts, urlState.ts (+test), orbitPanel.ts; app/src/safety/tether.ts (+test), walker.ts (+test); AGENTS.md indexes in ui/ and safety/.
+Other roles need to know: C, the link now holds stops (`stops=lon,lat,min;...`); the Bright Angel link itself is unchanged.
+Checks: `npm run check` passes (types, 108 tests, build). Scripted headless Chrome on the dev server: hero walk, two stops, Clear, stops link reloaded, playback and Stop, held keys, first person in and out, no console errors.
+
+## Sun 15 Nov 02:30, role B work by the team owner, with Claude Code
 
 Done (not committed yet; the owner decides): (1) F18 orbiters: an orbiter running out of predictions no longer blanks the walk; a link minute counts as known only while a relay orbiter has data, an imaging minute only while a camera orbiter has; after the saved window ends (MRO, 30 Nov 12:46 UTC, a limit of Horizons itself) the orbit panel and globe replay that window, labelled with its real dates (`predictionWindow`, `predictionClock` in `data/orbiters.ts`); Mars Express no longer listed as both counted and not counted. (2) `pwa/sw.js`: a new deploy's worker takes over at once; site data other than tiles is network-first, so a new site.json never meets an old grid; failed cache saves no longer lose the response. `ui/install.ts` reloads a page once when that happens. (3) `route/client.ts`: a worker error rejects the request it names; an error naming none rejects everything and refuses later requests.
 Not done: everything in your working files was left alone and written up as S0 to S24 in REVIEW_QUEUE (newest section). Start with S0: `planTo` and `planVia` in `routePanel.ts` need a `.catch`, or a failed route still hangs the card.
@@ -20,7 +37,7 @@ Files: app/src/ui/routePanel.ts, app/src/main.ts, app/src/style.css
 Other roles need to know: C, screenshots for the project page can be taken now: the layout holds at 1,400 px.
 Checks: `npm run check` passes: types, 90 tests, build. Seen in a scripted browser on the dev server at 1,400 x 900 and 390 x 800: site opens with no note, walk to Cheyava Falls planned, three columns, folded card on the phone.
 
-## Sat 14 Nov 16:55, role B handover from the team owner to Joseph, with Claude Code. START HERE
+## Sat 14 Nov 16:55, role B handover from the team owner to Joseph, with Claude Code
 
 Done: everything in the 16:05 entry below, plus the link-to-Earth line (`ui/earthLink.ts`), route export as GeoJSON and "Move the rover" (`ui/routePanel.ts`), and field-view fixes (helmet only when its photo loads; map resize on a view change). All pushed.
 Not done: a person trying the afternoon's panels; review items R1 to R20.

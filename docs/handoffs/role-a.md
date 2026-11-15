@@ -1,6 +1,16 @@
 # Role A handoff
 
-## Sat 14 Nov 16:55, role A handover from the team owner to Joseph, with Claude Code. START HERE
+## Sun 15 Nov, about 09:20, role A, team owner with Claude Code, after Joseph's handover. START HERE
+
+Done (b3a151e, pushed): S23, `pipeline/build_orbiters.py` stops the build when Horizons does not echo the site position, instead of skipping the longitude check.
+Not done: batch 3 (MEDA weather, RAD storm data, Gale dates); Gale; minerals; rerunning `build_orbiters.py` (the saved predictions end 30 Nov; the app replays them after that, labelled).
+Broken or risky: nothing new.
+Next: if time allows before the 12:00 freeze, batch 3 per the 16:55 entry below; otherwise leave the pipeline as it is.
+Files: pipeline/build_orbiters.py
+Other roles need to know: nothing.
+Checks: `pytest -q` passes (54) with `pipeline/.venv`.
+
+## Sat 14 Nov 16:55, role A handover from the team owner to Joseph, with Claude Code
 
 Done: see the 16:05 entry below. Since then: nothing new in the pipeline; batch 3 was asked of the data server's own Claude session (prompt kept by the owner).
 Not done: Gale; geology; minerals; weather at Jezero.

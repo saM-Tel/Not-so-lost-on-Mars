@@ -34,6 +34,13 @@ The page takes images (JPG, PNG, GIF up to 10 MB) but not videos or documents.
 
 ## Other rules to meet
 
+From the participant terms and conditions (read 15 Nov; summary in DECISIONS.md) and the guides. The field-by-field draft is [PROJECT_PAGE.md](PROJECT_PAGE.md).
+
+- [x] Our licence named: Apache 2.0 in `LICENSE`, and in the README (15 Nov; agreed by the owner)
+- [x] Every third-party licence listed in the README (15 Nov)
+- [ ] Nothing promotes a commercial product or service
+- [ ] No personal details (birthdays, addresses, phone numbers) anywhere
+- [ ] Everyone shown in the video is 18 or over and has agreed in writing to NASA using their name and likeness
 - [ ] No image, video, audio or likeness of anyone under 18 in the demo or the project
 - [ ] If the app moves to a new web address, ask for a web filter classification as the guide describes
 

@@ -20,6 +20,11 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 | 14 Nov | "Launch as an app" means an installable web app (manifest and service worker), not a separate desktop build | Stays static files behind one link (rule 4). Decided by the team owner, built that way |
 | 14 Nov | The helmet view is offered only when a real rover photo near the target has loaded | It was often empty. Decided by the team owner |
 | 14 Nov | Large bugs and reviews go to docs/REVIEW_QUEUE.md, for a larger model or a person to review; one app review was done and logged | Decided by the team owner |
+| 15 Nov | Joseph handed the project over to the team owner, who now covers roles A, B and C and may change any file | Told to Claude Code by the team owner on Sunday morning |
+| 15 Nov | A walk through several stops goes into the shareable link with its stops and the minutes at each (`stops=lon,lat,min;...`, in place of `to=`). A refused point is not written to the link (review item S7) | F7 says a copied link must open the same view; writing only the last stop opened a different walk with a different verdict. The owner left the choice to Claude Code ("use your best judgment") |
+| 15 Nov | Walking the planned route in the walk-through stands still at each stop for its time (review item S13) | The card counts time at stops in the tether, so the playback's clock, margin and relay times must match it. The owner left the choice to Claude Code |
+| 15 Nov | The tether verdict and the margin chart use one rule: each point of the walk is checked against the moment the walker is there, with time at stops, and the planned way back counts on the way home (review items S5 and R3) | The two disagreed. Made with the bug fixes the owner asked for |
+| 15 Nov | Our own code, data files and text are released under the Apache License 2.0 (`LICENSE`) | The participant terms say original content must be free to use or under an open-source licence, and that NASA applies Apache 2.0 when a team names none. Chosen by Claude Code when the owner asked for the README to follow the terms; the owner agreed to push it on 15 Nov |
 
 ## Proposed, waiting for the team
 
@@ -38,7 +43,6 @@ Prepared 13 November 2026, before the event, as planning. Add a line whenever th
 | App stack | MapLibre GL JS, Vite, TypeScript, static hosting on GitHub Pages | OpenLayers, which reads Trek tiles directly but has no 3D |
 | Data preparation | Python with rasterio and numpy | GDAL command line, not installed on the lead machine |
 | Git workflow | One main branch, small commits, pull before push, one owner per folder | Branch per person with pull requests |
-| Licence for our code | To choose; check whether the submission guide requires open source | |
 | Whether teammates' AI tools may commit | Only when their human asks | |
 
 ## Answered from the official guides on 14 November
@@ -52,7 +56,23 @@ Read from the Project Submission Guide and the Judging and Awards Guide, both da
 - **Unlisted video:** not mentioned. The demo link must be "publicly accessible" with no login. Test it in a private window.
 - **Editing after submitting:** allowed until the deadline; only the last saved submission is judged.
 
+## From the participant terms and conditions, read 15 November
+
+Read from the text of the terms (updated 7 August 2026), which the owner pasted in.
+
+- **Licence:** original content must be free to use without restriction or under an open-source licence (OSI). With no licence named, NASA distributes it under Apache 2.0. We name Apache 2.0 (`LICENSE`).
+- **Third-party material:** must be free and public, or under an open-source licence. Every licence must be listed in the documentation we submit, or NASA will not post the project. The README lists them.
+- **Citations:** every source must be cited, even open-source ones. Teams that do not cite resources can lose nominations, awards or winner status.
+- **Not allowed in a submission:**
+  - material that promotes commercial products or services;
+  - personal details such as birthdays, addresses or phone numbers;
+  - material we do not hold the rights to;
+  - recognisable names, voices or likenesses of anyone under 18;
+  - any person 18 or over shown without their agreement to NASA using their name and likeness.
+- **Video:** it must be our own work, infringe no one's rights, and anyone shown must have agreed in writing. Submitting it grants the US government a free, perpetual licence to use it.
+- **Identity:** participants take part as themselves, under their own names.
+- **Export control:** nothing export-controlled (ITAR, EAR). Nothing in this project is.
+
 ## Still open
 
-- The participant FAQ and the terms and conditions have not been read
-- A licence for our code
+- The participant FAQ has not been read

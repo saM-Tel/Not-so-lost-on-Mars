@@ -11,7 +11,7 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | Participant FAQ | https://www.spaceappschallenge.org/resources/participant-faqs/ | No, search excerpt only |
 | Judging and Awards Guide, dated 13 Nov 2026 | https://www.spaceappschallenge.org/resources/judging-awards-guide/ | Yes, 14 Nov, from a saved PDF |
 | Project Submission Guide, dated 13 Nov 2026 | https://www.spaceappschallenge.org/resources/project-submission-guide/ | Yes, 14 Nov, from a saved PDF |
-| Participant terms and conditions | https://www.spaceappschallenge.org/legal/ | No |
+| Participant terms and conditions, updated 7 Aug 2026 | https://www.spaceappschallenge.org/legal/ | Yes, 15 Nov, from the text the team owner pasted; summary in DECISIONS.md |
 | Organiser answers on submission times | https://github.com/nasa/spaceapps/discussions/1788 | Yes |
 
 ## Data
@@ -99,6 +99,7 @@ Add each library with its licence when it is first installed.
 | Pillow | 13.0.0 | MIT-CMU | Writing tile images |
 | PyYAML | 6.0.3 | MIT | Reading site configs |
 | pytest | 9.2.0 | MIT | Tests for the pipeline |
+| Fiona | 1.10.1 | BSD-3-Clause | Reading the geologic map (`pipeline/build_geology.py`) |
 
 ## Images and media
 

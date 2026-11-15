@@ -16,18 +16,21 @@ At Bright Angel you can:
 
 - **See the ground at walking scale.** A 3 km by 3 km box with a 25 cm image from orbit, draped over 3D terrain.
 - **Plan a walk.** Pick one of three science targets at real rover stops, or click any point. The app draws the least-effort way out from the crew's rover and a separate way home, and avoids ground steeper than the suit's slope limit (20 degrees by default). It gives distance, climb, time, energy and oxygen as an expected value with a favourable and a cautious value beside it, a height profile, and how much of the walk is close to the slope limit.
-- **See the tether.** A line on the map shows how far you can go and still walk home in time. It shrinks as the walk goes on. A walk that leaves it gets a warning.
+- **Walk through several stops.** Add stops on the map or from the science targets, put them in order, and say how long you will spend at each. Time at a stop counts against the tether, the radiation and the daylight check, because standing still is still time outside.
+- **See the tether.** A line on the map shows how far you can go and still walk home in time. It shrinks as the walk goes on. The walk is checked at every point against the moment you would be there, and the card names the tightest point, with a small chart of the margin along the walk. A walk that leaves the tether gets a warning.
+- **See whether you will have a link.** For the walk and a start time, a timeline of when a relay orbiter is in view and when a camera orbiter passes high overhead in daylight, from JPL Horizons predictions saved by the pipeline. The stretches with no link glow on the map. The orbiters also appear on the globe. Once the saved predictions end, the app replays them and labels them with their real dates.
+- **Walk it.** A to-scale astronaut, 1.8 m tall, walks the planned route on the 3D ground at a speed-up you choose, standing at each stop for its time, or you steer it with the keyboard. It moves at the cautious walking speed for the slope underfoot and cannot enter keep-out ground. A first-person view puts you at eye height under a simulated helmet display: arrow and distance home, walk-home time, tether margin and a start-back countdown. It is labelled as simulated.
 - **See the radiation cost.** The dose picked up on the walk, and NASA's latest forecast of a solar eruption reaching Mars.
 - **Practise a storm.** Pick a warning time; the app says whether to go home or to start home and shelter under steep ground, and sets the 20 May 2024 solar storm measured at Gale crater beside the walk's own dose.
 - **Choose when to go.** Mars local time, sunrise and sunset for today's season, whether the walk ends in daylight, and shading of the ground for the Sun's direction.
 - **Take it outside.** A field tablet view with one large status card and big buttons, and a helmet concept view over a real rover photo.
 - **See what is really there.** Photos the rover took within 30 m of your route, each with its date, camera and credit.
 - **Check every layer.** Each layer has a card saying who measured it, when, how fine its detail really is, how far to trust it, and what not to conclude from it.
-- **Share the view.** The address bar holds the site, the target and the tether settings. A walk can be downloaded as a GeoJSON file.
+- **Share the view.** The address bar holds the site, the target or the stops with the time at each, and the tether settings, so a copied link opens the same walk with the same verdict. A walk can be downloaded as a GeoJSON file.
 - **Install it.** In Chrome or Edge it can be installed as an app; it keeps the map it has shown, so it opens quickly next time.
 - **See the link to Earth.** A live line says which Mars spacecraft NASA's Deep Space Network is talking to and how long a message takes.
 
-Some of these were added on the afternoon of 14 November and are still being tested.
+All of this was built during the 39 hours of the event. Most of it has been tried in a scripted browser; [docs/STATUS.md](docs/STATUS.md) says what a person has checked and what is still open.
 
 Gale crater shows where it is, what data exists and typical weather from Curiosity's records; its map is not built yet.
 
@@ -67,6 +70,8 @@ The app shows this check in the side panel, under the layers.
 | Land round each site, about 5 m | Context Camera (CTX) on Mars Reconnaissance Orbiter: global mosaic by the Murray Lab at Caltech, and the USGS Jezero mosaic and terrain (Fergason, Galuszka and Hare 2020) | Zooming in; 3D land round Bright Angel |
 | Seven landing-site maps, 1 m | HiRISE terrain models and images from the University of Arizona's HiRISE archive | The level 2 sites |
 | Night-time warmth | THEMIS on Mars Odyssey; mosaic by USGS, in the Jezero geologic map package (Sun and Stack 2020) | Where footing may change |
+| Geology | Geologic map of Jezero crater and the Nili Planum region, USGS SIM 3464 (Sun and Stack 2020) | The geology layer at Bright Angel |
+| Orbiter positions and passes | JPL Horizons, NASA JPL Solar System Dynamics, with trajectories from the NASA and ESA navigation teams (MRO, Mars Odyssey, Mars Express, TGO) | Link and view from orbit; orbiters on the globe |
 | Typical weather at Gale | Curiosity's REMS instrument, 14 years of daily records (NASA, Spain's Centro de Astrobiología) | The Gale site |
 | Mars time and the Sun | NASA's Mars24 method (Allison and McEwen 2000) | When to go |
 | The 20 May 2024 solar storm | NASA/JPL, 10 June 2024: 8,100 micrograys beside Curiosity | The storm replay |
@@ -86,14 +91,14 @@ We would rather list these than hide them.
 
 - **Nobody has walked on Mars.** Time and energy come from a model built on Apollo data and tests on Earth, applied to Mars gravity. They are grade C, and the app says so.
 - **Home is an assumption.** The crew's rover parks at a stop Perseverance itself used for 16 sols; you can move it.
-- **One target at a time.** A walk goes to one point and back.
 - **The tether is a time limit only.** It does not yet budget oxygen or energy, and takes no reserve.
 - **Loose sand and small rocks are not counted.** The terrain cannot show anything smaller than about 3 to 5 m.
-- **No geology layer yet.** The code is written; it waits on one software package.
 - **Radiation is the everyday background.** A solar storm can add far more in a few hours and is not in the dose figure; the storm drill shows how much.
 - **No weather at Jezero yet.** Weather is never borrowed from another site; Perseverance's records are being added.
 - **Photos are not sorted by the way they face.**
 - **The seven other maps are automatic.** One terrain strip each, not checked on the ground or by a person. Gale has no map yet.
+- **Orbiter predictions end.** They were saved from JPL Horizons on 14 November and end on 30 November 2026, where MRO's own prediction ends. After that the app replays the saved window and says so. The elevation a relay link needs and what counts as overhead for a camera are assumed (grade D); we found no published figure.
+- **The walk-through is a demonstration, not a game.** It uses the same walking model as the route card and the same tether, with no score.
 
 ## Run it yourself
 
@@ -140,6 +145,28 @@ We used an AI coding assistant, Claude Code, throughout. It wrote most of the co
 
 Every session is logged in [docs/AI_USE.md](docs/AI_USE.md). There are no AI-generated images, video or audio anywhere in the project. Every picture is a real NASA image with its credit.
 
+## Licence
+
+Our own code, data files and text are released under the Apache License 2.0: see [LICENSE](LICENSE). This is the licence NASA's participant terms apply when a team names none.
+
+Software we use, and its licence:
+
+| Software | Licence | Used for |
+|---|---|---|
+| MapLibre GL JS | BSD-3-Clause | The globe, the map and 3D terrain; part of the published site |
+| Vite | MIT | Building the site (not shipped) |
+| TypeScript | Apache-2.0 | Type checking (not shipped) |
+| Vitest | MIT | Tests (not shipped) |
+| NumPy | BSD-3-Clause and others | Data preparation |
+| Rasterio, with GDAL | BSD-3-Clause (GDAL: MIT) | Reading terrain and image files |
+| Fiona | BSD-3-Clause | Reading the geologic map |
+| Pillow | MIT-CMU | Writing tile images |
+| PyYAML | MIT | Reading site configs |
+| pytest | MIT | Tests |
+| pextant (SEXTANT planner) | MIT | Source of the walking speed and energy equations we coded in `app/src/route/cost.ts` |
+
+The data and images come from NASA, JPL, ESA, USGS and the University of Arizona's HiRISE team, as listed above, with the credit each asks for. Every source, including papers, is cited in [docs/REFERENCES.md](docs/REFERENCES.md).
+
 ## Credits
 
-Images and data: NASA/JPL-Caltech, University of Arizona, USGS Astrogeology Science Center, NASA Ames, NASA CCMC. This project is not endorsed by NASA.
+Images and data: NASA/JPL-Caltech, University of Arizona, USGS Astrogeology Science Center, NASA Ames, NASA CCMC, NASA/JPL/MSSS/The Murray Lab (CTX mosaic), JPL Horizons. This project is not endorsed by NASA.

@@ -10,38 +10,13 @@ Severity: **high** breaks a must-have or could show a wrong number; **medium** v
 
 ### From the read-only review of Sun 15 Nov, about 01:50 (items S1 to S24)
 
-Team owner with Claude Code. Three read-only agents read the code coded on Saturday night. Nothing here has been confirmed by running the app; each item is a suspected bug with a failure scenario. Line numbers are after ef8f303. Bugs in the orbiter files, `pwa/sw.js` and `route/client.ts` are being fixed in the same session (see STATUS); everything below is in files role B is working in, so it is left for role B. Work highs first.
-
-**Several stops, `app/src/ui/routePanel.ts`**
-- **S0 (high, do first; needed by this session's fix): route calls have no `.catch`.** `route/client.ts` now rejects a request when the worker fails on it (it used to hang for good), but `planTo` (`void client.route(position).then(...)`, about line 886) and `planVia` (about line 897) end in `.then` only, so the card still stays on "Working out the walk…" and the rejection goes unhandled. Add to each: `.catch((error: unknown) => { if (!stopped && request === latest) status.textContent = error instanceof Error ? \`The walk could not be worked out: ${error.message}\` : String(error); });`
-- **S1 (high): `restart()` resets `planTo` but not `planVia` (line 780).** Adding, moving or removing a stop in the 1 to 3 s while the new worker starts (after a slope-limit change or a rover move), or at any time when the new home is unusable, calls the old, stopped worker; its promise never settles and the card stays on "Working out the walk through N stops…". Fix: set `planVia = () => {}` beside `planTo`, and replan the stops when the new worker is ready.
-- **S2 (medium): removing the last stop, or "Clear the stops", keeps the old stops walk** (`stopsChanged`, line 346; Clear, line 360). Removing one by one never replans at zero stops, so the verdict and chart keep the old stays. Clear empties `shownStops` but not `walkTimeline`, so verdict and chart disagree and the table still says "through N stops". Fix: at zero stops replan the single target (or clear the walk).
-- **S3 (medium): after a restart, a failed or cleared stops plan silently falls back to `targets[0]`** (`planVia` sets `lastTarget = null`). Keep the last single target, or say the walk was reset.
-- **S4 (medium, wrong numbers): time at stops is left out of** the daylight check (`when.setWalk`, line 654), the dose and storm-card dose, and the tablet's time free at the target (`stayAtTargetS`, line 424). Standing at a stop is still time outside. The orbit timeline does include it, so the two panels disagree.
-- **S5 (medium): verdict and margin chart use different rules** (`showVerdict` vs `safety/tether.ts` margin timeline): the verdict compares the walk's highest time-to-home with the allowance at the far end; the chart tests each point at its own time, and they use different timing models. Late in an EVA with a far early stop, the headline can say "leaves the tether" while the chart says "Tightest point … to spare". Pick one rule (the chart's per-point rule is the stricter, truer one) and drive both from it.
-- **S6 (medium): `planTo` clears `shownStops` before the new answer arrives**, so any slider move in that gap runs the verdict without stays against the old stops walk.
-- **S7 (medium, honesty): a stops walk writes only its last stop to the link as `to=`** (line 683), so the link opens a different walk with a different verdict, without saying so; a failed stops plan erases the previous good `to=` (line 677). Until stops go in the link (a team decision), leave `to=` out for a stops walk.
-- **S8 (medium): stops added before the first worker is ready are never planned**; the walk shown is to `targets[0]`.
-
-**Walk-through and first person, `app/src/ui/walkThrough.ts`, `visor.ts`, `safety/walker.ts`**
-- **S9 (high): key auto-repeat can give a negative time step.** Each repeated keydown calls `run()` (line 275), which resets `last`; `realDt` (line 206) can come out negative, so the astronaut steps backwards and "Time gone" can fall. Fix: `Math.max(0, …)` and ignore `event.repeat`.
-- **S10 (high): keys stay held after the window loses focus, or when the key-up lands on a form field** (lines 268 to 289); the astronaut keeps walking. Clear `held` on `blur` and `visibilitychange`. The speed select keeps focus after a change, so arrows change the speed.
-- **S11 (high): the walk-through overwrites the tether's "time since leaving home"** (`setElapsed`, routePanel line 199): it is set to 0 on start, losing the user's value, and left at the walk's end after Stop, so the card's verdict then judges the planned walk as starting late. Save the value on start and restore it on Stop.
-- **S12 (medium to high): leaving first person queues `easeTo` one frame later** (line 340); if the planner is torn down in first person, it cancels the flight to the globe. Skip it when the walk-through is being removed.
-- **S13 (medium): playback ignores time at stops** (line 359: `routeTimeline` without `withStopTimes`), so its clock, margin and relay times disagree with the card. Pausing at stops is a team decision (SPEC).
-- **S14 (medium): replanning or moving the rover during playback leaves the old route playing**; clicks still reach the map in first person (the visor has `pointer-events: none`) and replan mid-walk. Stop playback on a new answer or restart.
-- **S15 (medium): the astronaut can be put on an unusable home** (no check of `homeUsable`) and cannot move. `heightAt(...) ?? 0` in `walker.ts` line 99 turns a missing height into 0 m against heights near −2,400 m, adding a 2.4 km climb to the timeline (also used by the margin chart). Skip or carry the last height.
-- **S16 (medium): the frame loop runs at 60 fps while the astronaut stands still** (line 247), calling `setData` each frame. Stop the loop when idle with no key held.
-- **S17 (medium): simulated time starts at `Date.now()`** (lines 111, 260), not at the start chosen in "When to go" or the orbit panel, so the Sun and relay readouts disagree with the card. After 30 Nov it should use the orbit replay clock (`predictionClock` in `data/orbiters.ts`, being added in this session).
-- **S18 (medium): mouse and touch still move the map in first person**, fighting the camera each frame. Disable drag, scroll zoom and rotate on entry and put them back on leaving.
-- **Checked, not a bug:** in MapLibre 6.18 `queryTerrainElevation` returns the absolute height (`terrain.getElevationForLngLat`), so first-person eye height is right. It returns null while terrain is off (below zoom 12.2), so the first frames sit at height 0.
+Team owner with Claude Code. Three read-only agents read the code written on Saturday night and listed suspected bugs, each with a failure scenario. S0 to S18 and S23 were fixed on Sunday morning (see Done). What is left is low.
 
 **Low, one line each**
-- S19 stops: pins come from the list being edited, not the walk shown; two stops in one cell are always called "stop 1"; the GeoJSON export has no stops; Clear leaves "add stops" on and restarts the point numbers; `back=` and `t=` from a link override controls changed before the tether loads; the stay is drawn as a slanted line into the stop on the chart and orbit glow.
-- S20 walk-through: pixel ratio restored to `min(dpr, 2)`, not the saved value; the tether moves in 5-minute jumps while the readout is exact; route mode shows a stale slope; the visor shows "At home" when home is unknown and "N 360°" for 359.6°; `alongTimeline` with fewer than 2 points crashes `putAt`; the visor's `role="status"` is rewritten every frame; walk-through readouts have no range, grade or "modelled" label (CONFIDENCE).
+- S19 stops (the GeoJSON export now has the stops): pins come from the list being edited, not the walk shown; two stops in one cell are always called "stop 1"; Clear leaves "add stops" on and restarts the point numbers; `back=` and `t=` from a link override controls changed before the tether loads; the stay is drawn as a slanted line into the stop on the chart and orbit glow.
+- S20 walk-through (fixed: pixel ratio, "Home not known", N 000 for 359.6 degrees, a walk too short to play, the visor status rewritten only on change): the tether moves in 5-minute jumps while the readout is exact; route mode shows a stale slope; walk-through readouts have no range or grade (they now say modelled, predicted or computed; CONFIDENCE).
 - S21 orbit panel: the "now" start goes stale while the panel stays open; the globe track `setData` runs every second while hidden; a gap at the 180° meridian and bent tracks above 85° latitude (cosmetic); an empty orbiter list shows "no link" instead of "no prediction".
 - S22 photos (`data/photos.ts` line 89): a stop with 3 photos gets two neighbouring views, not two spread out.
-- S23 pipeline (role A): `build_orbiters.py` around line 172 skips the longitude check silently if the "Center geodetic" line is not found; it should stop the build. Not done this session: no `pipeline/.venv` on this laptop.
 - S24 never queued from the 14 Nov review: the tether's dimming stops at the box edge (a dark square against the rings); walls at the edge of the seven level 2 sites' terrain; no performance profile taken while tilting at Bright Angel; `zoomSelect.ts` and `scaleBar.ts` never reviewed.
 
 ### From the app review of 14 Nov, about 16:45 (items R1 to R20)
@@ -142,6 +117,49 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **Check:** record a performance profile while spinning the globe and while zooming in. If it shows, add rings only for the site in focus.
 
 ## Done
+
+### S0 to S18, and parts of S19, S20 and S23: fixed Sun 15 Nov, about 08:40 to 09:20, commits 740a81e (app) and b3a151e (S23), team owner with Claude Code
+
+Joseph had handed the project over, so role B's working files were open to change.
+
+- **S0:** `planTo` and `planVia` in `ui/routePanel.ts` catch a failed request and say "The walk could not be worked out: …" in the card and the field views.
+- **S1, S8:** `restart()` resets `planVia` as well as `planTo`. A new `wanted` remembers whether the person last asked for one target or for stops, and `begin` plans that again once the new worker is ready.
+- **S2, S3:** removing the last stop, or Clear, goes back to the last single target (else the first science target, else clears the walk). `planVia` no longer forgets the last single target.
+- **S4:** time at stops is added to the daylight check, the radiation (card and storm drill) and the tablet's time free at the far end, through one `timeOutside()`. The notes under "What these numbers rest on" say so.
+- **S5:** `marginsAlongWalk` in `safety/tether.ts` takes the index where the way back starts. From there the walk home is the slower of the quickest way and the planned way back (keeps R3). The verdict, the margin chart and the field views all read this one check and name the same tightest point. The old far-end rule is used only before the walk's timeline exists.
+- **S6:** `planTo` clears the old stops only when the new answer arrives.
+- **S7** (team decision, DECISIONS.md): a stops walk goes into the link as `stops=lon,lat,min;...` in place of `to=` (`ui/urlState.ts`, with tests). A link with stops opens the same walk, and stops at science targets take their names. A refused point no longer erases the link.
+- **S9:** the frame step is never negative, and a key's auto-repeat changes nothing.
+- **S10:** keys are let go on window blur, on a hidden page and on any key-up, even over a form field. The speed select gives up the keyboard after a change.
+- **S11:** the walk-through starts from the tether's own time since leaving home and puts it back on Stop.
+- **S12:** leaving first person does not queue a flight when the walk-through is being removed.
+- **S13** (team decision): playback stands still at each stop for its time (`withStopPauses` in `safety/walker.ts`, with tests) and says "At stop N … more here".
+- **S14:** a new answer or a restart stops a playback of the old walk. Map clicks are ignored in first person.
+- **S15:** the walk-through starts only from a usable home. `routeTimeline` carries the last known height over a cell with no height, so a missing height adds no 2.4 km climb (test).
+- **S16:** the frame loop runs only while the astronaut moves (in first person, also until the ground under the eyes has loaded).
+- **S17:** the walk-through clock starts at the start chosen in "Link and view from orbit" (`orbit.startUtc()`), which is the replay clock after 30 Nov.
+- **S18:** mouse and touch handlers are switched off in first person and back on when leaving.
+- **S19, part:** the GeoJSON export has the stops as points.
+- **S20, part:**
+  - the pixel ratio is restored to the saved value;
+  - the visor says "Home not known" instead of "At home";
+  - 359.6 degrees shows as N 000;
+  - a walk too short to play is refused;
+  - the visor status is rewritten only when it changes;
+  - the readouts say modelled, predicted or computed.
+- **S23:** `pipeline/build_orbiters.py` stops the build when Horizons does not echo the site position.
+- **How checked:**
+  - `npm run check` passes: types, 108 tests (6 new) and the build. pytest passes: 54 tests.
+  - A scripted headless Chrome (DevTools protocol, dev server) checked, at Bright Angel:
+    - the hero walk opens, and the verdict and chart name the same tightest point;
+    - two stops added from the science targets give `stops=` in the link, the verdict counts 20 min at the stops, and the radiation rises;
+    - Clear goes back to the Cheyava Falls walk with `to=`;
+    - the stops link reloaded opens the same walk;
+    - playback stood at the stops; the tether slider moved to 35 min and went back to 0 on Stop;
+    - a held key with auto-repeat never made time fall;
+    - first person opened and closed;
+    - no errors in the console.
+- **Not checked:** S0's message with a real worker failure (unit-tested in `route/client.test.ts` only); S12, S16 and S18 by hand with a mouse; any of it by a person.
 
 ### R9, R10, R11, R12, R20 and the zoom 12 glitch: fixed Sat 14 Nov 20:37, commit c9e2a69, team owner with Claude Code
 

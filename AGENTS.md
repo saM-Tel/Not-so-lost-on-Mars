@@ -108,7 +108,7 @@ Read on demand. Do not load all of these at the start of a session.
 | [docs/DECISIONS.md](docs/DECISIONS.md) | You hit a choice that belongs to the team |
 | [docs/PLAN.md](docs/PLAN.md) | You need the strategy, schedule, roles or cut lines |
 | [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) | You find a large bug or a review too big for your task, or you look for known open problems |
-| [docs/SUBMISSION_CHECKLIST.md](docs/SUBMISSION_CHECKLIST.md) | Sunday afternoon |
+| [docs/SUBMISSION_CHECKLIST.md](docs/SUBMISSION_CHECKLIST.md), [docs/PROJECT_PAGE.md](docs/PROJECT_PAGE.md) | Sunday afternoon: the checklist, and a draft of every field of the project page |
 | [docs/REFERENCES.md](docs/REFERENCES.md), [docs/AI_USE.md](docs/AI_USE.md) | Every session, at the end |
 
 ## Definition of done
