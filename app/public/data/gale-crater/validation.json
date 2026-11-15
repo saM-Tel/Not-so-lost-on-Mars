@@ -1,0 +1,43 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-15T10:17:48Z",
+  "heights": {
+    "what": "Terrain height minus the height the rover logged at the same position",
+    "heightReference": "metres relative to the areoid, in both",
+    "stopsInBox": 289,
+    "stopsUsed": 289,
+    "stopsSkippedNoTerrain": 0,
+    "stopsSkippedNoLoggedHeight": 0,
+    "medianDifferenceM": 0.0,
+    "medianAbsoluteDifferenceM": 0.03,
+    "percentile90AbsoluteDifferenceM": 0.1,
+    "largestAbsoluteDifferenceM": 1.0,
+    "firstSol": 3941,
+    "lastSol": 5045,
+    "roverFile": "msl_curiosity_waypoints.json",
+    "roverFileReadFrom": "local copy in data/raw",
+    "caution": "The agreement is closer than the terrain's stated accuracy, which suggests the rover's logged heights were themselves read from this terrain model. That is not confirmed. If so, this shows that we placed the terrain correctly, not that the terrain is accurate."
+  },
+  "slope": {
+    "what": "Our slope from the orbital terrain minus the tilt the rover measured at the same position",
+    "unit": "degrees from level, in both",
+    "stopsInBox": 289,
+    "stopsUsed": 285,
+    "stopsSkippedNoSlope": 4,
+    "stopsSkippedNoTilt": 0,
+    "medianDifferenceDeg": -0.4,
+    "medianAbsoluteDifferenceDeg": 2.3,
+    "percentile90AbsoluteDifferenceDeg": 6.6,
+    "largestAbsoluteDifferenceDeg": 28.3,
+    "correlation": 0.49,
+    "roverTiltMedianDeg": 8.6,
+    "roverTiltLargestDeg": 24.0,
+    "ourSlopeMedianDeg": 9.0,
+    "ourSlopeLargestDeg": 41.5,
+    "baselineM": {
+      "northSouthM": 6.0,
+      "eastWestM": 5.979
+    },
+    "caution": "The two are not quite the same measurement. Ours is the steepest slope of the ground over about 6 m, taken from orbit; the rover's is how far the vehicle leaned where it stood. Rover drivers also choose gentle ground, so these stops say little about how well steep slopes are measured."
+  }
+}

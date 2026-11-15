@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T15:47:57Z",
+  "builtUtc": "2026-11-15T10:19:41Z",
   "layers": [
     {
       "id": "image-ctx-arctic-plain-wide",
@@ -829,10 +829,10 @@
         "count": 117,
         "bytes": 415550,
         "bounds": {
-          "westLonDeg": 134.73365337042384,
-          "eastLonDeg": 140.14961262957615,
-          "southLatDeg": -7.288763777298435,
-          "northLatDeg": -1.890170222701565
+          "westLonDeg": 134.67474509716263,
+          "eastLonDeg": 140.0923377028374,
+          "southLatDeg": -7.499144007298435,
+          "northLatDeg": -2.1005504527015653
         }
       }
     },
@@ -870,13 +870,13 @@
         "minZoom": 10,
         "maxZoom": 12,
         "tileSizePx": 256,
-        "count": 115,
-        "bytes": 202456,
+        "count": 106,
+        "bytes": 198344,
         "bounds": {
-          "westLonDeg": 137.10313554630298,
-          "eastLonDeg": 137.780130453697,
-          "southLatDeg": -4.926879097162304,
-          "northLatDeg": -4.2520549028376955
+          "westLonDeg": 137.04494186214535,
+          "eastLonDeg": 137.72214093785468,
+          "southLatDeg": -5.137259327162305,
+          "northLatDeg": -4.462435132837696
         }
       }
     },
@@ -914,13 +914,13 @@
         "minZoom": 13,
         "maxZoom": 14,
         "tileSizePx": 256,
-        "count": 123,
-        "bytes": 114414,
+        "count": 140,
+        "bytes": 260842,
         "bounds": {
-          "westLonDeg": 137.3400837638909,
-          "eastLonDeg": 137.5431822361091,
-          "southLatDeg": -4.690690629148691,
-          "northLatDeg": -4.4882433708513085
+          "westLonDeg": 137.2819615386436,
+          "eastLonDeg": 137.48512126135643,
+          "southLatDeg": -4.901070859148692,
+          "northLatDeg": -4.698623600851309
         }
       }
     },

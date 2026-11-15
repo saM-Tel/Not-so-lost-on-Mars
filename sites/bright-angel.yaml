@@ -217,6 +217,8 @@ rover:
   serverPath: raw/feeds
   originalUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
   heightField: elev_geoid   # metres relative to the areoid, like the terrain mosaic
+  layerSource: m20          # the rover layers are named rover-stops-m20 and rover-path-m20
+  photoFeed: mars2020       # NASA's raw image feed category that pipeline/photos.py reads
   # The rover's drives as lines, for the rover path layer.
   pathFile: m20_perseverance_traverse.json
   pathOriginalUrl: "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"

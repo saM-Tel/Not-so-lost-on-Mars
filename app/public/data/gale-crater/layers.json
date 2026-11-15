@@ -1,0 +1,143 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-15T10:17:48Z",
+  "layers": [
+    {
+      "mission": "Mars Reconnaissance Orbiter, with Mars Express",
+      "instrument": "HiRISE, with CTX and HRSC images where HiRISE was lacking",
+      "agency": "NASA; HRSC is ESA's",
+      "productId": "MSL_Gale_Orthophoto_Mosaic_25cm_v3",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm",
+      "doi": "not found",
+      "acquiredFrom": "2006-11-20",
+      "acquiredTo": "2011-12-25",
+      "published": "2016-10-20",
+      "gridSpacing": "25 cm",
+      "realDetail": "About 25 to 32 cm where from HiRISE; objects need to be about 1 m across to be recognised",
+      "positionAccuracy": "About 100 m: tied to MOLA through HRSC (product page). Curiosity's stops are placed on this same mosaic",
+      "heightAccuracy": "not applicable",
+      "grade": "B",
+      "caveats": [
+        "Taken between 2006 and 2011, before Curiosity reached this area. Rover tracks are not in it, and sand may have moved.",
+        "Lit by the afternoon Sun at the time of each image. Dark patches can be shadows, not dark ground.",
+        "One black-and-white band. It shows brightness, not colour."
+      ],
+      "credit": "NASA/JPL-Caltech/University of Arizona/USGS (Calef and Parker 2016)",
+      "id": "image-hirise",
+      "title": "Ground from orbit",
+      "dataType": "optical",
+      "processing": "Cut to the site's box and redrawn as map tiles for zoom 12 to 18. One tile pixel at zoom 18 is 0.32 m on the ground. Places with no data are transparent.",
+      "tiles": {
+        "path": "tiles/image-hirise/{z}/{x}/{y}.webp",
+        "minZoom": 12,
+        "maxZoom": 18,
+        "tileSizePx": 256,
+        "count": 1969,
+        "bytes": 17000954
+      }
+    },
+    {
+      "mission": "Mars Reconnaissance Orbiter, with Mars Express and Mars Global Surveyor",
+      "instrument": "HiRISE stereo, with CTX and HRSC terrain where HiRISE stereo was lacking, tied to MOLA",
+      "agency": "NASA; HRSC is ESA's",
+      "productId": "MSL_Gale_DEM_Mosaic_1m_v3",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m",
+      "doi": "not found",
+      "acquiredFrom": "2006-11-20",
+      "acquiredTo": "2011-12-25",
+      "published": "2016-10-20",
+      "gridSpacing": "1 m",
+      "realDetail": "About 3 to 5 m where made from HiRISE stereo; far coarser where CTX or HRSC terrain fills a gap",
+      "positionAccuracy": "About 100 m: tied to MOLA through HRSC, which is only as accurate as MOLA (product page). Curiosity's stops are placed on this same mosaic",
+      "heightAccuracy": "About 1 m against MOLA (product page)",
+      "grade": "B",
+      "caveats": [
+        "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model, and the boxwork ridges, about 1 to 2 m tall, are smaller than that.",
+        "Where HiRISE stereo was lacking the mosaic used CTX, HRSC or MOLA terrain, which is coarser. The page does not map where.",
+        "Made from images taken between 2006 and 2011, before Curiosity reached this area.",
+        "For 400 m round the box the 3D ground is eased down to the box's lowest point so the box does not stand up as a block; that edge is not measured terrain."
+      ],
+      "credit": "NASA/JPL-Caltech/University of Arizona/ESA/DLR/FU Berlin/USGS (Calef and Parker 2016)",
+      "id": "terrain-hirise",
+      "title": "Terrain height",
+      "dataType": "topographic",
+      "processing": "Cut to the site's box and stored as height tiles for zoom 11 to 15, to the nearest 0.1 m. One tile pixel at zoom 15 is 2.5 m on the ground, so the 3D view is smoother than the 1 m grid. Past the edge of the box the edge heights are eased down to the box's lowest point over 400 m, because the map has no terrain beyond it; that easing is for the picture only and is not data. Routes and slopes use only the terrain inside the box.",
+      "tiles": {
+        "path": "tiles/terrain-hirise/{z}/{x}/{y}.png",
+        "minZoom": 11,
+        "maxZoom": 15,
+        "tileSizePx": 256,
+        "count": 65,
+        "bytes": 1714460,
+        "encoding": "mapbox",
+        "bounds": {
+          "westLonDeg": 137.3513744,
+          "eastLonDeg": 137.4157084,
+          "southLatDeg": -4.8319014,
+          "northLatDeg": -4.7677931
+        }
+      }
+    },
+    {
+      "mission": "Mars Reconnaissance Orbiter, with Mars Express and Mars Global Surveyor",
+      "instrument": "HiRISE stereo, with CTX and HRSC terrain where HiRISE stereo was lacking, tied to MOLA",
+      "agency": "NASA; HRSC is ESA's",
+      "productId": "MSL_Gale_DEM_Mosaic_1m_v3",
+      "sourceUrl": "https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m",
+      "doi": "not found",
+      "acquiredFrom": "2006-11-20",
+      "acquiredTo": "2011-12-25",
+      "published": "2016-10-20",
+      "gridSpacing": "4 m cells, each holding the steepest of 16 slopes measured on the 1 m terrain",
+      "realDetail": "About 6 m: each slope is measured over 6.0 m north to south and 5.979 m east to west",
+      "positionAccuracy": "About 100 m: tied to MOLA through HRSC, which is only as accurate as MOLA (product page). Curiosity's stops are placed on this same mosaic",
+      "heightAccuracy": "About 1 m against MOLA (product page)",
+      "grade": "B",
+      "caveats": [
+        "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model, and the boxwork ridges, about 1 to 2 m tall, are smaller than that.",
+        "Where HiRISE stereo was lacking the mosaic used CTX, HRSC or MOLA terrain, which is coarser. The page does not map where.",
+        "Made from images taken between 2006 and 2011, before Curiosity reached this area.",
+        "Checked against the tilt the rover measured at 285 stops: typical difference 2.3 degrees, 9 in 10 within 6.6 degrees. Rover drivers choose gentle ground, so steep slopes are less well checked.",
+        "A short steep step, such as a ledge under about 3 m, can be missed."
+      ],
+      "credit": "NASA/JPL-Caltech/University of Arizona/ESA/DLR/FU Berlin/USGS (Calef and Parker 2016)",
+      "id": "slope-hirise",
+      "title": "Slope",
+      "dataType": "topographic",
+      "processing": "Steepest slope at each 1 m cell of the terrain, then the steepest of those in each routing cell. Cells are narrower east to west at this latitude and the spacing is corrected for it.",
+      "grid": "slopeMaxDeg"
+    },
+    {
+      "id": "rover-stops-msl",
+      "title": "Rover stops",
+      "dataType": "in-situ",
+      "mission": "Mars Science Laboratory",
+      "instrument": "Curiosity rover: the rover team's own position for each drive",
+      "agency": "NASA",
+      "productId": "msl_curiosity_waypoints.json",
+      "sourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+      "doi": "not found",
+      "acquiredFrom": "2023-09-07 (sol 3941)",
+      "acquiredTo": "2026-10-15 (sol 5045)",
+      "published": "A live file that grows as the rover drives; our copy ends at sol 5070",
+      "gridSpacing": "One point where each drive ended",
+      "realDetail": "A single position for each stop",
+      "positionAccuracy": "not found",
+      "heightAccuracy": "not found",
+      "processing": "Cut to the site's box. Positions are as the rover team published them; nothing is moved or smoothed. Earth dates are the UTC date of local midday on each sol.",
+      "grade": "A",
+      "caveats": [
+        "The file does not say how accurate these positions are.",
+        "Where a rover drove is not proof that a person on foot can walk there, and the reverse.",
+        "Only the part inside this site's box is shown."
+      ],
+      "credit": "NASA/JPL-Caltech",
+      "vector": {
+        "path": "vectors/rover-stops.geojson",
+        "geometry": "point",
+        "count": 289,
+        "bytes": 96694
+      }
+    }
+  ]
+}

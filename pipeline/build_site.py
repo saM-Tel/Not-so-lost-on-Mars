@@ -127,7 +127,7 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
-    hero = scenario.resolve(site.get("scenario"), stops if rover else [], box, grids["terrain"])
+    hero = scenario.resolve(site.get("scenario"), stops if rover else [], box, grids["terrain"], f"{site['mission']} waypoints file")
     if hero:
         print(f"Scenario: home at stop {hero['home']['stop'] if 'home' in hero else 'none'}; "
               f"{len(hero.get('targets', []))} targets: {', '.join(t['name'] for t in hero.get('targets', []))}")
@@ -311,8 +311,13 @@ def build(config_path: pathlib.Path, dry_run: bool) -> None:
             print(f"Wrote {layer['title'].lower()}: {layer['vector']['count']} features, "
                   f"{layer['acquiredFrom']} to {layer['acquiredTo']}; path file from the {path_origin}")
 
-    # Real rover photos at the stops in the box. Optional: without them the app simply shows none.
-    if rover:
+    # Real rover photos at the stops in the box. Optional: without them the app simply shows none. Only for a rover
+    # whose image feed photos.py reads (rover.photoFeed in the config): another rover's photos must never be matched
+    # to these stops by sol.
+    if rover and rover.get("photoFeed") != photos.FEED_CATEGORY:
+        print(f"No photos.json: photos.py reads only the '{photos.FEED_CATEGORY}' image feed, and this rover's config names "
+              f"'{rover.get('photoFeed')}'.")
+    elif rover:
         in_box = [stop for stop in stops if box.west_lon_deg <= mars.lon_to_180(float(stop["lon"])) <= box.east_lon_deg
                   and box.south_lat_deg <= float(stop["lat"]) <= box.north_lat_deg]
         if in_box:

@@ -1,27 +1,34 @@
-# WHAT:    Site config for Gale crater, where Curiosity landed: readiness level 1, not built.
+# WHAT:    Site config for Gale crater, where Curiosity has driven since 2012: readiness level 1. The box is the boxwork
+#          region on Mount Sharp, centred on the stop where Curiosity drilled the "Altadena" rock in June 2025.
 # IN:      Nothing.
-# OUT:     What the pipeline needs to know about this site. So far: identity, position and what data exists.
+# OUT:     What the pipeline needs to build this site: identity, position, the box, source files with their dates and
+#          accuracy, the rover's stops and path, and the scenario (home and science targets at rover stops).
 # USED BY: pipeline/build_globe.py, and pipeline/build_site.py when the site is built.
 # RULES:   No invented coordinates. Every number is copied from the source named beside it.
 # TRAPS:   PITFALLS 2, 4.
-# OWNER:   Role A.
+# OWNER:   Role A, with role C supplying targets.
 
 id: gale-crater
-name: Gale crater
-place: Gale crater
+name: Gale crater boxwork
+place: Boxwork on Mount Sharp, Gale crater
 mission: Curiosity
 missionYears: "2012 to now"
 level: 1
 reviewedByPerson: false
 
 position:
-  from: point   # where Curiosity landed
-  source: "Curiosity waypoints file, first logged stop (RMC 2_0, sol 3), before it had driven"
+  from: point   # the rover stop where Curiosity stood from sol 4560 to sol 4570, while it drilled Altadena
+  source: "Curiosity waypoints file, stop RMC 116_1944, first logged on sol 4560"
   sourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
   longitudeConvention: "east-positive, -180 to 180"
   latitudeType: planetocentric
-  lonEastDeg: 137.441633
-  latDeg: -4.589467
+  lonEastDeg: 137.3835414
+  latDeg: -4.79984723
+  why: >-
+    NASA says Curiosity drilled the rock nicknamed Altadena on 8 June 2025, in the area of the boxwork patterns on
+    Mount Sharp. NASA's raw image feed logs images taken on 8 June 2025 as sol 4564, and the rover's log has it at this
+    stop from sol 4560 until it next moved on sol 4571. NASA's blog for sols 4568 and 4569 has it still at the drill site.
+  whySourceUrl: "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/"
 
 landing:
   asPublished: "4.589467 S, 137.441633 E: the rover's first logged stop (RMC 2_0, sol 3)"
@@ -29,9 +36,133 @@ landing:
   sourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
 
 data:
-  - "Image mosaic at 25 cm and terrain mosaic on a 1 m grid from HiRISE (USGS)"
-  - "Curiosity's own stops, 1,388 logged to sol 5070"
+  - "Image mosaic at 25 cm and terrain mosaic on a 1 m grid, mostly from HiRISE (USGS, Calef and Parker 2016)"
+  - "Curiosity's own stops, 1,388 logged to sol 5070, with tilt and height at each"
   - "Radiation and daily weather measured on the ground by Curiosity"
 
 problems:
-  - "Not built yet. The rover is now far from where it landed; the box to build has not been chosen."
+  - "Home is an assumption for this scenario: the crew rover parks at a rover stop Curiosity reached."
+  - "The mosaics were tied to MOLA through HRSC, so their absolute position is good to about 100 m. Curiosity's stops are placed on the same mosaic, so routes and stops agree with each other."
+  - "Where HiRISE stereo was lacking, the terrain mosaic used CTX or HRSC terrain, which is far coarser. The build's check against the rover's tilt shows how well the slope holds here."
+
+# ---- Scenario: home and science targets (pipeline/scenario.py) ------------------------------
+# Every position is a rover stop, looked up by its id in the waypoints file at build time, so no coordinate is typed
+# here. How long Curiosity stayed is counted from the same file: the sols until its next logged stop.
+
+scenario:
+  home:
+    name: Crew rover
+    stop: "120_538"
+    assumed: true
+    why: >-
+      Assumed for this scenario: the crew's pressurised rover parks where Curiosity itself stood for 37 sols
+      (sol 4752 to 4788, December 2025 to January 2026), its longest stay in this box after Altadena, on ground the
+      rover's drivers chose and reached, with the rover tilted 9.5 degrees. About 500 m south of the Altadena drill site.
+    whySourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+  targets:
+    - id: altadena
+      name: Altadena drill site
+      stop: "116_1944"
+      why: >-
+        Curiosity drilled the rock nicknamed Altadena here on 8 June 2025, in the bedrock of the boxwork area. NASA
+        says this bedrock differs from other layers of Mount Sharp and is cut by many small veins of calcium sulfate.
+        The boxwork ridges formed where groundwater left minerals in cracks.
+      whySourceUrl: "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/"
+    - id: stop-122-0
+      name: Rover stop 122_0
+      stop: "122_0"
+      why: >-
+        Curiosity stayed here 21 sols (sol 4868 to 4888, April to May 2026), about 370 m south of the crew rover, so
+        its team found enough here to stop and work.
+      whySourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+    - id: stop-125-1326
+      name: Rover stop 125_1326
+      stop: "125_1326"
+      why: >-
+        Curiosity stayed here 24 sols (sol 5045 to 5068, October to November 2026), about 120 m above the crew rover by
+        the rover's own log, on its way up Mount Sharp. The hardest walk of the three.
+      whySourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+
+# ---- What the pipeline builds --------------------------------------------------------------
+
+box:
+  # Centred on the marker position above. The pipeline works out the edges from the Mars radius.
+  widthKm: 3
+  heightKm: 3
+
+rover:
+  # Curiosity's own stops, used to check the terrain against what the rover measured.
+  file: msl_curiosity_waypoints.json
+  serverPath: raw/feeds
+  originalUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+  heightField: elev_geoid   # metres relative to the areoid, like the terrain mosaic
+  layerSource: msl          # the rover layers are named rover-stops-msl and rover-path-msl
+  photoFeed: msl            # pipeline/photos.py reads only Perseverance's feed, so this site gets no photos
+  # The rover's drives as lines, for the rover path layer. Not on the team data server; read from NASA.
+  pathFile: msl_curiosity_traverse.json
+  pathOriginalUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json"
+  # When sol 0 began at the rover (local mean solar midnight), used to turn sol numbers into Earth dates.
+  # Worked out on 15 Nov 2026 from one record of NASA's raw image feed, which gives the same instant three ways:
+  # image FRB_802661004EDR_F1161944FHAZ00337M_ was taken on sol 4564 at local mean solar time 13:00:54.273 and at
+  # 2025-06-08T14:29:15Z UTC. 4564.542301 sols of 88,775.244 s before that is this time.
+  solZeroStartUtc: "2012-08-05T13:49:59Z"
+  record:
+    mission: Mars Science Laboratory
+    instrument: "Curiosity rover: the rover team's own position for each drive"
+    agency: NASA
+    sourceUrl: "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+    credit: "NASA/JPL-Caltech"
+
+sources:
+  terrain:
+    file: MSL_Gale_DEM_Mosaic_1m_v3.tif
+    serverPath: raw/gale
+    originalUrl: "https://planetarymaps.usgs.gov/mosaic/Mars/MSL"
+    record:
+      # From the product page and PDS3 label on the team data server (raw/gale/metadata), read 15 Nov 2026. The page
+      # names 12 HiRISE stereo pairs. The earliest image, PSP_001488 (the archive calls it PSP_001488_1750), started
+      # 2006-11-20T09:55:33Z; the latest, ESP_025368_1755, started 2011-12-25T04:45:25Z (HiRISE PDS labels).
+      mission: "Mars Reconnaissance Orbiter, with Mars Express and Mars Global Surveyor"
+      instrument: "HiRISE stereo, with CTX and HRSC terrain where HiRISE stereo was lacking, tied to MOLA"
+      agency: "NASA; HRSC is ESA's"
+      productId: MSL_Gale_DEM_Mosaic_1m_v3
+      sourceUrl: "https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m"
+      doi: not found
+      acquiredFrom: "2006-11-20"
+      acquiredTo: "2011-12-25"
+      published: "2016-10-20"
+      gridSpacing: "1 m"
+      realDetail: "About 3 to 5 m where made from HiRISE stereo; far coarser where CTX or HRSC terrain fills a gap"
+      positionAccuracy: "About 100 m: tied to MOLA through HRSC, which is only as accurate as MOLA (product page). Curiosity's stops are placed on this same mosaic"
+      heightAccuracy: "About 1 m against MOLA (product page)"
+      grade: B
+      caveats:
+        - "Rocks, ledges and ripples smaller than about 3 to 5 m are not in this model, and the boxwork ridges, about 1 to 2 m tall, are smaller than that."
+        - "Where HiRISE stereo was lacking the mosaic used CTX, HRSC or MOLA terrain, which is coarser. The page does not map where."
+        - "Made from images taken between 2006 and 2011, before Curiosity reached this area."
+      credit: "NASA/JPL-Caltech/University of Arizona/ESA/DLR/FU Berlin/USGS (Calef and Parker 2016)"
+  image:
+    file: MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif
+    serverPath: raw/gale
+    originalUrl: "https://planetarymaps.usgs.gov/mosaic/Mars/MSL"
+    record:
+      # From the product page and PDS3 label on the team data server, read 15 Nov 2026; dates as for the terrain.
+      mission: "Mars Reconnaissance Orbiter, with Mars Express"
+      instrument: "HiRISE, with CTX and HRSC images where HiRISE was lacking"
+      agency: "NASA; HRSC is ESA's"
+      productId: MSL_Gale_Orthophoto_Mosaic_25cm_v3
+      sourceUrl: "https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm"
+      doi: not found
+      acquiredFrom: "2006-11-20"
+      acquiredTo: "2011-12-25"
+      published: "2016-10-20"
+      gridSpacing: "25 cm"
+      realDetail: "About 25 to 32 cm where from HiRISE; objects need to be about 1 m across to be recognised"
+      positionAccuracy: "About 100 m: tied to MOLA through HRSC (product page). Curiosity's stops are placed on this same mosaic"
+      heightAccuracy: not applicable
+      grade: B
+      caveats:
+        - "Taken between 2006 and 2011, before Curiosity reached this area. Rover tracks are not in it, and sand may have moved."
+        - "Lit by the afternoon Sun at the time of each image. Dark patches can be shadows, not dark ground."
+        - "One black-and-white band. It shows brightness, not colour."
+      credit: "NASA/JPL-Caltech/University of Arizona/USGS (Calef and Parker 2016)"

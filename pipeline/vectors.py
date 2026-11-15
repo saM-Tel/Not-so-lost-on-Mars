@@ -76,10 +76,10 @@ def write_rover_layers(folder: pathlib.Path, stop_features: list[dict], path_fea
     last_sol = max(int(f["properties"]["sol"]) for f in stop_features)
     layers = []
     for layer_id, title, file_name, product, collection, geometry, spacing, detail in (
-        ("rover-stops-m20", "Rover stops", "rover-stops.geojson", rover["file"],
+        (f"rover-stops-{rover['layerSource']}", "Rover stops", "rover-stops.geojson", rover["file"],
          rover_stops(stop_features, box, rover["heightField"]), "point",
          "One point where each drive ended", "A single position for each stop"),
-        ("rover-path-m20", "Rover path", "rover-path.geojson", rover["pathFile"],
+        (f"rover-path-{rover['layerSource']}", "Rover path", "rover-path.geojson", rover["pathFile"],
          rover_path(path_features, box), "line",
          "A line along each drive, with a point every few metres", "The line the rover logged as it drove"),
     ):

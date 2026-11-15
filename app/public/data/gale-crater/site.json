@@ -1,0 +1,164 @@
+{
+  "contractVersion": 1,
+  "builtUtc": "2026-11-15T10:17:49Z",
+  "id": "gale-crater",
+  "name": "Gale crater boxwork",
+  "place": "Boxwork on Mount Sharp, Gale crater",
+  "mission": "Curiosity",
+  "level": 1,
+  "reviewedByPerson": false,
+  "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees. Heights in metres relative to the areoid.",
+  "box": {
+    "westLonDeg": 137.3581464,
+    "eastLonDeg": 137.4089364,
+    "southLatDeg": -4.8251531,
+    "northLatDeg": -4.7745413
+  },
+  "boxSizeKm": {
+    "eastWest": 3,
+    "northSouth": 3
+  },
+  "centre": {
+    "lonEastDeg": 137.3835414,
+    "latDeg": -4.7998472
+  },
+  "terrainHeightM": {
+    "lowest": -4050.16,
+    "highest": -3346.34,
+    "atCentre": -3647.19
+  },
+  "grid": {
+    "rows": 750,
+    "cols": 752,
+    "northWestCorner": {
+      "lonEastDeg": 137.358144925,
+      "latDeg": -4.774534279
+    },
+    "cellLonDeg": 6.748241943246088e-05,
+    "cellLatDeg": 6.748241943246088e-05,
+    "cellNorthSouthM": 4.0,
+    "cellEastWestM": 3.986,
+    "cellEastWestMeasuredAtLatDeg": -4.7998472,
+    "rowOrder": "north row first; within a row, west cell first",
+    "byteOrder": "little-endian",
+    "sourceCellsPerCell": 4,
+    "slopeBaselineM": {
+      "northSouthM": 6.0,
+      "eastWestM": 5.979
+    },
+    "files": [
+      {
+        "name": "heightM",
+        "path": "grid/heightM.f32",
+        "numberType": "float32",
+        "unit": "m",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 2256000,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Mean terrain height of the 4 x 4 source cells in the routing cell, relative to the areoid."
+      },
+      {
+        "name": "slopeMaxDeg",
+        "path": "grid/slopeMaxDeg.f32",
+        "numberType": "float32",
+        "unit": "deg",
+        "noData": "NaN",
+        "cellsWithNoData": 0,
+        "bytes": 2256000,
+        "fromLayer": "terrain-hirise",
+        "meaning": "Steepest slope found among the 4 x 4 source cells in the routing cell. Each source cell's slope is measured over 6.0 m north to south and 5.979 m east to west. Use it for keep-out; for effort use the slope along the direction of travel, taken from heightM."
+      }
+    ]
+  },
+  "home": {
+    "name": "Crew rover",
+    "stop": "120_538",
+    "firstSol": 4752,
+    "lonEastDeg": 137.3809929,
+    "latDeg": -4.8080317,
+    "heightM": -3607.61,
+    "why": "Assumed for this scenario: the crew's pressurised rover parks where Curiosity itself stood for 37 sols (sol 4752 to 4788, December 2025 to January 2026), its longest stay in this box after Altadena, on ground the rover's drivers chose and reached, with the rover tilted 9.5 degrees. About 500 m south of the Altadena drill site.",
+    "whySourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "positionSource": "Curiosity waypoints file, stop 120_538, first logged on sol 4752",
+    "assumed": true
+  },
+  "targets": [
+    {
+      "id": "altadena",
+      "name": "Altadena drill site",
+      "stop": "116_1944",
+      "firstSol": 4560,
+      "lonEastDeg": 137.3835414,
+      "latDeg": -4.7998472,
+      "heightM": -3647.19,
+      "why": "Curiosity drilled the rock nicknamed Altadena here on 8 June 2025, in the bedrock of the boxwork area. NASA says this bedrock differs from other layers of Mount Sharp and is cut by many small veins of calcium sulfate. The boxwork ridges formed where groundwater left minerals in cracks.",
+      "whySourceUrl": "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/",
+      "positionSource": "Curiosity waypoints file, stop 116_1944, first logged on sol 4560",
+      "assumed": false
+    },
+    {
+      "id": "stop-122-0",
+      "name": "Rover stop 122_0",
+      "stop": "122_0",
+      "firstSol": 4868,
+      "lonEastDeg": 137.3817063,
+      "latDeg": -4.8142672,
+      "heightM": -3570.55,
+      "why": "Curiosity stayed here 21 sols (sol 4868 to 4888, April to May 2026), about 370 m south of the crew rover, so its team found enough here to stop and work.",
+      "whySourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+      "positionSource": "Curiosity waypoints file, stop 122_0, first logged on sol 4868",
+      "assumed": false
+    },
+    {
+      "id": "stop-125-1326",
+      "name": "Rover stop 125_1326",
+      "stop": "125_1326",
+      "firstSol": 5045,
+      "lonEastDeg": 137.3876138,
+      "latDeg": -4.8246648,
+      "heightM": -3487.98,
+      "why": "Curiosity stayed here 24 sols (sol 5045 to 5068, October to November 2026), about 120 m above the crew rover by the rover's own log, on its way up Mount Sharp. The hardest walk of the three.",
+      "whySourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+      "positionSource": "Curiosity waypoints file, stop 125_1326, first logged on sol 5045",
+      "assumed": false
+    }
+  ],
+  "readFrom": {
+    "terrain": "team data server",
+    "image": "team data server"
+  },
+  "files": [
+    {
+      "path": "layers.json",
+      "files": 1,
+      "bytes": 7899
+    },
+    {
+      "path": "validation.json",
+      "files": 1,
+      "bytes": 1884
+    },
+    {
+      "path": "tiles/image-hirise",
+      "files": 1969,
+      "bytes": 17000954
+    },
+    {
+      "path": "tiles/terrain-hirise",
+      "files": 65,
+      "bytes": 1714460
+    },
+    {
+      "path": "grid",
+      "files": 2,
+      "bytes": 4512000
+    },
+    {
+      "path": "vectors",
+      "files": 1,
+      "bytes": 96694
+    }
+  ],
+  "totalBytes": 23333891
+}

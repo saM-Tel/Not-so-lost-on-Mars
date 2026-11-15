@@ -130,7 +130,7 @@ def _check_build_settings(config: dict, problems: list[str]) -> bool:
                 problems.append(f"rover.{field} is missing")
         # The rover's path and stops are drawn as layers only when all of these are given too.
         if isinstance(rover, dict) and rover.get("pathFile"):
-            for field in ("pathOriginalUrl", "solZeroStartUtc", "record"):
+            for field in ("pathOriginalUrl", "solZeroStartUtc", "record", "layerSource"):
                 if not rover.get(field):
                     problems.append(f"rover.{field} is missing; it is needed to draw the rover's path and stops")
             for field in ("mission", "instrument", "agency", "sourceUrl", "credit"):

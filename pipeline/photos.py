@@ -18,6 +18,8 @@ FEED = "https://mars.nasa.gov/rss/api/"
 PAGE_SIZE = 100
 # The left navigation camera: wide views of the ground around the rover, with the mast's pointing recorded.
 INSTRUMENT = "NAVCAM_LEFT"
+# The one feed this file reads: Perseverance's. A site config names it as rover.photoFeed to get photos.
+FEED_CATEGORY = "mars2020"
 CAMERA_NAME = "Navigation Camera (left), on the rover's mast"
 MAX_PER_STOP = 6
 # Frames looking at the rover's deck or straight up say little about the ground ahead. Mast elevation is in degrees,
@@ -46,7 +48,7 @@ def fetch_feed(first_sol: int, last_sol: int, cache: pathlib.Path) -> tuple[list
     images, page = [], 0
     while True:
         query = urllib.parse.urlencode({
-            "feed": "raw_images", "category": "mars2020", "feedtype": "json", "order": "sol asc",
+            "feed": "raw_images", "category": FEED_CATEGORY, "feedtype": "json", "order": "sol asc",
             "num": PAGE_SIZE, "page": page, "search": f"|{INSTRUMENT}",
             "condition_2": f"{first_sol}:sol:gte", "condition_3": f"{last_sol}:sol:lte",
         })

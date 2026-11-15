@@ -16,7 +16,8 @@ class ScenarioError(ValueError):
     pass
 
 
-def _place(entry: dict, stops_by_id: dict[str, dict], box: sources.Box, terrain: sources.Grid, kind: str) -> dict:
+def _place(entry: dict, stops_by_id: dict[str, dict], box: sources.Box, terrain: sources.Grid, kind: str,
+           waypoints: str = "Perseverance waypoints file") -> dict:
     stop_id = str(entry.get("stop", ""))
     stop = stops_by_id.get(stop_id)
     if stop is None:
@@ -38,13 +39,15 @@ def _place(entry: dict, stops_by_id: dict[str, dict], box: sources.Box, terrain:
         "heightM": round(height, 2),
         "why": " ".join(str(entry["why"]).split()),
         "whySourceUrl": entry["whySourceUrl"],
-        "positionSource": f"Perseverance waypoints file, stop {stop_id}, first logged on sol {int(stop['sol'])}",
+        "positionSource": f"{waypoints}, stop {stop_id}, first logged on sol {int(stop['sol'])}",
         "assumed": bool(entry.get("assumed", False)),
     }
 
 
-def resolve(scenario: dict | None, stops: list[dict], box: sources.Box, terrain: sources.Grid) -> dict:
-    """Home and targets for site.json, or an empty dict when the config has no scenario."""
+def resolve(scenario: dict | None, stops: list[dict], box: sources.Box, terrain: sources.Grid,
+            waypoints: str = "Perseverance waypoints file") -> dict:
+    """Home and targets for site.json, or an empty dict when the config has no scenario. `waypoints` names the rover's
+    waypoints file in each position's source, such as "Curiosity waypoints file"."""
     if not scenario:
         return {}
     # The waypoints file can log one stop id more than once; the first time it was logged is kept.
@@ -53,8 +56,8 @@ def resolve(scenario: dict | None, stops: list[dict], box: sources.Box, terrain:
         stops_by_id.setdefault(str(stop.get("RMC")), stop)
     out = {}
     if scenario.get("home"):
-        out["home"] = _place(scenario["home"], stops_by_id, box, terrain, "home")
-    targets = [_place(entry, stops_by_id, box, terrain, "target") for entry in scenario.get("targets", [])]
+        out["home"] = _place(scenario["home"], stops_by_id, box, terrain, "home", waypoints)
+    targets = [_place(entry, stops_by_id, box, terrain, "target", waypoints) for entry in scenario.get("targets", [])]
     ids = [target.get("id") for target in targets]
     if any(not i for i in ids) or len(set(ids)) != len(ids):
         raise ScenarioError("every scenario target needs its own id")

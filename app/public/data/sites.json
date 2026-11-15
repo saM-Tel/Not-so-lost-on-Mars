@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-14T20:57:00Z",
+  "builtUtc": "2026-11-15T10:17:49Z",
   "convention": "East-positive longitude from -180 to 180 and planetocentric latitude, in degrees.",
   "levels": {
     "1": {
@@ -245,19 +245,21 @@
     },
     {
       "id": "gale-crater",
-      "name": "Gale crater",
-      "place": "Gale crater",
+      "name": "Gale crater boxwork",
+      "place": "Boxwork on Mount Sharp, Gale crater",
       "mission": "Curiosity",
       "missionYears": "2012 to now",
       "level": 1,
-      "built": false,
+      "built": true,
       "reviewedByPerson": false,
-      "lonEastDeg": 137.441633,
-      "latDeg": -4.589467,
+      "lonEastDeg": 137.383541,
+      "latDeg": -4.799847,
       "position": {
         "what": "A single point taken from the source.",
-        "source": "Curiosity waypoints file, first logged stop (RMC 2_0, sol 3), before it had driven",
-        "sourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+        "source": "Curiosity waypoints file, stop RMC 116_1944, first logged on sol 4560",
+        "sourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+        "why": "NASA says Curiosity drilled the rock nicknamed Altadena on 8 June 2025, in the area of the boxwork patterns on Mount Sharp. NASA's raw image feed logs images taken on 8 June 2025 as sol 4564, and the rover's log has it at this stop from sol 4560 until it next moved on sol 4571. NASA's blog for sols 4568 and 4569 has it still at the drill site.",
+        "whySourceUrl": "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/"
       },
       "landing": {
         "asPublished": "4.589467 S, 137.441633 E: the rover's first logged stop (RMC 2_0, sol 3)",
@@ -265,12 +267,14 @@
         "sourceUrl": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
       },
       "data": [
-        "Image mosaic at 25 cm and terrain mosaic on a 1 m grid from HiRISE (USGS)",
-        "Curiosity's own stops, 1,388 logged to sol 5070",
+        "Image mosaic at 25 cm and terrain mosaic on a 1 m grid, mostly from HiRISE (USGS, Calef and Parker 2016)",
+        "Curiosity's own stops, 1,388 logged to sol 5070, with tilt and height at each",
         "Radiation and daily weather measured on the ground by Curiosity"
       ],
       "problems": [
-        "Not built yet. The rover is now far from where it landed; the box to build has not been chosen."
+        "Home is an assumption for this scenario: the crew rover parks at a rover stop Curiosity reached.",
+        "The mosaics were tied to MOLA through HRSC, so their absolute position is good to about 100 m. Curiosity's stops are placed on the same mosaic, so routes and stops agree with each other.",
+        "Where HiRISE stereo was lacking, the terrain mosaic used CTX or HRSC terrain, which is far coarser. The build's check against the rover's tilt shows how well the slope holds here."
       ]
     },
     {
