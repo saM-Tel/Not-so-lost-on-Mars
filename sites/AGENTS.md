@@ -47,6 +47,8 @@ A position is given in one of two ways, both copied digit for digit from the sou
 
 A config may have `scenario`: `home` and `targets`, each naming a rover `stop` id (looked up in the waypoints file at build time, so no coordinate is typed), a `name`, a `why` and a `whySourceUrl`; home may be `assumed: true`. Targets need an `id`. `bright-angel.yaml` and `gale-crater.yaml` have one.
 
+A config may also have `approach.ctxShiftM`: `east` and `north` in metres and `measured` (how), to move the uncontrolled CTX rings into line with the site's HiRISE map. Chryse, Columbia Hills, Meridiani and Elysium have one (15 Nov, from `pipeline/check_alignment.py`).
+
 A config may also have `approach.near`: a file for the near ring of approach imagery, with the same fields as a source (`file`, `serverPath`, `originalUrl`, `record`). Without it the near ring comes from the CTX global mosaic. `bright-angel.yaml` names the USGS Jezero CTX mosaic, which the HiRISE map was aligned to.
 
 After changing a config, run `build_globe.py --only sites` in `pipeline/` to rewrite `app/public/data/sites.json`.

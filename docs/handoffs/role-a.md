@@ -7,6 +7,7 @@ Done about 09:35 (32a6118, pushed): typical weather at Bright Angel from MEDA, b
 Done about 10:30 (5b3651a, pushed): Gale built as level 1 on the boxwork of Mount Sharp (REVIEW_QUEUE 8, Done). `sites/gale-crater.yaml` has a build section and scenario; `photos.py`, `vectors.py`, `scenario.py`, `config.py` and `build_site.py` no longer assume Perseverance (photoFeed, layerSource, the rover's own waypoints name). `build_approach.py --site gale-crater` rebuilt the rings round the new marker; `build_globe.py` rewrote sites.json.
 Not done: batch 3 RAD storm data; minerals; rerunning `build_orbiters.py` (the saved predictions end 30 Nov; the app replays them after that, labelled).
 Broken or risky: nothing new.
+Done about 11:15 (c6755cf, pushed): every site checked for alignment and its 3D mesh with the new `pipeline/check_alignment.py`; CTX rings moved into line at four level 2 sites (`approach.ctxShiftM`, `build_approach.py`). Details in REVIEW_QUEUE, Done. Still open: confirm Arctic plain and Meridiani's image on their terrain by eye.
 Next: leave the pipeline as it is unless something breaks; after the freeze, only fixes.
 Files: pipeline/build_orbiters.py, meda.py (new), test_meda.py (new), weather.py, mars.py, test_mars.py; app/public/data/weather/bright-angel.json
 Other roles need to know: nothing.

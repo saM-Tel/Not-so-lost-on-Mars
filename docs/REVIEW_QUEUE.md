@@ -17,7 +17,7 @@ Team owner with Claude Code. Three read-only agents read the code written on Sat
 - S20 walk-through (fixed: pixel ratio, "Home not known", N 000 for 359.6 degrees, a walk too short to play, the visor status rewritten only on change): the tether moves in 5-minute jumps while the readout is exact; route mode shows a stale slope; walk-through readouts have no range or grade (they now say modelled, predicted or computed; CONFIDENCE).
 - S21 orbit panel: the "now" start goes stale while the panel stays open; the globe track `setData` runs every second while hidden; a gap at the 180° meridian and bent tracks above 85° latitude (cosmetic); an empty orbiter list shows "no link" instead of "no prediction".
 - S22 photos (`data/photos.ts` line 89): a stop with 3 photos gets two neighbouring views, not two spread out.
-- S24 never queued from the 14 Nov review: the tether's dimming stops at the box edge (a dark square against the rings); walls at the edge of the seven level 2 sites' terrain; no performance profile taken while tilting at Bright Angel; `zoomSelect.ts` and `scaleBar.ts` never reviewed.
+- S24 never queued from the 14 Nov review: the tether's dimming stops at the box edge (a dark square against the rings); walls at the edge of the level 2 sites' terrain (checked 15 Nov: none, the edges are eased); no performance profile taken while tilting at Bright Angel; `zoomSelect.ts` and `scaleBar.ts` never reviewed.
 
 ### From the app review of 14 Nov, about 16:45 (items R1 to R20)
 
@@ -70,9 +70,9 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **F9:** one route against the rover is now shown in the route card as distance driven against distance walked between home and a target (both rover stops). A path-shape comparison is not built.
 
 
-### 9. Level 2 sites: image borrowed georeferencing (medium, check by eye)
-- **Where:** the seven level 2 configs, `georeferenceFrom: terrain`.
-- **What:** GDAL reads the 1 m ortho JP2's georeferencing differently from its terrain model's label (for Spirit it reports latitude of origin -10 where the terrain says true scale at -10). The two files have the same size and scale, so the image uses the terrain file's. Check in the app that ridges in the image line up with the 3D terrain at each site.
+### 9. Level 2 sites: image borrowed georeferencing (medium). Checked 15 Nov, see Done; Arctic plain and Meridiani still unconfirmed
+- Checked 15 Nov with `pipeline/check_alignment.py` on the published tiles. Image against its own terrain (brightness fitted to the terrain's slopes, best of shifts up to 6 pixels): Bright Angel, Gale, Ares Vallis, Chryse, Columbia Hills, Utopia within 1 pixel (2 to 3 m), Elysium 2 pixels (about 5 m), all under one 4 m routing cell. Arctic plain and Meridiani could not be judged: their ground is too flat for the fit (0.05 and 0.02). Terrain mesh at every site: no holes, no spikes over 15 m, the outer edge eased to the box's lowest height (no walls), no missing tiles.
+- **Still open:** confirm Arctic plain and Meridiani by eye in 3D (ridges in the image on ridges in the terrain).
 
 ### 7. Geology layer blocked: no vector reader (high, F2 must-have). RESOLVED in 12b95da
 - **Resolved:** the team owner installed fiona 1.10.1 at 20:15 (`uv pip`, as this laptop's environment has no pip). `build_geology.py` needed two fixes: the unit layer is `GeoUnits_v1`, and polygons are now cut to the 12 km square (10.9 MB before, 1.2 MB after). Built and shipped at Bright Angel: 75 polygons in 10 units. Not yet looked at in a browser. Text below kept for the record.
@@ -112,6 +112,20 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **Check:** record a performance profile while spinning the globe and while zooming in. If it shows, add rings only for the site in focus.
 
 ## Done
+
+### Site alignment and the 3D mesh, and the CTX rings moved at four sites: checked and fixed Sun 15 Nov, about 11:15, commit c6755cf, team owner with Claude Code
+
+- At the owner's request: are the sites aligned, layered well and meshed properly in 3D?
+- **Image against terrain, and the mesh:** Checked 15 Nov with `pipeline/check_alignment.py` on the published tiles. Image against its own terrain (brightness fitted to the terrain's slopes, best of shifts up to 6 pixels): Bright Angel, Gale, Ares Vallis, Chryse, Columbia Hills, Utopia within 1 pixel (2 to 3 m), Elysium 2 pixels (about 5 m), all under one 4 m routing cell. Arctic plain and Meridiani could not be judged: their ground is too flat for the fit (0.05 and 0.02). Terrain mesh at every site: no holes, no spikes over 15 m, the outer edge eased to the box's lowest height (no walls), no missing tiles.
+- **Site against the CTX ring round it:** the CTX global mosaic (Caltech, served by Esri) is uncontrolled, while the HiRISE terrain models are tied to MOLA. Matching each site image against its near ring (high-passed images, best of shifts up to 400 m) found clear offsets at four sites. The CTX rings there are now moved by that much (`approach.ctxShiftM` in the site config, applied in `build_approach.py`, and stated in each ring's processing and caveats):
+  - Chryse: 10 m west, 150 m north (correlation 0.49);
+  - Columbia Hills: 210 m west, 175 m north (0.46);
+  - Meridiani: 80 m east, 80 m south (0.47);
+  - Elysium: 25 m west, 130 m north (0.29).
+  Each was measured at zoom 13 and refined at zoom 14. After the rebuild each matches at zero shift (0.49, 0.54, 0.46, 0.33).
+- **Bright Angel** matches its ring exactly (0.77): its ring is the USGS CTX mosaic its HiRISE map was aligned to.
+- **No clear match either way (0.03 to 0.16), left as they are:** Ares Vallis, Gale and Utopia. Arctic plain's near ring has no tiles at the zooms compared. A zoom-15 screenshot of each box corner showed no visible break, which is weak evidence.
+- **How checked:** pytest 62 pass; the check rerun after the rebuild.
 
 ### Item 8 (Gale not built) and the overlap of the forecast and the link to Earth: fixed Sun 15 Nov, about 10:30, commits 5b3651a (Gale) and bc4cb24 (overlap), team owner with Claude Code
 

@@ -70,6 +70,7 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Shadows in the image mistaken for dark material or hazards | The image has fixed afternoon lighting. Our computed shadows are a separate overlay |
 | Old imagery treated as today's surface | State the acquisition date; ripples move; rover tracks are absent |
 | One slope number used for everything | Use slope along the direction of travel for effort and the steepest slope for keep-out. A level path across a steep side-slope is still a hazard |
+| Trusting the CTX global mosaic's position round a HiRISE site | It is uncontrolled: at four landing sites it sat 80 to 270 m off the MOLA-tied HiRISE map. Measure with `pipeline/check_alignment.py` and set `approach.ctxShiftM` |
 
 ## 6. Routing
 
