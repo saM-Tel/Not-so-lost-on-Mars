@@ -64,4 +64,11 @@ export interface TetherFields {
   searchMs: number;
 }
 
-export type Reply = Ready | TetherFields | RouteAnswer | { type: 'error'; message: string };
+/** A failure in the worker. `id` names the route request it happened in; without it, the start (or everything) failed. */
+export interface WorkerError {
+  type: 'error';
+  message: string;
+  id?: number;
+}
+
+export type Reply = Ready | TetherFields | RouteAnswer | WorkerError;

@@ -4,6 +4,7 @@
 // OUT:     Messages with keep-out cells, routes and statistics.
 // USED BY: src/route/client.ts.
 // RULES:   No page access. Typed arrays are transferred, not copied. A route answers in under 3 seconds.
+//          An error while answering a route carries that request's id.
 //          The route is chosen on the expected case; all three cases are reported along it.
 // TRAPS:   PITFALLS 6.
 // OWNER:   Role B.
@@ -104,6 +105,8 @@ self.onmessage = (event: MessageEvent<Request>): void => {
       ...(stops.length > 1 ? { stops: stopIndex.map((lineIndex) => ({ position: cellCentre(grid, cells[lineIndex]!), lineIndex })) } : {}),
     });
   } catch (error) {
-    post({ type: 'error', message: error instanceof Error ? error.message : String(error) });
+    // A failure while answering a route names that request, so the page can settle its promise.
+    const message = error instanceof Error ? error.message : String(error);
+    post(request.type === 'route' ? { type: 'error', message, id: request.id } : { type: 'error', message });
   }
 };

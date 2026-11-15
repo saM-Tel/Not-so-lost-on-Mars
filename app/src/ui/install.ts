@@ -1,7 +1,8 @@
 // WHAT:    Makes the built site an installable app: registers the service worker that keeps files on the device, and shows
 //          an "Install app" button when the browser offers installation (F8).
 // IN:      The page; the browser's install offer.
-// OUT:     A registered service worker (built site only); a button in the page corner while installing is possible.
+// OUT:     A registered service worker (built site only), and one reload when a new deploy's worker takes over a page
+//          that already had one; a button in the page corner while installing is possible.
 // USED BY: src/main.ts.
 // RULES:   Never registers in the dev server, so development always sees fresh files. Nothing here is needed for the app
 //          to work: if the browser has no service workers the site behaves as before.
@@ -18,6 +19,16 @@ interface InstallOffer extends Event {
 
 export function setUpInstall(): void {
   if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+    // A new deploy's service worker takes over open pages at once (pwa/sw.js) and drops the old build's files, so a page
+    // still running the old build reloads once to load the new one, rather than failing on a removed file later.
+    // Nothing happens on the first install: the page had no worker before.
+    const hadWorker = navigator.serviceWorker.controller !== null;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadWorker || reloaded) return;
+      reloaded = true;
+      window.location.reload();
+    });
     window.addEventListener('load', () => {
       navigator.serviceWorker.register(new URL('sw.js', document.baseURI)).catch((error: unknown) => {
         console.warn('The app could not keep files on this device:', error);

@@ -39,7 +39,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `route.test.ts` | Tests for `cost.ts`, `grid.ts`, `search.ts` and `stats.ts` on made-up grids, with expected values worked by hand | |
 | `messages.ts` | Types of the messages between the page and the route worker | F3 |
 | `worker.ts` | Web Worker entry: receives the grids, searches from and to home once, then answers each route request from those two searches. After that it sends the time to walk home from every cell, for the cautious and expected cases | F3, F4 |
-| `client.ts` | Page-side wrapper that starts the route worker and turns its messages into promises | F3, F4 |
+| `client.ts` | Page-side wrapper that starts the route worker and turns its messages into promises; a worker error rejects the request it names, or every waiting one | F3, F4 |
+| `client.test.ts` | Tests for `client.ts` with a fake worker: answers and errors reach the right promise | |
 
 ## Known issues
 

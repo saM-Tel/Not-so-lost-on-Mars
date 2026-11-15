@@ -62,7 +62,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `package.json` | Dependencies and the commands above | |
 | `tsconfig.json` | TypeScript settings: strict, no output | |
 | `vite.config.ts` | Build settings; relative base path for GitHub Pages; a small plugin that writes the service worker into the build with its version and the files to keep at install | F8 |
-| `pwa/sw.js` | The service worker template: keeps the app and the map files already seen on the device; live NASA feeds always go to the network | F8 |
+| `pwa/sw.js` | The service worker template: keeps the app and the map files already seen on the device; site data other than tiles is fetched network-first so a deploy's files never mix; a new version takes over open pages at once; live NASA feeds always go to the network | F8 |
 | `pwa/make_icons.py` | Draws the PNG app icons from simple shapes, the same as `public/icons/icon.svg`. Run once after changing the icon | F8 |
 | `public/manifest.webmanifest`, `public/icons/` | What makes the site installable: name, colours and icons | F8 |
 | `run-tests.mjs` | Starts Vitest from a folder path with a capital drive letter; used by `npm test` and `npm run check` | |
@@ -76,7 +76,7 @@ Add a row when you add a file. Remove it when you delete one.
 
 ## Known issues
 
-- The service worker runs only in the built site (`npm run build`, then `npm run preview`, or the public link), never in `npm run dev`. To see a change on a device that has the app installed, close every window of it and open it again: a new version takes over only when no window still uses the old one.
+- The service worker runs only in the built site (`npm run build`, then `npm run preview`, or the public link), never in `npm run dev`. A new version takes over open windows as soon as it has installed; reload a window that was open before a deploy if it shows an error about a missing file.
 
 - Tests sit beside the file they test, as `<name>.test.ts`.
 - On Windows, running `npx vitest` directly fails on every test with "Cannot read properties of undefined (reading 'config')" when the terminal's folder is spelled with a lowercase drive letter (`c:\...`), as VS Code's terminal often spells it. Use `npm test` or `npm run check`; they go through `run-tests.mjs`, which avoids it.
