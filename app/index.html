@@ -4,7 +4,8 @@ WHAT:    The single page of the app. Holds the map element and loads src/main.ts
 IN:      Nothing.
 OUT:     The page.
 USED BY: The browser; Vite builds from this file.
-RULES:   Addresses are relative, because the site is served under the repository name.
+RULES:   Addresses are relative, because the site is served under the repository name. AI use is stated in the
+         metadata below, as the Project Submission Guide asks; the page also says it on screen (sitePicker.ts, mapView.ts).
 TRAPS:   PITFALLS 10, 11.
 OWNER:   Role B.
 -->
@@ -15,6 +16,9 @@ OWNER:   Role B.
     <title>Tether: not so lost on Mars</title>
     <meta name="description" content="Plan a walk on Mars for a suited astronaut and see how far you can go and still get home." />
     <meta name="theme-color" content="#07080c" />
+    <!-- AI use, stated as the Project Submission Guide asks: in metadata here, and in text on the page. -->
+    <meta name="generator" content="Written with Claude Code (Anthropic), an AI coding assistant, under the team's direction" />
+    <meta name="ai-assistance" content="Most of this app's code, tests, data-processing code and documentation were written with Claude Code (Anthropic), an AI coding assistant, under the team's direction. Every session is logged in docs/AI_USE.md. No AI-generated images, video or audio are used." />
     <!-- The manifest and the service worker (src/ui/install.ts) make the site installable as an app. -->
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />

@@ -110,8 +110,9 @@ export function createGlobeMap(options: GlobeMapOptions): MapLibreMap {
     // Phone and high-density laptop screens report 2.5 to 3 device pixels per CSS pixel. Drawing the globe, the
     // 3D terrain and every overlay at that density costs up to twice the work of 2 and looks no sharper on a map.
     pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-    // Credit stays written out in full; it is never folded away behind a button.
-    attributionControl: { compact: false },
+    // Credit stays written out in full; it is never folded away behind a button. It also says AI was used to write
+    // the app, so the statement is on screen in every view (Project Submission Guide).
+    attributionControl: { compact: false, customAttribution: 'App code written with an AI assistant (Claude Code)' },
   });
   // Zoom and compass only. MapLibre's scale control is left out on purpose: it assumes Earth.
   map.addControl(new NavigationControl({ visualizePitch: true }), 'top-right');

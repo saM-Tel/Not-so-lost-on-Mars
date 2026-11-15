@@ -78,9 +78,17 @@ export function createSitePicker(options: SitePickerOptions): SitePicker {
   panel.setAttribute('aria-label', 'Landing sites');
 
   const header = el('header', 'panel__header');
+  // AI use is stated on screen, as the Project Submission Guide asks; the metadata is in index.html.
+  const aiNote = el('p', 'panel__ai', 'Built with an AI coding assistant (Claude Code) under the team\'s direction. No AI-made images. ');
+  const aiLink = el('a', undefined, 'How we used AI');
+  aiLink.href = 'https://github.com/saM-Tel/Not-so-lost-on-Mars#how-ai-was-used';
+  aiLink.target = '_blank';
+  aiLink.rel = 'noopener';
+  aiNote.append(aiLink);
   header.append(
     el('h1', undefined, 'Tether'),
     el('p', 'panel__line', 'Plan a walk on Mars and know you can get home. Pick a landing site to begin.'),
+    aiNote,
   );
   const body = el('div', 'panel__body');
   panel.append(header, body);
