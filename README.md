@@ -1,5 +1,9 @@
 # Tether: not so lost on Mars
 
+
+https://github.com/user-attachments/assets/f943c076-83a8-4623-aa81-6df88cf31c75
+
+
 Tether is a map for an astronaut on foot on Mars. It answers one question: **can I do this science and still get home safely?**
 
 **Open it:** https://sam-tel.github.io/Not-so-lost-on-Mars/
