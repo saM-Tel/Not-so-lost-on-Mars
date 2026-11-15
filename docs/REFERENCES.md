@@ -115,3 +115,4 @@ Add each image used in the app, video or project page with its credit line.
 | Image | Where it is used | Credit line |
 |---|---|---|
 | Viking colour mosaic of Mars (see Data above) | The globe in the app | NASA Viking Orbiter; mosaic by USGS Astrogeology Science Center; colour by NASA Ames |
+| Demo video, `docs/demo/tether-demo-draft-1.mp4`: a screen recording of the live app | The demo field of the submission (draft) | Shows the imagery above with the app's own credit line; see docs/demo/README.md |

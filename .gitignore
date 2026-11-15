@@ -34,3 +34,5 @@ Thumbs.db
 *.mp4
 *.mov
 *.mkv
+# ...except the finished demo video, which is kept with its note
+!docs/demo/*.mp4
