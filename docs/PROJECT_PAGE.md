@@ -45,7 +45,7 @@ https://sam-tel.github.io/Not-so-lost-on-Mars/#site=bright-angel
 
 It opens on the hero walk. The plain link, https://sam-tel.github.io/Not-so-lost-on-Mars/ , opens on the globe. Both need no login.
 
-**[FILL]** Add the repository address if the team makes it public: https://github.com/sam-tel/Not-so-lost-on-Mars
+Repository (public; checked Sun 15 Nov 14:10): https://github.com/saM-Tel/Not-so-lost-on-Mars
 
 ## Detailed Project Description
 
@@ -74,11 +74,41 @@ Perseverance stopped 116 times inside the Bright Angel box and logged how far it
 
 ### How it answers the challenge
 
-**[FILL]** Paste the table "How it answers the challenge" from the README. It maps each line of the challenge statement to what Tether does.
+The challenge asks for "a layered, integrated view of a location or route on the Martian surface that pulls together data from multiple NASA science missions and could help a human explorer plan and carry out a successful Marswalk". Line by line:
+
+| The challenge asks for | What Tether does |
+|---|---|
+| A map, tool or interface a Mars astronaut could use, with NASA data and tools | A planner for the habitat, a field tablet view and a helmet display concept, all from NASA data |
+| Science goals, and a location to explore | Bright Angel, where Perseverance found the Cheyava Falls rock with possible signs of past life; and the boxwork on Mount Sharp, the challenge's own example, where Curiosity drilled Altadena in 2025. Targets are real rover stops, each with its reason and source |
+| Data from multiple NASA science missions | Mars Reconnaissance Orbiter (HiRISE, CTX), Mars Odyssey (THEMIS), Perseverance, Curiosity, Viking, and NASA's space weather, Deep Space Network and JPL Horizons services |
+| At least three kinds of data, layered for context | At Bright Angel: optical, topographic (terrain and slope), thermal (night infrared), geologic, radiation, atmospheric (weather by hour) and space weather, each with a card saying who measured it, when and how far to trust it |
+| Astronaut safety first; space weather and radiation | The tether: how far you can go and still walk home in time, checked at every point of the walk. Radiation dose for the walk with a range, NASA's latest solar storm forecast, and a storm drill |
+| Spacesuits and loads change how people move | Walking speed and energy for a suited person in Mars gravity, in three cases from published suit masses and speeds; a slope limit from NASA's Artemis requirement |
+| A route map that avoids obstacles such as large rock formations | The least-effort route out and a separate way home, never on ground steeper than the suit's limit. Features larger than about 4 m show up as steep ground; smaller rocks are not seen, and the app says so |
+| A display inside the habitat, a tablet, or a helmet visor | All three, and a first-person walk-through under a simulated visor with the arrow and time home |
+| Rover photos, so the astronaut knows what to expect | Real Perseverance photos taken within 30 m of the planned route, each with its date and credit |
+| Rovers carrying crew and tools, or astronauts in pairs | The crew rover can be driven to a new spot and becomes home for every walk. Pairs are not modelled |
+| Updates on current conditions | NASA's live solar storm forecast and the live link to Earth. Surface weather is typical for the season, from past Mars years, not live |
+
+(Copied from the README on Sun 15 Nov 14:10. If the README changes, copy it again.)
 
 ### What it does not do yet
 
-**[FILL]** Copy the list under "What it does not do yet" in the README at the time of submitting. It is kept there so it stays current.
+We would rather list these than hide them.
+
+- **Nobody has walked on Mars.** Time and energy come from a model built on Apollo data and tests on Earth, applied to Mars gravity. They are grade C, and the app says so.
+- **Home is an assumption.** The crew's rover parks at a stop Perseverance itself used for 16 sols; you can move it.
+- **The tether is a time limit only.** It does not yet budget oxygen or energy, and takes no reserve.
+- **Loose sand and small rocks are not counted.** The terrain cannot show anything smaller than about 3 to 5 m.
+- **Radiation is the everyday background.** A solar storm can add far more in a few hours and is not in the dose figure; the storm drill shows how much.
+- **Weather at Jezero is typical, not live.** It is the spread of the same season in past Mars years, measured where the rover was then, a few kilometres from Bright Angel. Its temperature is the one inside MEDA's humidity sensor, which follows the air but is not an air temperature reading. Wind data is sparse: the wind sensors were damaged by wind-blown grains in 2022.
+- **Photos are not sorted by the way they face.**
+- **The seven other maps are automatic.** One terrain strip each, not checked on the ground or by a person.
+- **Gale is less sure than Bright Angel.** Its mosaics are tied to Mars's global laser map, good to about 100 m in absolute position (Curiosity's stops sit on the same mosaic, so they agree with each other). Its slope check is weaker (typical 2.3 degrees, 9 in 10 within 6.6 degrees, correlation 0.49, over 285 stops). It has no rover photos, because our photo index reads only Perseverance's feed, and no drive lines, because NASA's Curiosity path file gives no sol numbers to date them. The boxwork ridges themselves, about 1 to 2 m tall, are smaller than the terrain can show.
+- **Orbiter predictions end.** They were saved from JPL Horizons on 14 November and end on 30 November 2026, where MRO's own prediction ends. After that the app replays the saved window and says so. The elevation a relay link needs and what counts as overhead for a camera are assumed (grade D); we found no published figure.
+- **The walk-through is a demonstration, not a game.** It uses the same walking model as the route card and the same tether, with no score.
+
+(Copied from the README on Sun 15 Nov 14:10. If the README changes, copy it again.)
 
 ### Why it matters
 
@@ -124,7 +154,70 @@ No AI-generated images, video or audio are used anywhere in the app, the video o
 
 - **ESA:** Mars Express and the ExoMars Trace Gas Orbiter trajectories, from the ESA navigation team through JPL Horizons; HRSC terrain and images from Mars Express inside the USGS Gale mosaics.
 - **Spain's Centro de Astrobiología (CSIC-INTA):** partner on Curiosity's REMS and Perseverance's MEDA instruments.
-- **Papers, data products, software and images:** **[FILL]** Paste the full list from [REFERENCES.md](REFERENCES.md) at the time of submitting, with each software licence from the README. The terms say every source must be cited, even open-source ones. A team that does not cite them can lose an award.
+- **Papers, data products, software and images:** see below.
+
+Drafted on Sun 15 Nov from [REFERENCES.md](REFERENCES.md) and the README's licence table, keeping only what the app, the pipeline or this page uses. Paste the text between the lines into the form.
+
+---
+
+**Imagery and terrain**
+
+- Fergason, R. L., and others, 2020. Mars 2020 Terrain Relative Navigation HiRISE orthorectified image mosaic (25 cm) and DTM mosaic (1 m), Jezero crater. USGS Astrogeology Science Center. https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_orthorectified_image_mosaic and https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic. Credit: NASA/JPL-Caltech/University of Arizona/USGS.
+- Fergason, R. L., Galuszka, D. M., and Hare, T. M., 2020. Context Camera orthorectified image mosaic and DTM for Mars 2020 Terrain Relative Navigation. USGS. doi:10.5066/P9GV1ND3. https://planetarymaps.usgs.gov/mosaic/mars2020_trn/CTX/
+- Calef, F. J., III, and Parker, T., 2016. MSL Gale Merged Orthophoto Mosaic (25 cm) and Merged DEM (1 m). PDS Annex, USGS Astrogeology Science Center. https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm and https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m. Credit: NASA/JPL-Caltech/University of Arizona/ESA/DLR/FU Berlin/USGS.
+- HiRISE image labels for PSP_001488_1750 and ESP_025368_1755 (dates of the Gale source images). University of Arizona. https://hirise-pds.lpl.arizona.edu/PDS/RDR/
+- HiRISE digital terrain models and ortho images for seven landing sites (Viking 1 and 2, Pathfinder, Spirit, Opportunity, Phoenix, InSight). University of Arizona. https://hirise.lpl.arizona.edu/PDS/DTM/
+- Global CTX mosaic, beta01. The Murray Lab, Caltech; served by Esri (OnMars CTX). Credit: NASA/JPL/MSSS/The Murray Lab. https://astro.arcgis.com/arcgis/rest/services/OnMars/CTX/MapServer. Described in Dickson, J. L., and others, 2024, Earth and Space Science, doi:10.1029/2024EA003555.
+- Mars Viking Colorized Global Mosaic 232 m (MDIM 2.1). USGS Astrogeology Science Center, 2009, read through NASA Mars Trek. Credit: NASA Viking Orbiter; mosaic by USGS; colour by NASA Ames. https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m
+- Sun, V. Z., and Stack, K. M., 2020. Geologic map of Jezero crater and the Nili Planum region, Mars. USGS Scientific Investigations Map 3464. doi:10.3133/sim3464. Also the source of the THEMIS night-time infrared mosaic (USGS, October 2018; credit NASA/JPL-Caltech/Arizona State University).
+
+**Rover and lander data**
+
+- Perseverance stops and drives (Mars 2020 mission location files). NASA/JPL-Caltech. https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json and M20_traverse.json
+- Perseverance raw images (navigation camera). NASA/JPL-Caltech. https://mars.nasa.gov/mars2020/multimedia/raw-images/
+- Curiosity stops (MSL mission location file). NASA/JPL-Caltech. https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json
+- Curiosity raw image record FRB_802661004EDR_F1161944FHAZ00337M_ (Curiosity's sol clock). NASA/JPL-Caltech. https://mars.nasa.gov/api/v1/raw_image_items/
+- Curiosity REMS daily weather. NASA/JPL-Caltech/CAB (CSIC-INTA). https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json
+- Mars 2020 MEDA derived environment data, PDS Atmospheres Node. NASA/JPL-Caltech/CAB (CSIC-INTA). https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/
+- NASA NSSDCA spacecraft catalogue (published landing positions). https://nssdc.gsfc.nasa.gov/nmc/
+
+**Space weather, links and orbits**
+
+- NASA CCMC DONKI notifications, Moon to Mars Space Weather Analysis Office, read through https://api.nasa.gov/. https://ccmc.gsfc.nasa.gov/tools/DONKI/
+- NASA Deep Space Network Now. https://eyes.nasa.gov/dsn/dsn.html (feed https://eyes.nasa.gov/dsn/data/dsn.xml)
+- JPL Horizons, NASA JPL Solar System Dynamics: predicted positions of MRO, Mars Odyssey, Mars Express and TGO (trajectories from the NASA and ESA navigation teams). https://ssd.jpl.nasa.gov/horizons/
+- Mission pages for the orbiters' cameras and relay roles: NASA MRO https://science.nasa.gov/mission/mars-reconnaissance-orbiter/ ; NASA Mars Odyssey https://science.nasa.gov/mission/odyssey/ ; ESA Mars Express https://www.esa.int/Science_Exploration/Space_Science/Mars_Express ; ESA ExoMars https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars
+
+**Science and engineering**
+
+- Hassler, D. M., and others, 2014. Mars' surface radiation environment measured with the Mars Science Laboratory's Curiosity rover. Science 343. https://ntrs.nasa.gov/citations/20180007641
+- Guo, J., and others, 2015. Modeling the variations of dose rate measured by RAD during the first MSL Martian year: 2012-2014. Astrophysical Journal. https://arxiv.org/abs/1507.03473
+- NASA/JPL, 10 June 2024. NASA watches Mars light up during epic solar storm. https://www.jpl.nasa.gov/news/nasa-watches-mars-light-up-during-epic-solar-storm/
+- Ogilvie, R., Swartout, B., Hoffmann, B., McFarland, S., and Hickox, L., 2026. Mars Spacesuit Mass Requirements. ICES-2026-127, NASA Johnson Space Center. https://ntrs.nasa.gov/citations/20260003038
+- Ortiz, L., 2025. Artemis Human Landing System Overview. NASA, 2025 International Space Apps Challenge. https://ntrs.nasa.gov/citations/20250009323
+- Marquez, J. J., and Cummings, M. L., 2008, and Santee, W. R., and others, 2001: the walking speed and energy equations, as coded in pextant, the open-source SEXTANT traverse planner (MIT licence). https://github.com/norheim/pextant
+- Weir, J. B. de V., 1949. New methods for calculating metabolic rate with special reference to protein metabolism. Journal of Physiology 109, 1-9. doi:10.1113/jphysiol.1949.sp004363
+- Allison, M., and McEwen, M., 2000. A post-Pathfinder evaluation of areocentric solar coordinates. Planetary and Space Science 48, 215-235; the Mars24 algorithm, NASA GISS. https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+
+**Context for the hero sites**
+
+- NASA, 25 July 2024. NASA's Perseverance rover scientists find intriguing Mars rock (Cheyava Falls). https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/
+- NASA, 23 June 2025. NASA's Curiosity Mars rover starts unpacking boxwork formations. https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/
+- NASA Curiosity blog, sols 4568-4569, 13 June 2025. https://science.nasa.gov/blog/curiosity-blog-sols-4568-4569-a-close-look-at-the-altadena-drill-hole-and-tailings/
+- NASA/JPL, 23 Feb 2026. NASA's Curiosity rover sees Martian 'spiderwebs' up close. https://www.jpl.nasa.gov/news/nasas-curiosity-rover-sees-martian-spiderwebs-up-close/
+
+**Software and its licences**
+
+- MapLibre GL JS 6.18 (BSD-3-Clause), Vite 8.3 (MIT), TypeScript 7.0 (Apache-2.0), Vitest 5.1 (MIT), NumPy 2.5 (BSD-3-Clause and others), Rasterio 1.5 with GDAL 3.12 (BSD-3-Clause; GDAL MIT), Fiona 1.10 (BSD-3-Clause), Pillow 13.0 (MIT-CMU), PyYAML 6.0 (MIT), pytest 9.2 (MIT), pextant (MIT). Hosted on GitHub Pages.
+- Claude Code (Anthropic), the AI coding assistant described under "Use of Super Intelligence".
+
+**Images on the page and in the video**
+
+- Screenshots of the app, showing the imagery above with its credit lines. No AI-generated images, no NASA logo.
+
+---
+
+Left out on purpose, because nothing in the app or this page uses them: the CRISM mineral products (downloaded, not processed), and papers we read only in part for ideas we did not build (Ehresmann 2021 and Guo 2021 on terrain shielding, Wold 2018 on forecast error, Hueso 2023 on dust devils, Kirk 2021, Kluis 2022, Jacob and others). If the team prefers to cite everything consulted, add them from REFERENCES.md.
 
 ## Images on the page
 
