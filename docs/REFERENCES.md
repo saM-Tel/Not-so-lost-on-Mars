@@ -33,12 +33,19 @@ Entries below were gathered during planning on 13 November 2026. "Read" means so
 | USGS planetary data catalogue | https://stac.astrogeology.usgs.gov/api/collections |
 | Sun and Stack 2020, Geologic map of Jezero crater and the Nili Planum region, USGS SIM 3464, doi 10.3133/sim3464 | https://pubs.usgs.gov/publication/sim3464 |
 | Perseverance location data | https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json |
-| Curiosity location data | https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json |
+| Curiosity location data: stops (used for the Gale box, home, targets and slope check) | https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json |
+| Curiosity drive lines, read 15 Nov; not used, as it gives no sol numbers | https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json |
+| Calef and Parker 2016, MSL Gale Merged Orthophoto Mosaic (25 cm) and Merged DEM (1 m), PDS Annex, USGS. The Gale boxwork map. Product pages and PDS3 labels read 15 Nov from the team data server | https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm and https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m |
+| HiRISE PDS labels for PSP_001488_1750 (start 2006-11-20) and ESP_025368_1755 (start 2011-12-25): the dates of the earliest and latest Gale source images | https://hirise-pds.lpl.arizona.edu/PDS/RDR/ |
+| NASA, "NASA's Curiosity Mars Rover Starts Unpacking Boxwork Formations", 23 June 2025: Altadena drilled on 8 June 2025. Read 15 Nov | https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/ |
+| NASA Curiosity blog, sols 4568 and 4569, 13 June 2025: the rover still at the Altadena drill site. Read 15 Nov | https://science.nasa.gov/blog/curiosity-blog-sols-4568-4569-a-close-look-at-the-altadena-drill-hole-and-tailings/ |
+| NASA JPL, "NASA's Curiosity Rover Sees Martian 'Spiderwebs' Up Close", 23 Feb 2026: boxwork ridges about 1 to 2 m tall; Curiosity to leave the boxwork in March. Read 15 Nov | https://www.jpl.nasa.gov/news/nasas-curiosity-rover-sees-martian-spiderwebs-up-close/ |
+| NASA raw image feed, Curiosity image FRB_802661004EDR_F1161944FHAZ00337M_ (sol 4564, 13:00:54 local mean solar time, 2025-06-08T14:29:15Z): Curiosity's sol clock | https://mars.nasa.gov/api/v1/raw_image_items/?condition_1=msl:mission |
 | NASA NSSDCA spacecraft catalogue: landing positions as published for Viking 1, Viking 2, Pathfinder, Spirit, Opportunity and Phoenix | https://nssdc.gsfc.nasa.gov/nmc/ |
 | NASA JPL, "NASA's Perseverance Rover Scientists Find Intriguing Mars Rock", 25 July 2024: date and place of the Cheyava Falls core | https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-scientists-find-intriguing-mars-rock/ |
 | Perseverance raw images | https://mars.nasa.gov/mars2020/multimedia/raw-images/ |
 | Curiosity weather feed | https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json |
-| Mars 2020 MEDA archive, PDS Atmospheres Node | https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/ |
+| Mars 2020 MEDA archive, PDS Atmospheres Node: derived environment data (pressure, humidity sensor, wind, ancillary) for sols 3 to 64, 672 to 733 and 1340 to 1402, read through the team data server by `pipeline/meda.py` for typical weather at Bright Angel. The bundle readme and the product labels were read on 15 Nov; the SIS documents were not | https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/ |
 | PDS Orbital Data Explorer search service | https://oderest.rsl.wustl.edu/live2/ |
 | NASA DONKI space weather database | https://api.nasa.gov/ |
 | Deep Space Network Now | https://eyes.nasa.gov/dsn/dsn.html |

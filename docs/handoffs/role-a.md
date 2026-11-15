@@ -1,14 +1,16 @@
 # Role A handoff
 
-## Sun 15 Nov, about 09:20, role A, team owner with Claude Code, after Joseph's handover. START HERE
+## Sun 15 Nov, about 09:05, role A, team owner with Claude Code, after Joseph's handover. START HERE
 
 Done (b3a151e, pushed): S23, `pipeline/build_orbiters.py` stops the build when Horizons does not echo the site position, instead of skipping the longitude check.
-Not done: batch 3 (MEDA weather, RAD storm data, Gale dates); Gale; minerals; rerunning `build_orbiters.py` (the saved predictions end 30 Nov; the app replays them after that, labelled).
+Done about 09:35 (32a6118, pushed): typical weather at Bright Angel from MEDA, batch 3. New `pipeline/meda.py` (run as `python weather.py bright-angel`) reads the derived pressure, humidity-sensor and wind files for the 173 sols on the server (about 2.5 minutes, cached per sol in `data/work/meda/`) and writes `app/public/data/weather/bright-angel.json` in a new hourly form (DATA_CONTRACT). `mars.solar_longitude_deg` (Mars24, as in the app) gives each sol's season from its label's start time, because MEDA's own `SOLAR_LONGITUDE_ANGLE` column is not the season (PITFALLS 9). Result: solar longitude 6.7 to 36.6 degrees in each of three Mars years; rover 2.4 to 8.8 km from the site.
+Done about 10:30 (5b3651a, pushed): Gale built as level 1 on the boxwork of Mount Sharp (REVIEW_QUEUE 8, Done). `sites/gale-crater.yaml` has a build section and scenario; `photos.py`, `vectors.py`, `scenario.py`, `config.py` and `build_site.py` no longer assume Perseverance (photoFeed, layerSource, the rover's own waypoints name). `build_approach.py --site gale-crater` rebuilt the rings round the new marker; `build_globe.py` rewrote sites.json.
+Not done: batch 3 RAD storm data; minerals; rerunning `build_orbiters.py` (the saved predictions end 30 Nov; the app replays them after that, labelled).
 Broken or risky: nothing new.
-Next: if time allows before the 12:00 freeze, batch 3 per the 16:55 entry below; otherwise leave the pipeline as it is.
-Files: pipeline/build_orbiters.py
+Next: leave the pipeline as it is unless something breaks; after the freeze, only fixes.
+Files: pipeline/build_orbiters.py, meda.py (new), test_meda.py (new), weather.py, mars.py, test_mars.py; app/public/data/weather/bright-angel.json
 Other roles need to know: nothing.
-Checks: `pytest -q` passes (54) with `pipeline/.venv`.
+Checks: `pytest -q` passes (62) with `pipeline/.venv`.
 
 ## Sat 14 Nov 16:55, role A handover from the team owner to Joseph, with Claude Code
 

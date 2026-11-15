@@ -18,6 +18,7 @@ Run these inside `pipeline/`. Use a standard Python 3.12 from python.org. The Py
 - Build a site: `.venv\Scripts\python build_site.py ../sites/<site id>.yaml`. Add `--dry-run` to check the config and print the box without reading or writing. The first build of Bright Angel reads about 190 MB from the team data server in three to four minutes; the cells are then kept in `../data/work/<site id>/` and a rebuild takes about a minute
 - Build the approach imagery around every site: `.venv\Scripts\python build_approach.py`, or `--site <site id>` for one site, keeping the others. The first run fetches about 75 tiles per site from Esri's OnMars CTX service and keeps them in `../data/work/approach/`; a rerun takes seconds. It prints a "note:" for any tile the service fails to give, which is left as no data
 - Refresh the space-weather snapshot: `.venv\Scripts\python build_space_weather.py`. Run it shortly before the submission so the fallback is fresh
+- Build typical weather: `.venv\Scripts\python weather.py gale-crater` (Curiosity REMS, needs `../data/raw/feeds/msl_curiosity_rems_weather.json`) and `.venv\Scripts\python weather.py bright-angel` (Perseverance MEDA from the team data server: about 1 GB and 2.5 minutes on the first run, seconds after, from the sums kept in `../data/work/meda/`)
 - Build the globe image and site list: `.venv\Scripts\python build_globe.py` Add `--only image` or `--only sites` to build one of the two. The image step fetches 512 tiles from Mars Trek on the first run and keeps them in `../data/work/globe/`. Run the sites step after changing any file in `../sites/`
 - Check, the one command that must pass before any push: `.venv\Scripts\python -m pytest -q`, then `.venv\Scripts\python build_site.py ../sites/bright-angel.yaml --dry-run`
 
@@ -71,8 +72,8 @@ Add a row when you add a file. Remove it when you delete one.
 | `test_orbiters.py` | Tests for the longitude and latitude conversions and the parsing in `build_orbiters.py`, on made-up Horizons text | |
 | `build_space_weather.py` | Saves a snapshot of NASA's notices that forecast a solar eruption reaching Mars, with its fetch time. One request per run | F5 |
 | `test_space_weather.py` | Tests for `build_space_weather.py` on made-up notices | |
-| `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths | all |
-| `test_mars.py` | Tests for `mars.py`, with expected values worked by hand | |
+| `mars.py` | Mars constants and geometry: radius, gravity, sol length, cell spacing, longitude conversion, tile maths, and the season (solar longitude) at a UTC time by Mars24, as in the app | all |
+| `test_mars.py` | Tests for `mars.py`, with expected values worked by hand and the Mars24 worked example for the season | |
 | `config.py` | Reads and checks a site config: identity, position, what data exists, and for a site that can be built its box and sources with their dates and accuracy. The scenario is checked by `scenario.py`, approach sources by `build_approach.py` | all |
 | `test_config.py` | Tests for `config.py`; also loads every real config in `../sites/` | |
 | `sources.py` | Finds each source file (team data server, then local copy, then original address) and reads only the site's box from it, warping any other projection onto the app's grid | F1, F15 |
@@ -83,10 +84,12 @@ Add a row when you add a file. Remove it when you delete one.
 | `test_terrain.py` | Tests for `terrain.py`, `grids.py` and `vectors.py` on made-up fixtures, with expected values worked by hand | |
 | `terrain.py` | Stage 4. Built so far: steepest slope over a baseline of at least 5 m, on the corrected cell spacing. To add: roughness and sky exposure | F2, F3, F5 |
 | `grids.py` | Stage 5. Built so far: joins 4 x 4 source cells into a routing cell and writes mean height and steepest slope as raw 32-bit floats, with the grid definition for `site.json`. To add: mask, footing, sky exposure | F3, F4 |
-| `vectors.py` | Stage 6. Built so far: the rover's stops and path inside the box as GeoJSON, each with a full layer record, and sol numbers turned into Earth dates. To add: geology and science targets | F2 |
-| `weather.py` | Typical weather by Mars month at a site with its own station: Curiosity REMS daily lows, highs, pressure, ultraviolet and sky at Gale, as percentiles with sol counts. Writes `../app/public/data/weather/<site id>.json`. Run `python weather.py gale-crater` | F11 |
-| `photos.py` | Stage 7: reads NASA's raw image feed for the left navigation camera and indexes up to six photos for each rover stop in the box. Built | F6 |
-| `scenario.py` | The hero scenario: home and science targets placed at rover stops looked up by id in the waypoints file, with reasons and sources, for `site.json` | F3, F7 |
+| `vectors.py` | Stage 6. Built so far: the rover's stops and path inside the box as GeoJSON, each with a full layer record, and sol numbers turned into Earth dates; layer ids end in the config's `rover.layerSource`. A path with no sols is left out | F2 |
+| `weather.py` | Typical weather by Mars month at a site with its own station: Curiosity REMS daily lows, highs, pressure, ultraviolet and sky at Gale, as percentiles with sol counts. Writes `../app/public/data/weather/<site id>.json`. Run `python weather.py gale-crater`; `python weather.py bright-angel` hands over to `meda.py` | F11 |
+| `meda.py` | Typical weather by local solar hour at Bright Angel for today's season, from Perseverance's MEDA derived data on the team data server (sols 3 to 64, 672 to 733, 1340 to 1402): pressure, the temperature inside the humidity sensor, wind, as percentiles with sol counts, and where the rover was. About 1 GB is read on the first run; per-sol sums are kept in `../data/work/meda/` | F11 |
+| `test_meda.py` | Tests for `meda.py` on made-up CSV text in MEDA's layout | |
+| `photos.py` | Stage 7: reads NASA's raw image feed (Perseverance's, `FEED_CATEGORY`) for the left navigation camera and indexes up to six photos for each rover stop in the box. Run only for a config whose `rover.photoFeed` names that feed. Built | F6 |
+| `scenario.py` | The scenario: home and science targets placed at rover stops looked up by id in the waypoints file, with reasons and sources, for `site.json`; the position source names the site's own rover (Perseverance or Curiosity) | F3, F7 |
 | `validate.py` | Stage 8: checks our terrain against the rover's own measurements. Built: heights and slope at every rover stop in the box, and the reader for the rover's feeds. To add: a route against the rover's path | F1, F9 |
 | `records.py` | Stage 9: the layer record check, the JSON writer and `layers.json` | F2, F14 |
 

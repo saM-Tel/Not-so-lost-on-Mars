@@ -1,6 +1,6 @@
 # Role C handoff
 
-## Sun 15 Nov, about 09:30, team owner with Claude Code, after Joseph's handover. START HERE
+## Sun 15 Nov, about 09:05, team owner with Claude Code, after Joseph's handover. START HERE
 
 Done (pushed with 740a81e, b3a151e and the docs commit after them):
 - Caught up and reported.
@@ -12,9 +12,10 @@ Done (pushed with 740a81e, b3a151e and the docs commit after them):
 - Updated STATUS, REVIEW_QUEUE, REFERENCES (terms read, Fiona) and SUBMISSION_CHECKLIST (terms rules).
 Not done: the backup video (the owner is doing it); the [FILL] marks in PROJECT_PAGE.md (video link, where the idea came from, references); the private-window check; the two open proposals in DECISIONS.
 Broken or risky: the licence was chosen by the AI on the owner's instruction to follow the terms; the owner agreed to push it.
-Next: the video from the live site, once the deploy of this push has finished. Then fill PROJECT_PAGE.md and paste it into the form.
+Next: the video from the live site (the 09:07 push is deployed). If the owner wants the Jezero weather in it, commit and push that first. Then fill PROJECT_PAGE.md and paste it into the form.
 Files: README.md, LICENSE, docs/PROJECT_PAGE.md, DECISIONS.md, SPEC.md, STATUS.md, REVIEW_QUEUE.md, REFERENCES.md, SUBMISSION_CHECKLIST.md, AI_USE.md, AGENTS.md (root and docs), handoffs.
-Other roles need to know: the AI statement on the project page must say truthfully where the idea came from; only a person can write that.
+Done about 10:45: AI use is now stated inside the app (side panel line, map credit line, `index.html` metadata, manifest), so that checklist item is ticked.
+Other roles need to know: the AI statement on the project page must say truthfully where the idea came from; only a person can write that. Since about 10:30 (pushed at about 10:55): the README has a table "How it answers the challenge" (PROJECT_PAGE.md says to paste it); Gale's boxwork is a second full site (the challenge's own example), worth a shot in the video; the Helmet button now opens the visor view directly. Since about 09:35 (pushed at about 10:55) Bright Angel has typical weather by hour from Perseverance's MEDA in When to go; the README, PROJECT_PAGE.md and the data table there already mention it, so the video can show it once it is pushed.
 Checks: `npm run check` passes (108 tests); pytest passes (54).
 
 ## Sun 15 Nov 02:30, team owner with Claude Code

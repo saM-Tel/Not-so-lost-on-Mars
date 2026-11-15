@@ -2,14 +2,14 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sun 15 Nov, about 09:30, by the team owner with Claude Code. Joseph has handed the project over; the owner now holds roles A, B and C. This morning: S0 to S18 and S23 from REVIEW_QUEUE fixed and tried in a scripted browser; stops now go in the shareable link and the walk-through stands at stops (team decisions); the verdict and the margin chart use one rule; README brought up to date with a licence section; Apache 2.0 `LICENSE` added (owner to confirm); a draft of every project page field in [PROJECT_PAGE.md](PROJECT_PAGE.md). Pushed about 09:40 (740a81e, b3a151e and the docs commit after them). Feature freeze is today at 12:00 and the submission at 21:00. Not started: the backup video (the owner is doing it next). Batch 3 data is on the server and not yet used.
+Last updated: Sun 15 Nov, about 10:35, by the team owner with Claude Code. Joseph has handed the project over; the owner now holds roles A, B and C. Pushed at 09:07 (740a81e, b3a151e, 2a11835): S0 to S18 and S23, stops in the link, one tether rule, README licence section, `LICENSE`, project page draft. Pushed at about 10:55 (32a6118, 5b3651a, 893fb0f, bc4cb24 and the docs commit): typical weather by hour at Bright Angel (MEDA); the Gale boxwork built as a second full site, the Helmet button opening first person under the visor, the way home drawn and followed by the visor's arrow, the overlap of the forecast and the link to Earth fixed, a challenge table in the README, and AI use stated inside the app. Feature freeze is today at 12:00 and the submission at 21:00. Not started: the backup video.
 
 ## Now
 
 | Role | Person | Working on | Since |
 |---|---|---|---|
-| A: data and science | Team owner, from Joseph's handover on Sun 15 Nov morning | Not started this morning. Open: batch 3 data (MEDA weather, RAD storm data, Gale dates); rerun `build_orbiters.py` before submitting if time allows | Sun 15 Nov |
-| B: app | Team owner with Claude Code, from Joseph's handover | Done 09:20, pushed (740a81e): S0 to S18 (route card, walk-through, visor, walker, tether, link). Next: the owner looks at the walk column and the walk-through by eye | Sun 15 Nov |
+| A: data and science | Team owner, from Joseph's handover on Sun 15 Nov morning | Done and pushed: MEDA weather for Bright Angel (32a6118); the Gale boxwork built (5b3651a). Open: batch 3 RAD storm data (on the server, not read); rerun `build_orbiters.py` before submitting if time allows | Sun 15 Nov |
+| B: app | Team owner with Claude Code, from Joseph's handover | Done about 09:00, pushed (740a81e): S0 to S18 (route card, walk-through, visor, walker, tether, link). Next: the owner looks at the walk column and the walk-through by eye | Sun 15 Nov |
 | C: story and submission | Team owner | The backup video next; then fill the [FILL] marks in PROJECT_PAGE.md and paste it into the form | Sun 15 Nov |
 | (was: B, files outside Joseph's) | Team owner with Claude Code | Done Sun 02:30 and pushed (abd8291, d547cd3) | Sun 01:45 |
 
@@ -44,7 +44,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 
 | Feature | Owner | Status | Notes |
 |---|---|---|---|
-| F14 Mars globe and site picker | A, B | works with issues | Live. New 14 Nov afternoon: approach imagery, three rings of real CTX images round every site (320, 40, 12 km), so zooming in is no longer a blur (seen in headless Chrome at Bright Angel). Eight sites now open a built map. Not tried by a person since |
+| F14 Mars globe and site picker | A, B | works with issues | Live. New 14 Nov afternoon: approach imagery, three rings of real CTX images round every site (320, 40, 12 km), so zooming in is no longer a blur (seen in headless Chrome at Bright Angel). All nine sites now open a built map (Gale since 15 Nov). Not tried by a person since |
 | F1 Hero site map | A, B | works with issues | Bright Angel built from real data, now with CTX 20 m terrain round the box out to 10 km (not looked at yet). Not checked: load time from the public link; heights at three rover stops shown in the app |
 | F2 Layer panel and information cards | B | works with issues | Six layers at Bright Angel: ground image, slope, keep-out, rover path and stops, night-time warmth (F12), and geology (built 14 Nov evening, 12b95da, after fiona was installed). Not tried by a person since the geology layer was added |
 | F3 Route planner | B | works with issues | Home and three science targets, any clicked point, or several stops with time at each. Elevation profile, oxygen (Weir 1949), route confidence line. Sun 15 Nov: failed requests now say so (S0); clearing stops goes back to one target (S2); time at stops counts in radiation and daylight (S4). Tried in a scripted browser on 15 Nov: hero walk, two stops, Clear, a stops link reloaded. Not done: smoothing |
@@ -55,21 +55,21 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F8 Public site and repository | B | works with issues | Live. Installable as an app. README up to date on 15 Nov with a licence section listing every third-party licence; Apache 2.0 `LICENSE`, agreed by the owner. Not done: private-window check |
 | F9 Validation panel | A | works with issues | Slope and height at 116 stops. New, not tried: the route card sets the rover's distance driven between home and a target beside our walk |
 | F10 Storm mode | A, B | in progress | Coded, not tried: storm drill in the route card (pick a warning time; go home or start home and shelter under steep ground); the 20 May 2024 event at Gale, 8,100 micrograys (NASA), against the walk's background dose |
-| F11 Time of day | A, B | in progress | Coded, not tried: Mars24 season, local solar time and Sun (tested against the Mars24 worked example), start-time slider, sunrise and sunset, whether the walk ends in daylight, computed sun shading; typical weather by Mars month at Gale only (Curiosity REMS). No weather at Jezero: the MEDA archive is not on the server. No dust devils |
+| F11 Time of day | A, B | works with issues | Mars24 season, local solar time and Sun (tested against the Mars24 worked example), start-time slider, sunrise and sunset, whether the walk ends in daylight, computed sun shading. Typical weather: by Mars month at Gale (Curiosity REMS); from 15 Nov, by local hour at Bright Angel from Perseverance's MEDA (batch 3 on the team data server: 173 sols in three Mars years, solar longitude 6.7 to 36.6 degrees; today is 22): pressure, the temperature inside the humidity sensor (not called air temperature) and wind, at the start hour and over the walk, each with its sol count. Seen in a scripted browser at 09:00 and 14:00. Outside that season (from about 17 Dec) the panel says the values are for another season. No dust devils; no ultraviolet (MEDA's radiation sensor data was not fetched) |
 | F12 Thermal and mineral layers | A | in progress | Night infrared (THEMIS, USGS 2018) as a layer at Bright Angel: coded, to be built. Minerals not started: CRISM files unprocessed (REVIEW_QUEUE 10) |
-| F13 Tablet and helmet display | B, C | in progress | Tried briefly by the owner: janky and often empty. Fixed since: the helmet option shows only when its rover photo loads; the map resizes on a view change. Still open: R6 and R13 to R15 in REVIEW_QUEUE |
+| F13 Tablet and helmet display | B, C | works with issues | Field tablet view as before. From 15 Nov (owner's request) the Helmet button opens the walk-through's first-person view under the simulated visor, at any built site; the older concept view over a rover photo is no longer reachable. Seen in a scripted browser at Gale. Still open: R6 and R14 in REVIEW_QUEUE |
 | F17 Interface upgrade | B, C | works with issues | Added by the team owner, 14 Nov 19:04. Two passes on 14 Nov evening (see the plan above); not yet seen in a browser at phone and laptop widths; tablet and helmet views not yet reworked |
 | F18 Orbiters overhead | A, B | works with issues | JPL Horizons predictions saved to 30 Nov; after that the panel and globe replay the saved window, labelled with its real dates (pushed, abd8291). The walk-through clock now uses the start chosen here, so its relay readout follows the replay too (S17). Relay and camera roles counted only where a source confirmed them; thresholds assumed. Not yet looked at by a person |
-| F19 Walk-through | B | works with issues | Astronaut steered with the keyboard or walking the planned route, standing at each stop for its time (team decision, 15 Nov); first person under a visor. Sun 15 Nov: S9 to S18 fixed (keys, tether time put back on Stop, idle loop, mouse in first person). Tried in a scripted browser: playback, Stop, held keys, first person in and out. Not tried by a person |
-| F15 More sites | A | in progress | Seven landing sites built as level 2 from their HiRISE terrain strips, warped from their own projections (2.6 to 6.3 MB each). Gale not built: image dates of its mosaics not found (REVIEW_QUEUE 8) |
+| F19 Walk-through | B | works with issues | Astronaut steered with the keyboard or walking the planned route, standing at each stop for its time (team decision, 15 Nov); first person under a visor. Sun 15 Nov: S9 to S18 fixed; while steering, the quickest walkable way home (down the tether field) is drawn on the ground in blue and the visor's arrow follows it (owner's request). Tried in a scripted browser: playback, Stop, held keys, first person in and out, the way home drawn. The headless test browser renders so slowly while the camera follows the astronaut that long walks could not be tried there. Not tried by a person |
+| F15 More sites | A | works with issues | Seven landing sites built as level 2 from their HiRISE terrain strips (2.6 to 6.3 MB each). From 15 Nov, Gale built as level 1: the boxwork box on Mount Sharp, centred on Curiosity's Altadena drill stop (116_1944, sol 4560), with home and three targets at Curiosity's stops, 23.3 MB. Height check at 289 stops: typical 0.03 m (the stops sit on the same mosaic). Slope check typical 2.3 degrees, 9 in 10 within 6.6 degrees, correlation 0.49, over 285 stops, weaker than Bright Angel. No photos (Perseverance feed only), no drive lines (NASA's Curiosity path file has no sols). Seen in a scripted browser |
 | F16 Extras | any | in progress | Coded, not tried: live link to Earth from NASA DSN Now; route export as GeoJSON with its Mars frame; rover drop-off (move home). Not started: two walkers, rover models in 3D, orbiter passes overhead (now F18) |
 
 ## Sites
 
 | Site | Level | Data built | Reviewed by a person |
 |---|---|---|---|
-| bright-angel | 1 | image and terrain tiles (terrain reaching 10 km), routing grids, rover stops and path, photo index, terrain checks, hero scenario | no |
-| gale-crater | 1 | no (dates missing); typical weather from Curiosity REMS | no |
+| bright-angel | 1 | image and terrain tiles (terrain reaching 10 km), routing grids, rover stops and path, photo index, terrain checks, hero scenario, geology, night infrared, typical weather by local hour (MEDA, 15 Nov) | no |
+| gale-crater | 1 | image and terrain tiles, routing grids, rover stops, terrain checks, scenario at the boxwork (15 Nov); typical weather from Curiosity REMS | no |
 | columbia-hills, meridiani, ares-vallis, chryse-planitia, utopia-planitia | 2 | 2 km image and terrain from one HiRISE strip, routing grids | no |
 | arctic-plain, elysium-planitia | 2 | 2 km image and terrain from one HiRISE strip (Phoenix warped from polar stereographic), routing grids | no |
 | all nine | | approach imagery (CTX rings) | no |
@@ -81,7 +81,8 @@ All nine have a config in `sites/` with a cited position, and appear on the glob
 - Fixed Sun 15 Nov 00:28 (7a3a388): the note 'Source "overlay-thermal-themis" already exists' on opening a site. The cause was not a double open. The route planner threw "Cannot access 'stops' before initialization" on every site since d3b62d1, so it never started, and the layers it left behind gave the note on the next open. Seen fixed in a scripted browser.
 - Fixed Sun 15 Nov 00:28 (32cc581): styles for the Several stops list and the margin chart. Written from the class names; the list and chart themselves have not been looked at with stops in them.
 
-- Fixed Sun 15 Nov, about 09:20, pushed (740a81e, b3a151e): S0 to S18 and S23 in [REVIEW_QUEUE.md](REVIEW_QUEUE.md) (Done). Tried in a scripted browser, not by a person. Still open there: the low items S19 to S22 and S24.
+- Fixed Sun 15 Nov, about 10:20, pushed (bc4cb24): the space-weather line, once opened, covered the link to Earth (seen by the owner). Both now share one column at the bottom right of the map (`.map-notes`), so the opened forecast pushes the link up. Checked in a scripted browser at 1,440 px: no overlap.
+- Fixed Sun 15 Nov, about 09:00, pushed (740a81e, b3a151e): S0 to S18 and S23 in [REVIEW_QUEUE.md](REVIEW_QUEUE.md) (Done). Tried in a scripted browser, not by a person. Still open there: the low items S19 to S22 and S24.
 
 Nothing else known broken, but most of the afternoon's work has not been opened in a browser. Large items for review are in [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
 
@@ -105,7 +106,7 @@ The first run of the new batch stopped at 02:37 UTC on 14 Nov with 12 problems, 
 
 ## Waiting on someone
 
-- **Batch 3 on the team data server,** asked for at about 16:30 and taking a few hours: Perseverance MEDA weather for sols 3 to 64, 672 to 733 and 1340 to 1402 (`/raw/meda/`), Curiosity RAD data for sols 4185 to 4195 around the 20 May 2024 storm (`/raw/rad/`), and the Gale mosaics' metadata (`/raw/gale/metadata/`). The server's Claude session reports what arrived; see [../data/AGENTS.md](../data/AGENTS.md).
+- **Batch 3 on the team data server:** MEDA arrived (173 sols) and is used since 15 Nov (F11). The RAD folder and the Gale mosaic labels are on the server too, not read yet. As asked at about 16:30 on 14 Nov: Perseverance MEDA weather for sols 3 to 64, 672 to 733 and 1340 to 1402 (`/raw/meda/`), Curiosity RAD data for sols 4185 to 4195 around the 20 May 2024 storm (`/raw/rad/`), and the Gale mosaics' metadata (`/raw/gale/metadata/`). The server's Claude session reports what arrived; see [../data/AGENTS.md](../data/AGENTS.md).
 - **The team owner:** fill the [FILL] marks in [PROJECT_PAGE.md](PROJECT_PAGE.md): the video link, where the idea came from, the references.
 - **The team owner:** the backup video (overdue since Saturday 23:00; being done next).
 

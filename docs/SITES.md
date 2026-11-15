@@ -24,7 +24,7 @@ Checked on 13 November against the Mars Trek catalogue and the PDS search servic
 | Site | Mission | About | Trek imagery | Terrain | Ground data | Level |
 |---|---|---|---|---|---|---|
 | Jezero crater | Perseverance, 2021 to now | 18.44 N, 77.45 E | 25 cm corrected mosaic | USGS 1 m mosaic | Stops to sol 2022, photos, weather archive | 1 |
-| Gale crater | Curiosity, 2012 to now | 4.59 S, 137.44 E | HiRISE mosaic | USGS 1 m mosaic | Stops to sol 5070, photos, daily weather, radiation | 1 |
+| Gale crater boxwork | Curiosity, 2012 to now | 4.80 S, 137.38 E: Curiosity's Altadena drill stop (landed at 4.59 S, 137.44 E) | HiRISE mosaic | USGS 1 m mosaic | Stops to sol 5070, photos, daily weather, radiation | 1 |
 | Columbia Hills, Gusev | Spirit, 2004 to 2010 | 14.57 S, 175.47 E | HiRISE mosaic | 1 m model on Trek; 6 PDS models nearby | Traverse source to be found | 2 |
 | Meridiani and Endeavour | Opportunity, 2004 to 2018 | 1.95 S, 5.53 W | HiRISE mosaic | Endeavour and Victoria models; 5 PDS models nearby | Traverse source to be found | 2 |
 | Elysium Planitia | InSight, 2018 to 2022 | 4.50 N, 135.62 E | HiRISE mosaic | Combined model on Trek; 4 PDS models nearby | Weather archive at the PDS | 2 |
@@ -43,9 +43,9 @@ The one model chosen for each site (four for Opportunity), with its address and 
 
 | Site | Level | What is built |
 |---|---|---|
-| Bright Angel, Jezero | 1 | 3 km box: 25 cm image, 1 m terrain with CTX 20 m terrain round it to 10 km, routing grids, rover stops and path, photos, terrain checks, hero scenario (home and three targets at rover stops), night infrared layer |
+| Bright Angel, Jezero | 1 | 3 km box: 25 cm image, 1 m terrain with CTX 20 m terrain round it to 10 km, routing grids, rover stops and path, photos, terrain checks, hero scenario (home and three targets at rover stops), night infrared layer, typical weather by local hour from Perseverance's MEDA (15 Nov) |
 | Chryse Planitia, Utopia Planitia, Ares Vallis, Columbia Hills, Meridiani, Arctic plain, Elysium Planitia | 2 | 2 km box at the centre of one HiRISE terrain strip: 1 m image and terrain warped from the strip's own projection, routing grids. Automatic, not reviewed |
-| Gale crater | 1 planned | Not built: the image dates of its mosaics were not found (REVIEW_QUEUE item 8; the metadata is in batch 3 on the server). Typical weather from Curiosity is built |
+| Gale crater boxwork | 1 | Built 15 Nov: 3 km box centred on Curiosity's Altadena drill stop (116_1944), 25 cm image and 1 m terrain from the USGS Gale mosaics (Calef and Parker 2016), routing grids, rover stops, terrain checks (typical 2.3 degrees, 9 in 10 within 6.6 degrees, correlation 0.49, over 285 stops), home and three targets at Curiosity's stops. No photos and no drive lines. Typical weather from Curiosity is built |
 | All nine | | Approach imagery: CTX rings of 320, 40 and 12 km |
 
 The owner moved the level 2 builds ahead of Three Forks and Gale on 14 November (DECISIONS).

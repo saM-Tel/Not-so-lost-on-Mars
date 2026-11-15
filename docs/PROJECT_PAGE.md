@@ -53,11 +53,11 @@ It opens on the hero walk. The plain link, https://sam-tel.github.io/Not-so-lost
 
 Tether is a static web app for planning a Marswalk. It answers one question: can I do this science and still get home safely? Everything in it helps answer that question.
 
-- **The place.** A globe of Mars with nine NASA landing sites. Bright Angel is built in full: a 3 km by 3 km box of 25 cm HiRISE imagery on 1 m HiRISE terrain, with Context Camera imagery round it for the zoom in. Seven more landing sites have a smaller map built automatically from one HiRISE terrain strip each.
+- **The place.** A globe of Mars with nine NASA landing sites. Two are built in full, each a 3 km by 3 km box of 25 cm imagery on 1 m terrain: Bright Angel in Jezero crater, and the boxwork on Mount Sharp in Gale crater, the challenge's own example, where Curiosity drilled the Altadena rock in June 2025. Seven more landing sites have a smaller map built automatically from one HiRISE terrain strip each.
 - **Layers.** Slope, keep-out ground, geology, night-time warmth, and the rover's path and stops. Each layer has a card saying who measured it, when, how fine its detail really is, how far to trust it, and what not to conclude from it.
 - **Walks.** Pick a science target, click any point, or add several stops with time at each. The route is the least-effort way out and a separate way home, never crossing ground steeper than the suit's slope limit (20 degrees, NASA's Artemis III requirement). It gives distance, climb, time, energy, oxygen and radiation, each for a favourable, an expected and a cautious case.
 - **The tether.** A line on the map shows how far you can go and still walk home within the allowance. The allowance is the walk-back limit (1 hour by default, or 30 minutes) or the time left of an 8-hour walk, whichever is less. The line shrinks as the walk goes on. The walk is checked at every point against the moment you would be there. The card names the tightest point and shows a chart of the margin along the walk.
-- **Around the walk.** Radiation picked up on the walk, NASA's latest forecast of a solar eruption reaching Mars, and a storm drill set against the 20 May 2024 storm Curiosity measured. Sunrise, sunset and whether the walk ends in daylight. When a relay orbiter is in view for a link, from JPL Horizons predictions. Real Perseverance photos taken within 30 m of the route.
+- **Around the walk.** Radiation picked up on the walk, NASA's latest forecast of a solar eruption reaching Mars, and a storm drill set against the 20 May 2024 storm Curiosity measured. Sunrise, sunset and whether the walk ends in daylight. Typical pressure, temperature and wind for the hour you set out and over the walk, from Perseverance's weather station in the same season of three past Mars years. When a relay orbiter is in view for a link, from JPL Horizons predictions. Real Perseverance photos taken within 30 m of the route.
 - **On the ground.** A to-scale astronaut walks the planned route on the 3D ground, standing at each stop for its time, while the tether shrinks. A first-person view under a simulated helmet display shows the arrow home, the walk-home time and a start-back countdown. A field tablet view and a helmet concept view show the same data with cautious values only.
 - **Sharing.** The link holds the site, the walk and the tether settings, so it opens the same walk with the same verdict.
 
@@ -70,7 +70,11 @@ Tether is a static web app for planning a Marswalk. It answers one question: can
 
 ### How we checked it
 
-Perseverance stopped 116 times inside the Bright Angel box and logged how far it was tilted each time. Against our slope from orbit, the typical difference is 1.4 degrees, 9 in 10 are within 4.0 degrees, and the correlation is 0.89. The rover's drivers chose gentle ground, so this says more about gentle slopes than steep ones. The route card uses that 4-degree figure to flag stretches close to the slope limit.
+Perseverance stopped 116 times inside the Bright Angel box and logged how far it was tilted each time. Against our slope from orbit, the typical difference is 1.4 degrees, 9 in 10 are within 4.0 degrees, and the correlation is 0.89. The rover's drivers chose gentle ground, so this says more about gentle slopes than steep ones. The route card uses that 4-degree figure to flag stretches close to the slope limit. At the Gale boxwork the same check is weaker (typical 2.3 degrees, 9 in 10 within 6.6 degrees, correlation 0.49, over 285 stops), and the app shows it as it is.
+
+### How it answers the challenge
+
+**[FILL]** Paste the table "How it answers the challenge" from the README. It maps each line of the challenge statement to what Tether does.
 
 ### What it does not do yet
 
@@ -102,13 +106,14 @@ No AI-generated images, video or audio are used anywhere in the app, the video o
 
 ## NASA Data
 
-- **HiRISE on Mars Reconnaissance Orbiter:** the 25 cm image and 1 m terrain at Bright Angel (USGS mosaics, Fergason and others 2020), and the terrain models and images at seven landing sites (HiRISE archive, University of Arizona).
+- **HiRISE on Mars Reconnaissance Orbiter:** the 25 cm image and 1 m terrain at Bright Angel (USGS mosaics, Fergason and others 2020) and at the Gale boxwork (USGS mosaics, Calef and Parker 2016, filled with CTX and HRSC), and the terrain models and images at seven landing sites (HiRISE archive, University of Arizona).
 - **Context Camera (CTX) on Mars Reconnaissance Orbiter:** the land round each site. Sources: the USGS Jezero mosaic and terrain (Fergason, Galuszka and Hare 2020), and the global mosaic by the Murray Lab at Caltech.
 - **Mars 2020 Perseverance:** rover stops, path and tilt (mission location files), used for the routes' home and targets and to check our slope; navigation camera photos (raw image feed).
 - **Viking Orbiter:** the colour mosaic of the whole planet (USGS Astrogeology and NASA Ames, through Mars Trek).
 - **THEMIS on Mars Odyssey:** night-time warmth, from the USGS Jezero geologic map package.
 - **USGS geologic map of Jezero crater (SIM 3464, Sun and Stack 2020):** the geology layer.
-- **Curiosity:** REMS daily weather at Gale; RAD dose rates (Hassler and others 2014; Guo and others 2015); NASA/JPL's account of the 20 May 2024 solar storm.
+- **Perseverance MEDA:** typical weather by hour at Jezero for the season (derived data from the Planetary Data System Atmospheres Node).
+- **Curiosity:** its stops, tilt and path (mission location files), for the Gale home and targets and the slope check; REMS daily weather at Gale; RAD dose rates (Hassler and others 2014; Guo and others 2015); NASA/JPL's account of the 20 May 2024 solar storm.
 - **NASA CCMC DONKI:** space weather forecasts from the Moon to Mars Space Weather Analysis Office.
 - **NASA Deep Space Network Now:** the live link to Earth.
 - **JPL Horizons:** predicted positions and passes of MRO, Mars Odyssey, Mars Express and TGO.
@@ -117,8 +122,8 @@ No AI-generated images, video or audio are used anywhere in the app, the video o
 
 ## Space Agency Partner Data and Other References
 
-- **ESA:** Mars Express and the ExoMars Trace Gas Orbiter trajectories, from the ESA navigation team through JPL Horizons.
-- **Spain's Centro de Astrobiología (CSIC-INTA):** partner on Curiosity's REMS instrument.
+- **ESA:** Mars Express and the ExoMars Trace Gas Orbiter trajectories, from the ESA navigation team through JPL Horizons; HRSC terrain and images from Mars Express inside the USGS Gale mosaics.
+- **Spain's Centro de Astrobiología (CSIC-INTA):** partner on Curiosity's REMS and Perseverance's MEDA instruments.
 - **Papers, data products, software and images:** **[FILL]** Paste the full list from [REFERENCES.md](REFERENCES.md) at the time of submitting, with each software licence from the README. The terms say every source must be cited, even open-source ones. A team that does not cite them can lose an award.
 
 ## Images on the page

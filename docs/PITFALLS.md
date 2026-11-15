@@ -114,6 +114,10 @@ Prepared 13 November 2026, before the event, as planning. Read the section for y
 | Counting every vortex as a dust devil | About one in five carries dust |
 | Averaging across seasons | Use the same season as the planned date |
 | Applying Gale weather to Jezero | Different sites. Do not |
+| Reading MEDA's `SOLAR_LONGITUDE_ANGLE` (ancillary file) as the season | It changes through the day and falls from sol to sol: it is not Ls. Work the season out from the label's start time with Mars24 (`mars.solar_longitude_deg`) |
+| Calling MEDA's `HUMIDITY_LOCAL_TEMP` the air temperature | It is the temperature inside the humidity sensor. Say so; the air temperature product is a different file |
+| Expecting sol numbers in NASA's Curiosity path file (`MSL_traverse.json`) | It holds only line lengths; the rover path layer needs dates, so Gale has stops but no path. Perseverance's file has sols |
+| Running the photo index for any rover | `photos.py` reads Perseverance's feed; another rover's stops would get Perseverance photos by sol. A config names `photoFeed` |
 
 ## 10. Building and hosting
 

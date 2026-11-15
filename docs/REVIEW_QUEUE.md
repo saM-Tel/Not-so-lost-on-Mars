@@ -70,11 +70,6 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 - **F9:** one route against the rover is now shown in the route card as distance driven against distance walked between home and a target (both rover stops). A path-shape comparison is not built.
 
 
-### 8. Gale crater not built: image dates of the Gale mosaics not found (medium, F15)
-- **Where:** `sites/gale-crater.yaml` has no `box` or `sources` yet. The mosaics (`MSL_Gale_DEM_Mosaic_1m_v3.tif`, `MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif`, Calef and Parker 2016) are on the server and on the app's grid, so the pipeline can read them as they are.
-- **What:** no file we could read gives the dates of the HiRISE images in the mosaics; the USGS page (https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm) refuses automated reading. Without dates the app hides the layers.
-- **Fix:** a person reads the dates on that page (or its PDS label), then copy `bright-angel.yaml`'s build section with the Curiosity waypoints (`msl_curiosity_waypoints.json`) as the rover.
-
 ### 9. Level 2 sites: image borrowed georeferencing (medium, check by eye)
 - **Where:** the seven level 2 configs, `georeferenceFrom: terrain`.
 - **What:** GDAL reads the 1 m ortho JP2's georeferencing differently from its terrain model's label (for Spirit it reports latitude of origin -10 where the terrain says true scale at -10). The two files have the same size and scale, so the image uses the terrain file's. Check in the app that ridges in the image line up with the 3D terrain at each site.
@@ -118,7 +113,17 @@ Not reviewed yet and worth a second review: the pipeline (`build_approach.py`, `
 
 ## Done
 
-### S0 to S18, and parts of S19, S20 and S23: fixed Sun 15 Nov, about 08:40 to 09:20, commits 740a81e (app) and b3a151e (S23), team owner with Claude Code
+### Item 8 (Gale not built) and the overlap of the forecast and the link to Earth: fixed Sun 15 Nov, about 10:30, commits 5b3651a (Gale) and bc4cb24 (overlap), team owner with Claude Code
+
+- **Item 8:** the Gale mosaics' source images are named on their USGS product pages, which arrived on the team data server in batch 3. The earliest, PSP_001488 (the archive calls it PSP_001488_1750), started 2006-11-20; the latest, ESP_025368_1755, started 2011-12-25 (HiRISE PDS labels). `sites/gale-crater.yaml` now has a build section: a 3 km box centred on Curiosity's Altadena drill stop. The pipeline was changed so a second rover needs no code change:
+  - `photos.py` reads only the feed a config names as `photoFeed`, so Perseverance photos are never matched to Curiosity's stops;
+  - the rover layer ids come from `layerSource`;
+  - the scenario names the rover's own waypoints file.
+- **Gale build results:** 23.3 MB; heights at 289 stops typical 0.03 m; slope typical 2.3 degrees, 9 in 10 within 6.6 degrees, correlation 0.49, over 285 stops.
+- **Overlap (seen by the owner):** the space-weather line, once opened, covered the link to Earth. Both are now children of one column, `.map-notes` (`main.ts`, `style.css`).
+- **How checked:** `npm run check` (110 tests) and pytest pass. A scripted browser at 1,440 px showed Gale opening on the walk to Altadena, inside the tether, and the opened forecast and the link to Earth not overlapping.
+
+### S0 to S18, and parts of S19, S20 and S23: fixed Sun 15 Nov, about 08:40 to 09:00, commits 740a81e (app) and b3a151e (S23), team owner with Claude Code
 
 Joseph had handed the project over, so role B's working files were open to change.
 

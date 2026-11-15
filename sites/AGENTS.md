@@ -32,7 +32,7 @@ Role A, with role C supplying science targets and their reasons.
 | File | Site | Level | Reviewed by a person |
 |---|---|---|---|
 | `bright-angel.yaml` | Bright Angel, Neretva Vallis, Jezero crater (Perseverance) | 1 | No |
-| `gale-crater.yaml` | Gale crater (Curiosity) | 1 | No |
+| `gale-crater.yaml` | Gale crater boxwork, Mount Sharp (Curiosity) | 1 | No |
 | `columbia-hills.yaml` | Columbia Hills, Gusev crater (Spirit) | 2 | No |
 | `meridiani.yaml` | Meridiani (Opportunity) | 2 | No |
 | `elysium-planitia.yaml` | Elysium Planitia (InSight) | 2 | No |
@@ -41,11 +41,11 @@ Role A, with role C supplying science targets and their reasons.
 | `chryse-planitia.yaml` | Chryse Planitia (Viking 1) | 2 | No |
 | `utopia-planitia.yaml` | Utopia Planitia (Viking 2) | 2 | No |
 
-Each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. `bright-angel.yaml` also holds what a build needs: the box (a size, centred on the marker position), the terrain and image files with their dates, accuracy and credit, and the rover's stops. Since 14 Nov the seven level 2 configs also hold build settings: a 2 km box at the centre of the terrain model's footprint, and the terrain model and its 1 m ortho image with records whose dates are the source images' START_TIME in the HiRISE archive. `gale-crater.yaml` has none yet: the Gale mosaics' image dates were not found (docs/REVIEW_QUEUE.md). Bright Angel is the only site with a hero scenario (home and science targets).
+Each config holds what the globe needs: identity, readiness level, the position of its marker with its source, the landing position as published, what data exists and known problems. `bright-angel.yaml` also holds what a build needs: the box (a size, centred on the marker position), the terrain and image files with their dates, accuracy and credit, and the rover's stops. Since 14 Nov the seven level 2 configs also hold build settings: a 2 km box at the centre of the terrain model's footprint, and the terrain model and its 1 m ortho image with records whose dates are the source images' START_TIME in the HiRISE archive. Since 15 Nov `gale-crater.yaml` has a build section too: a 3 km box on the boxwork of Mount Sharp centred on Curiosity's Altadena drill stop, the USGS Gale mosaics with dates from their source images' HiRISE labels, and Curiosity's stops. Bright Angel and Gale have a scenario (home and science targets). A rover block names `layerSource` (the end of the rover layer ids, `m20` or `msl`) and `photoFeed` (the raw image feed; only `mars2020` gets photos, from `pipeline/photos.py`).
 
 A position is given in one of two ways, both copied digit for digit from the source: `from: point` with a longitude and latitude, or `from: terrain-footprint` with the four edges of a terrain model, in which case the marker stands at the footprint's centre. `pipeline/config.py` converts the longitude and refuses a position with no source.
 
-A config may have `scenario`: `home` and `targets`, each naming a rover `stop` id (looked up in the waypoints file at build time, so no coordinate is typed), a `name`, a `why` and a `whySourceUrl`; home may be `assumed: true`. Targets need an `id`. `bright-angel.yaml` has one.
+A config may have `scenario`: `home` and `targets`, each naming a rover `stop` id (looked up in the waypoints file at build time, so no coordinate is typed), a `name`, a `why` and a `whySourceUrl`; home may be `assumed: true`. Targets need an `id`. `bright-angel.yaml` and `gale-crater.yaml` have one.
 
 A config may also have `approach.near`: a file for the near ring of approach imagery, with the same fields as a source (`file`, `serverPath`, `originalUrl`, `record`). Without it the near ring comes from the CTX global mosaic. `bright-angel.yaml` names the USGS Jezero CTX mosaic, which the HiRISE map was aligned to.
 

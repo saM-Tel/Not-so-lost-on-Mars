@@ -28,7 +28,7 @@ The page takes images (JPG, PNG, GIF up to 10 MB) but not videos or documents.
 ## AI rules to meet (Project Submission Guide)
 
 - [ ] Our statement says truthfully where the idea came from; the guide says AI should not be used to come up with it
-- [ ] AI-written code and data are acknowledged in descriptive text and in metadata, inside the project itself
+- [x] AI-written code and data are acknowledged in descriptive text and in metadata, inside the project itself (15 Nov: README, AI_USE.md, the app's side panel and map credit line, `index.html` meta tags, the app manifest; the data files themselves carry no note)
 - [ ] No AI-generated image, video or audio anywhere. If one is ever used: a visible watermark on images and video
 - [ ] No NASA logo, flag or mission identifier in anything generated
 

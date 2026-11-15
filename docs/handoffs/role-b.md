@@ -1,6 +1,6 @@
 # Role B handoff
 
-## Sun 15 Nov, about 09:20, role B work by the team owner with Claude Code, after Joseph's handover. START HERE
+## Sun 15 Nov, about 09:05, role B work by the team owner with Claude Code, after Joseph's handover. START HERE
 
 Done (740a81e, pushed): S0 to S18 from REVIEW_QUEUE, plus the GeoJSON stops (S19) and the small visor fixes (S20). Details in REVIEW_QUEUE, Done.
 - `ui/routePanel.ts`: failed route requests now say so. A `wanted` flag replans the right walk after a restart. Clearing the stops goes back to one target. Time at stops counts in radiation, daylight and the tablet. The verdict, the margin chart and the field views read one check (`walkMargins`). Stops go in the link.
@@ -13,7 +13,9 @@ Done (740a81e, pushed): S0 to S18 from REVIEW_QUEUE, plus the GeoJSON stops (S19
 Not done: the low items S19 to S22 and S24; item 12 of the evening plan (way home from here); smoothing.
 Broken or risky: nothing seen broken. The tether check runs on the walker's cautious timeline, which can differ by a few minutes from the table's cautious times (safety/AGENTS.md, Known issues). In first person the camera stops updating once the ground under the eyes has loaded and no key is held; if higher-detail terrain loads later it could sit a little off the ground until the next step.
 Next: the owner looks by eye at the walk column at 1,440 px and on a phone, adds two stops, plays the walk-through in first person.
-Files: app/src/ui/routePanel.ts, walkThrough.ts, visor.ts, urlState.ts (+test), orbitPanel.ts; app/src/safety/tether.ts (+test), walker.ts (+test); AGENTS.md indexes in ui/ and safety/.
+Also, about 10:30 (bc4cb24 and 893fb0f, pushed): the Helmet button opens first person under the visor (`modes.ts` `onHelmet`, `walkThrough.ts` `enterFirstPerson`); while steering, the quickest walkable way home (`safety/walker.ts` `wayHome`, tested) is drawn in blue and the visor's arrow follows it; the forecast and the link to Earth share one column (`main.ts`, `style.css` `.map-notes`), fixing the overlap the owner saw. The headless test browser renders too slowly while the camera follows the astronaut to try long walks; the loop itself was checked with a temporary log (removed).
+Also, about 09:35 (32a6118, pushed): `ui/timeSlider.ts` shows an hourly weather file (Bright Angel, MEDA): pressure, the humidity sensor's temperature and wind at the start hour, the sensor temperature range over the walk, the season it is for, and a warning when today is outside it. Seen in a scripted browser at 1,440 px.
+Files: app/src/ui/routePanel.ts, walkThrough.ts, visor.ts, urlState.ts (+test), orbitPanel.ts, timeSlider.ts; app/src/safety/tether.ts (+test), walker.ts (+test); AGENTS.md indexes in ui/ and safety/.
 Other roles need to know: C, the link now holds stops (`stops=lon,lat,min;...`); the Bright Angel link itself is unchanged.
 Checks: `npm run check` passes (types, 108 tests, build). Scripted headless Chrome on the dev server: hero walk, two stops, Clear, stops link reloaded, playback and Stop, held keys, first person in and out, no console errors.
 

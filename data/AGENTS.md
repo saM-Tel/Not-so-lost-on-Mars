@@ -37,17 +37,17 @@ Web paths under the address:
 /raw/gale/      Gale terrain and image files
 /raw/<site>/    one folder each for viking1, viking2, pathfinder, spirit, opportunity, phoenix, insight
 /raw/feeds/     rover location files and the Curiosity weather feed
-/raw/meda/      Perseverance weather (MEDA): batch 3, asked for on 14 Nov, sols 3-64, 672-733 and 1340-1402 in data_derived_env/sol_NNNN/, format documents in docs/
-/raw/rad/       Curiosity RAD data for sols 4185-4195 (the 20 May 2024 storm is sol 4190): batch 3
-/raw/gale/metadata/   labels and pages for the Gale mosaics, for their image dates: batch 3
+/raw/meda/      Perseverance weather (MEDA): batch 3, 173 sols from 3-64, 672-733 and 1340-1402 in data_derived_env/sol_NNNN/, format documents in docs/. Read by pipeline/meda.py since 15 Nov
+/raw/rad/       Curiosity RAD data for sols 4185-4195 (the 20 May 2024 storm is sol 4190): batch 3, folder MSL-M-RAD-3-RDR-V1.0 present, contents not checked, not used
+/raw/gale/metadata/   labels and pages for the Gale mosaics, for their image dates: batch 3, present (PDS3 and PDS4 labels and the USGS product pages), not read yet
 /shared/        large intermediate files worth sharing; only the owner can add to it
 ```
 
 Checked on 13 November from the server itself and from the owner's laptop over Tailscale: a header request shows `Accept-Ranges: bytes`, a request for the first 100 bytes returns status 206, and a write attempt is refused.
 
-Batch 3 was asked of the server's own Claude session on 14 Nov at about 16:30 and takes a few hours. Check what arrived by listing the folders above; the server session's report says what failed. Until it lands, those folders are absent.
+Batch 3 was asked of the server's own Claude session on 14 Nov at about 16:30. All three folders were present when listed on 15 Nov; only MEDA has been read, and its 173 sol folders are all there.
 
-Local copies the pipeline uses (in `data/raw/`, ignored by git): `feeds/msl_curiosity_rems_weather.json` for `weather.py`, and `geology/` (the SIM 3464 zip, and the THEMIS night infrared mosaic unzipped from it for Bright Angel's thermal layer). Fetch them from the server's `/raw/feeds/` and `/raw/jezero/geology/` if missing.
+Local copies the pipeline uses (in `data/raw/`, ignored by git): `feeds/msl_curiosity_rems_weather.json` for `weather.py`, `feeds/m20_perseverance_waypoints.json` for where the rover was (also `meda.py`), and `geology/` (the SIM 3464 zip, and the THEMIS night infrared mosaic unzipped from it for Bright Angel's thermal layer). Fetch them from the server's `/raw/feeds/` and `/raw/jezero/geology/` if missing. `meda.py` reads MEDA straight from the server and keeps only small per-sol sums in `data/work/meda/`.
 
 Still to check:
 
