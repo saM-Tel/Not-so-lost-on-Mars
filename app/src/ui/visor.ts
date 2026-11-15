@@ -14,6 +14,8 @@ import { formatMarsClock } from './timeSlider';
 
 export interface VisorSnapshot {
   headingDeg: number;
+  /** Whether home is known; when it is not, the visor says so rather than "At home". */
+  homeKnown: boolean;
   /** Bearing from the astronaut to home, degrees from north; null when at home. */
   homeBearingDeg: number | null;
   homeDistanceM: number;
@@ -87,10 +89,16 @@ export function createVisor(onLeave: () => void): Visor {
   return {
     element: visor,
     update(s) {
-      heading.textContent = `${COMPASS[Math.round(s.headingDeg / 45) % 8]} ${s.headingDeg.toFixed(0).padStart(3, '0')}°`;
+      // Rounded first, so 359.6 degrees reads N 000, not N 360.
+      const degrees = Math.round(s.headingDeg) % 360;
+      heading.textContent = `${COMPASS[Math.round(degrees / 45) % 8]} ${String(degrees).padStart(3, '0')}°`;
       badge.textContent = s.speedUp === 1 ? 'SIMULATED · real time' : `SIMULATED · ${s.speedUp}× real time`;
 
-      if (s.homeBearingDeg === null || s.homeDistanceM < 2) {
+      if (!s.homeKnown) {
+        homeArrow.style.transform = 'none';
+        homeArrow.textContent = '?';
+        homeText.textContent = 'Home not known';
+      } else if (s.homeBearingDeg === null || s.homeDistanceM < 2) {
         homeArrow.style.transform = 'none';
         homeArrow.textContent = '⌂';
         homeText.textContent = 'At home';
@@ -121,7 +129,8 @@ export function createVisor(onLeave: () => void): Visor {
       const link = s.relays === null ? 'link: no prediction' : s.relays.length > 0 ? `link: ${s.relays.join(', ')}` : 'no link';
       const sun = s.sunElevationDeg > 0 ? `Sun ${s.sunElevationDeg.toFixed(0)}° up` : 'Sun down';
       stats.textContent = `${s.speedMps.toFixed(2)} m/s on ${s.slopeDeg >= 0 ? '+' : ''}${s.slopeDeg.toFixed(0)}° · walked ${formatDistance(s.walkedM)} · ${link} · ${sun} · eye height 1.7 m`;
-      status.textContent = s.message;
+      // Written only when it changes: it is read out by screen readers.
+      if (status.textContent !== s.message) status.textContent = s.message;
     },
   };
 }

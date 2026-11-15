@@ -30,9 +30,9 @@ Add a row when you add a file. Remove it when you delete one.
 | File | What it does | Feature |
 |---|---|---|
 | `budget.ts` | The time budget behind the tether: an 8-hour walk and a walk-back limit of 30 minutes or 1 hour, both from a NASA source. To add: energy and oxygen budgets, a reserve | F4 |
-| `tether.ts` | The tether: a picture of the boundary where the walk home takes as long as is allowed, cautious line strong and expected line faint; how far from home a route gets | F4 |
+| `tether.ts` | The tether: a picture of the boundary where the walk home takes as long as is allowed, cautious line strong and expected line faint; how far from home a route gets; the margin at every point of a walk at the moment the walker is there, with the planned way back counted on the way home | F4 |
 | `tether.test.ts` | Tests for `budget.ts` and `tether.ts` on a made-up grid | |
-| `walker.ts` | The walk-through's rules (F19): how far the astronaut walks in a time step at the cautious speed for the slope ahead, checked every metre so keep-out cannot be jumped; the planned route as a timeline priced by the route card's own model | F19 |
+| `walker.ts` | The walk-through's rules (F19): how far the astronaut walks in a time step at the cautious speed for the slope ahead, checked every metre so keep-out cannot be jumped; the planned route as a timeline priced by the route card's own model, a missing height adding no climb; time at stops added (for the tether) or as pauses (for playback) | F3, F19 |
 | `walker.test.ts` | Tests for `walker.ts` on a made-up grid | |
 | `dose.ts` | Radiation dose for a planned walk: dose equivalent and absorbed dose, each from its own measured rate, with a range. To add: terrain shielding | F5 |
 | `dose.test.ts` | Tests for `dose.ts` | |
@@ -42,4 +42,4 @@ Add a row when you add a file. Remove it when you delete one.
 ## Known issues
 
 - The tether is a time limit only. Energy and oxygen are not yet budgets, and no reserve is taken off, because we have no sourced figures for them.
-- Whether a walk stays inside the tether is judged once, at the walk's far end, not at every point along it.
+- The tether is checked at every point of the walk on the cautious timeline from `walker.ts`, which prices steps between 4 m cell centres. That can differ by a few minutes from the route card's cautious times, which come from the route statistics.

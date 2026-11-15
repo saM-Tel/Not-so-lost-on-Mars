@@ -100,6 +100,19 @@ describe('how far from home a route gets', () => {
     expect(late.marginsS[2]).toBe(-3000);
   });
 
+  it('uses the planned way back on the way home when it is slower than the quickest way (S5 with R3)', () => {
+    // Fixture: out to cell 3 (1,800 s from home by the quickest way) in 30 min, then a planned way back of 62 min.
+    const points: [number, number][] = [[77.30005, 18.49995], [77.30035, 18.49995], [77.30005, 18.49995]];
+    const times = [0, 1800, 1800 + 3720];
+    const allowed = (elapsed: number) => allowedTimeHomeS({ walkBackLimitS: 3600, elapsedS: elapsed });
+    const quickestOnly = marginsAlongWalk(cautiousS, definition, points, times, allowed, 0);
+    expect(quickestOnly.marginsS[1]).toBe(1800);
+    const planned = marginsAlongWalk(cautiousS, definition, points, times, allowed, 0, 1);
+    expect(planned.homeS[1]).toBe(3720);
+    expect(planned.marginsS[1]).toBe(-120);
+    expect(planned.tightestIndex).toBe(1);
+  });
+
   it('says there is no way home from a point outside the grid', () => {
     expect(farthestFromHomeS(cautiousS, definition, [[77.2, 18.49995]])).toBe(Infinity);
   });

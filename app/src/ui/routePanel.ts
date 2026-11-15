@@ -4,7 +4,8 @@
 //          open and close: targets, tether, this walk, photos, storm, when to go, home and suit (F17).
 //          Also the scenario's science targets, oxygen, the elevation profile, the route's confidence line, the suit's
 //          slope limit, the storm drill, the when-to-go panel, route export and the field views' state.
-//          Still to add: a route through several targets in a row.
+//          Walks through several stops (F3), with time at each counted in the tether, radiation and daylight, and kept in
+//          the shareable link.
 // IN:      A loaded site with routing grids; clicks on the map; results from src/route/client.ts.
 // OUT:     A card over the map, and the route drawn through src/map/routeLayer.ts. Returns a function that removes both.
 // USED BY: src/main.ts.
@@ -194,10 +195,12 @@ export function startRoutePlanner(
     ground: () => groundNow(),
     timeHomeS: () => tetherFields?.cautiousS ?? null,
     home: () => homeAt,
-    route: () => (lastAnswer?.ok ? { out: lastAnswer.out.line, back: lastAnswer.back.line } : null),
+    route: () => (lastAnswer?.ok ? { out: lastAnswer.out.line, back: lastAnswer.back.line, stops: shownStops } : null),
     allowedS: (elapsedS) => allowedTimeHomeS({ ...tether.settings(), elapsedS }),
+    getElapsed: () => tether.settings().elapsedS,
     setElapsed: (elapsedS) => { tether.set({ elapsedS }); drawTether(); },
     relaysAt: (utc) => orbit.relaysAt(utc),
+    startUtc: () => orbit.startUtc().getTime(),
     site: [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg],
   });
   fill(parts.walkthrough, walk.element);
@@ -223,14 +226,25 @@ export function startRoutePlanner(
     if (passed.length > 0) return `after stop ${passed.length}, ${passed[passed.length - 1]!.name}`;
     return index === outCount - 1 ? 'at the far end' : 'on the way out';
   }
-  /** The tightest point and a small chart of the margin by time along the walk. Redrawn when the settings move. */
-  function renderMargins(): void {
-    marginBox.replaceChildren();
+  /**
+   * The tether checked at every point of the walk on screen, at the moment the walker is there, with the planned way
+   * back counted on the way home: one rule for the verdict, the margin chart and the field views (review item S5).
+   * Null until the walk, the tether and the grids are all known.
+   */
+  function walkMargins(): { marginsS: number[]; homeS: number[]; allowedS: number[]; tightestIndex: number } | null {
     const definition = loaded.site.grid;
-    if (!walkTimeline || !tetherFields || !definition || !lastAnswer?.ok) return;
+    if (!walkTimeline || !tetherFields || !definition || !lastAnswer?.ok) return null;
     const settings = tether.settings();
-    const { marginsS, tightestIndex } = marginsAlongWalk(tetherFields.cautiousS, definition, walkTimeline.points, walkTimeline.timesS,
-      (elapsedS) => allowedTimeHomeS({ ...settings, elapsedS }), settings.elapsedS);
+    const allowedAt = (elapsedS: number): number => allowedTimeHomeS({ ...settings, elapsedS });
+    const check = marginsAlongWalk(tetherFields.cautiousS, definition, walkTimeline.points, walkTimeline.timesS,
+      allowedAt, settings.elapsedS, lastAnswer.out.line.length - 1);
+    return { ...check, allowedS: walkTimeline.timesS.map((t) => allowedAt(settings.elapsedS + t)) };
+  }
+  /** The tightest point and a small chart of the margin by time along the walk. Redrawn when the settings move. */
+  function renderMargins(check: ReturnType<typeof walkMargins>): void {
+    marginBox.replaceChildren();
+    if (!walkTimeline || !check) return;
+    const { marginsS, tightestIndex } = check;
     const times = walkTimeline.timesS;
     const total = times[times.length - 1] || 1;
     const tight = marginsS[tightestIndex]!;
@@ -280,7 +294,9 @@ export function startRoutePlanner(
   let stops: { position: [number, number]; name: string; stayMin: number }[] = [];
   let addingStops = false;
   /** The stops of the walk now on screen, with where each falls on the way out; empty for a walk to one target. */
-  let shownStops: { lineIndex: number; stayS: number; name: string }[] = [];
+  let shownStops: { lineIndex: number; stayS: number; name: string; position: [number, number] }[] = [];
+  /** What the person last asked for: a walk to one target or through the stops. A restart plans it again (S1, S8). */
+  let wanted: 'target' | 'stops' = 'target';
   /** Plan the walk through `stops`. Set once the worker is ready. */
   let planVia: () => void = () => {};
 
@@ -342,10 +358,14 @@ export function startRoutePlanner(
     clearStops.hidden = stops.length === 0;
     renderStopPins();
   }
-  /** After any change to the stops: redraw the list and plan the walk through them again. */
+  /**
+   * After any change to the stops: redraw the list and plan the walk through them again. With no stops left, go back
+   * to a walk to one target, so the old stops walk and its times do not stay on screen (review item S2).
+   */
   function stopsChanged(): void {
     renderStops();
-    if (stops.length > 0) planVia();
+    if (stops.length > 0) { wanted = 'stops'; planVia(); }
+    else if (wanted === 'stops') { wanted = 'target'; planSingle(); }
   }
   function addStop(position: [number, number], name: string): void {
     stops.push({ position, name, stayMin: 10 });
@@ -357,10 +377,32 @@ export function startRoutePlanner(
   });
   clearStops.addEventListener('click', () => {
     stops = [];
-    shownStops = [];
     pointCount = 0;
-    renderStops();
+    stopsChanged();
   });
+  /** Back to a walk to one target once the stops are cleared: the last one chosen, else the first science target (S2, S3). */
+  function planSingle(): void {
+    const first = loaded.site.targets?.[0];
+    const target = lastTarget ?? (first ? [first.lonEastDeg, first.latDeg] as [number, number] : null);
+    if (target) { planTo(target); return; }
+    // No target to go back to: clear the walk, so nothing of the stops walk stays on screen.
+    ++latest;
+    shownStops = [];
+    walkTimeline = null;
+    lastAnswer = null;
+    walk.routeChanged();
+    layer.showRoute(null);
+    result.replaceChildren();
+    parts.walk.hidden = true;
+    photos.show(null);
+    when.setWalk(null);
+    orbit.setWalk(null);
+    showVerdict();
+    showStorm();
+    renderStopPins();
+    updateUrlState({ target: null, stops: null });
+    status.textContent = 'Click the ground to choose a target.';
+  }
   renderStops();
   let stopped = false;
   let stopWorker = (): void => {};
@@ -375,31 +417,48 @@ export function startRoutePlanner(
   let planTo: (position: [number, number]) => void = () => {};
   const stayAtStopsS = (): number => shownStops.reduce((sum, s) => sum + s.stayS, 0);
 
-  /** Say whether the walk on screen stays inside the tether, judged at its far end in the cautious case. */
+  /**
+   * Say whether the walk on screen stays inside the tether in the cautious case. Checked at every point against the
+   * moment the walker is there, with time at stops and the planned way back counted: the same rule as the margin
+   * chart, so the two always agree (review item S5).
+   */
   const showVerdict = (): void => {
     const definition = loaded.site.grid;
-    if (!tetherFields || !definition || !lastAnswer?.ok) { tether.showVerdict(null); modes.setState(null); return; }
+    if (!tetherFields || !definition || !lastAnswer?.ok) { tether.showVerdict(null); modes.setState(null); renderMargins(null); return; }
     const settings = tether.settings();
     const outS = caseValue(lastAnswer.out, 'cautious', 'timeS');
     const backS = caseValue(lastAnswer.back, 'cautious', 'timeS');
-    // Time at stops (F3) counts too: by the time the walker leaves the far end, the walk out and every stop have gone.
+    // Time at stops (F3) counts too: standing at a stop is still time outside.
     const stayS = stayAtStopsS();
-    const allowedThereS = allowedTimeHomeS({ ...settings, elapsedS: settings.elapsedS + outS + stayS });
-    // Judged along the walk as planned: the way back drawn on the map can be slower than the quickest way home.
-    const farthestS = walkFarthestFromHomeS(tetherFields.cautiousS, definition, lastAnswer.out.line, lastAnswer.back.line, backS);
+    const check = walkMargins();
+    let allowedThereS: number;
+    let farthestS: number;
+    let where: string;
+    if (check) {
+      const i = check.tightestIndex;
+      allowedThereS = check.allowedS[i]!;
+      farthestS = check.homeS[i]!;
+      where = `${formatDuration(walkTimeline!.timesS[i]!)} into the walk, ${whereOnWalk(i)}`;
+    } else {
+      // Before the walk's timeline exists: judged once, at the far end.
+      allowedThereS = allowedTimeHomeS({ ...settings, elapsedS: settings.elapsedS + outS + stayS });
+      farthestS = walkFarthestFromHomeS(tetherFields.cautiousS, definition, lastAnswer.out.line, lastAnswer.back.line, backS);
+      where = 'at its farthest';
+    }
     let alert: string | null = null;
     const atStops = stayS > 0 ? `, with ${formatDuration(stayS)} at the stops` : '';
+    const home = Number.isFinite(farthestS) ? `the walk home takes ${formatDuration(farthestS)} in the cautious case` : 'there is no walkable way home';
     if (outS + backS + stayS > timeLeftS(settings.elapsedS)) {
       alert = 'Not enough time left for this walk.';
       tether.showVerdict({ inside: false, text: `Not enough time left. Out and back takes ${formatDuration(outS + backS + stayS)} in the cautious case${atStops}, and ${formatDuration(timeLeftS(settings.elapsedS))} is left.` });
-    } else if (farthestS > allowedThereS) {
+    } else if (!(farthestS <= allowedThereS)) {
       alert = 'This walk leaves the tether. Choose a nearer target.';
-      tether.showVerdict({ inside: false, text: `This walk leaves the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case, along the planned way out and back; the most allowed by then is ${formatDuration(allowedThereS)}. Choose a nearer target.` });
+      tether.showVerdict({ inside: false, text: `This walk leaves the tether. At its tightest point, ${where}, ${home}; the most allowed by then is ${formatDuration(allowedThereS)}. Choose a nearer target${stayS > 0 ? ', fewer stops or shorter stays' : ''}.` });
     } else {
-      tether.showVerdict({ inside: true, text: `This walk stays inside the tether. At its farthest it is ${formatDuration(farthestS)} from home in the cautious case, along the planned way out and back; ${formatDuration(allowedThereS)} is allowed.` });
+      tether.showVerdict({ inside: true, text: `This walk stays inside the tether${atStops}. At its tightest point, ${where}, ${home}, with ${formatDuration(allowedThereS - farthestS)} to spare.` });
     }
-    updateField(lastAnswer, settings.elapsedS, outS, backS, allowedThereS, farthestS, alert);
-    renderMargins();
+    updateField(lastAnswer, settings.elapsedS, outS, backS, stayS, allowedThereS, farthestS, alert);
+    renderMargins(check);
   };
 
   /** The field tablet and helmet views (F13): cautious values for the planned walk. */
@@ -409,8 +468,8 @@ export function startRoutePlanner(
   /** The photo found for the current target, kept so slider moves do not look it up and reload it again. */
   let fieldPhoto: { key: string; photo: FieldState['photo'] } | null = null;
   const updateField = (
-    answer: Extract<RouteAnswer, { ok: true }>, elapsedS: number, outS: number, backS: number, allowedThereS: number, farthestS: number,
-    verdictAlert: string | null,
+    answer: Extract<RouteAnswer, { ok: true }>, elapsedS: number, outS: number, backS: number, stayS: number, allowedThereS: number,
+    farthestS: number, verdictAlert: string | null,
   ): void => {
     const homeAt: [number, number] = homeOverride ?? (loaded.site.home ? [loaded.site.home.lonEastDeg, loaded.site.home.latDeg] : [loaded.site.centre.lonEastDeg, loaded.site.centre.latDeg]);
     const named = (loaded.site.targets ?? []).find((t) => Math.abs(t.lonEastDeg - answer.target[0]) < 1e-4 && Math.abs(t.latDeg - answer.target[1]) < 1e-4);
@@ -421,7 +480,8 @@ export function startRoutePlanner(
       homeFromTargetS: backS,
       tetherMarginS: allowedThereS - farthestS,
       tetherAllowedS: allowedThereS,
-      stayAtTargetS: verdictAlert === null ? WALK_DURATION_S - elapsedS - outS - backS : 0,
+      // Time already given to the stops is not free at the far end (S4).
+      stayAtTargetS: verdictAlert === null ? WALK_DURATION_S - elapsedS - outS - backS - stayS : 0,
       alert: stormAlert ?? verdictAlert,
       photo: null,
     };
@@ -604,7 +664,12 @@ export function startRoutePlanner(
         slopeLimitDeg,
         madeUtc: new Date().toISOString(),
         modelled: 'Times and energy are modelled for three cases (favourable, expected, cautious); see the app for sources.',
-        features: [leg('out', answer.out.line, answer.out.stats), leg('back', answer.back.line, answer.back.stats)],
+        features: [
+          leg('out', answer.out.line, answer.out.stats), leg('back', answer.back.line, answer.back.stats),
+          ...shownStops.map((s, i) => ({
+            type: 'Feature', properties: { stop: i + 1, name: s.name, stayS: s.stayS }, geometry: { type: 'Point', coordinates: s.position },
+          })),
+        ],
       };
       const url = URL.createObjectURL(new Blob([JSON.stringify(file, null, 1)], { type: 'application/geo+json' }));
       const link = document.createElement('a');
@@ -626,13 +691,18 @@ export function startRoutePlanner(
     moveRover.textContent = placingHome ? 'Click the map where the rover should park…' : 'Move the rover: click a new spot';
   });
 
+  /** Time outside on a walk for each case: walking out and back, and standing at the stops (S4). */
+  const timeOutside = (answer: Extract<RouteAnswer, { ok: true }>): { favourable: number; expected: number; cautious: number } => {
+    const walkTime = (caseId: string): number => caseValue(answer.out, caseId, 'timeS') + caseValue(answer.back, caseId, 'timeS') + stayAtStopsS();
+    return { favourable: walkTime('favourable'), expected: walkTime('expected'), cautious: walkTime('cautious') };
+  };
+
   /** Storm mode (F10): what to do from the far end of the planned walk if a storm is coming. */
   const showStorm = (): void => {
     if (!lastAnswer?.ok) { storm.show(null, null); return; }
     const answer = lastAnswer;
     const timeHomeS = caseValue(answer.back, 'cautious', 'timeS');
-    const walkTime = (caseId: string): number => caseValue(answer.out, caseId, 'timeS') + caseValue(answer.back, caseId, 'timeS');
-    const dose = walkDose({ favourable: walkTime('favourable'), expected: walkTime('expected'), cautious: walkTime('cautious') });
+    const dose = walkDose(timeOutside(answer));
     storm.show(stormAdvice(timeHomeS, storm.warningS(), formatDuration), dose.absorbedUGy.expected);
   };
   const storm = createStormDrill(showStorm);
@@ -646,12 +716,15 @@ export function startRoutePlanner(
 
   const showAnswer = (answer: RouteAnswer, failedStop?: string): void => {
     lastAnswer = answer;
+    // A playback of the old walk stops (S14).
+    walk.routeChanged();
     const ground = answer.ok ? groundNow() : null;
     walkTimeline = answer.ok && ground ? withStopTimes(routeTimeline(ground, [answer.out.line, answer.back.line]), shownStops) : null;
     renderStopPins();
     showVerdict();
     showStorm();
-    when.setWalk(answer.ok ? caseValue(answer.out, 'cautious', 'timeS') + caseValue(answer.back, 'cautious', 'timeS') : null);
+    // Daylight counts the whole time outside, stops included (S4).
+    when.setWalk(answer.ok ? timeOutside(answer).cautious : null);
     if (answer.ok && walkTimeline) {
       // Each point at its cautious time, with time at stops, so the link timeline and the glow are timed as walked.
       const totalMin = walkTimeline.timesS[walkTimeline.timesS.length - 1]! / 60;
@@ -672,15 +745,19 @@ export function startRoutePlanner(
     result.replaceChildren();
     parts.walk.hidden = true;
     if (!answer.ok) {
+      // The link keeps the last walk that could be planned; a refused point is not written to it (S7).
       layer.showRoute(null);
       photos.show(null);
-      updateUrlState({ target: null });
       status.textContent = `${failedStop ? `${failedStop}: ` : ''}${REFUSALS[answer.reason] ?? 'No route was found.'}`;
       modes.setState(null, status.textContent);
       return;
     }
     layer.showRoute({ target: answer.target, out: answer.out.line, back: answer.back.line });
-    updateUrlState({ target: answer.target });
+    // A walk through stops goes into the link with its stops and the minutes at each, so the link opens the same walk
+    // with the same verdict (team decision of 15 Nov, review item S7).
+    updateUrlState(shownStops.length > 0
+      ? { target: null, stops: shownStops.map((s) => ({ position: s.position, stayMin: s.stayS / 60 })) }
+      : { target: answer.target, stops: null });
     // Photos the rover took near the way out and the way back.
     photos.show([...answer.out.line, ...answer.back.line]);
     status.textContent = 'Click another point to change the target.';
@@ -700,22 +777,21 @@ export function startRoutePlanner(
       answer.out.stats.steepestUpDeg, -answer.out.stats.steepestDownDeg,
       answer.back.stats.steepestUpDeg, -answer.back.stats.steepestDownDeg,
     );
-    // Radiation picked up outside over the round trip. Gray and sievert each come from their own measured rate.
-    const walkTime = (caseId: string): number => caseValue(answer.out, caseId, 'timeS') + caseValue(answer.back, caseId, 'timeS');
-    const dose = walkDose({ favourable: walkTime('favourable'), expected: walkTime('expected'), cautious: walkTime('cautious') });
+    // Radiation picked up outside over the round trip, stops included. Gray and sievert each come from their own measured rate.
+    const dose = walkDose(timeOutside(answer));
     const doseLine = el('p', 'route-card__dose');
     doseLine.textContent =
       `Radiation on this walk: ${formatRange(dose.equivalentUSv.expected, dose.equivalentUSv.lowest, dose.equivalentUSv.highest, (v) => formatDose(v, 'Sv'))} dose equivalent; ` +
       `${formatRange(dose.absorbedUGy.expected, dose.absorbedUGy.lowest, dose.absorbedUGy.highest, (v) => formatDose(v, 'Gy'))} absorbed dose.`;
     const doseBasis =
-      'Radiation: modelled from the everyday background Curiosity measured at Gale crater, applied here (grade C), for the walking time only. The range covers the solar cycle and the three walking cases. A solar storm can add far more in hours and is not included.';
+      `Radiation: modelled from the everyday background Curiosity measured at Gale crater, applied here (grade C), for the time outside${shownStops.length > 0 ? ': walking, and the time at the stops' : ''}. The range covers the solar cycle and the three walking cases. A solar storm can add far more in hours and is not included.`;
     const details = el('details', 'route-card__basis');
     details.append(el('summary', undefined, 'What these numbers rest on'));
     const basis = el('ul');
     // F17: the notes that explain each number live here, one click away, so the card shows the numbers first.
     for (const text of [
       'Modelled, not measured. Nobody has walked on Mars. Time and energy come from a walking model built on Apollo lunar data and load-carrying tests on Earth, with Mars gravity (grade C).',
-      'Each number is the expected case, with the favourable and cautious cases in brackets. The route is chosen for least energy in the expected case; walking time only, with no stops.',
+      `Each number is the expected case, with the favourable and cautious cases in brackets. The route is chosen for least energy in the expected case. The table gives walking time only${shownStops.length > 0 ? '; the time at the stops is added in the tether, the radiation and the daylight check' : ''}.`,
       'Out and back differ because uphill and downhill cost differently.',
       `Oxygen: ${OXYGEN_BASIS}`,
       doseBasis,
@@ -775,9 +851,15 @@ export function startRoutePlanner(
     photos.show(null);
     when.setWalk(null);
     orbit.setWalk(null);
+    shownStops = [];
+    walkTimeline = null;
+    walk.routeChanged();
     showVerdict();
     showStorm();
+    // Both planners belong to the old worker: a request to it would never be answered (S1). `begin` plans the walk
+    // the person last asked for again, through the stops or to the one target.
     planTo = () => {};
+    planVia = () => {};
     void begin();
   };
   const suit = suitSettings((limitDeg) => {
@@ -807,7 +889,8 @@ export function startRoutePlanner(
       if (stopped) return;
       layer.showKeepOut(ready.keepOut, definition);
       keepOutCells = ready.keepOut;
-      homeAt = ready.homeCentre;
+      // The walk-through can start only from a home that can be walked from (S15).
+      homeAt = ready.homeUsable ? ready.homeCentre : null;
       const first = firstStart;
       firstStart = false;
       // Keep-out ground is a layer like any other in the layer panel. Its record is the slope layer's, with what
@@ -876,31 +959,41 @@ export function startRoutePlanner(
         return;
       }
       status.textContent = targets.length > 0 ? 'Pick a science target, or click the ground.' : 'Click the ground to choose a target.';
+      /** A route request the worker failed on: say so, rather than leave "Working out the walk…" for good (S0). */
+      const failed = (request: number) => (error: unknown): void => {
+        if (stopped || request !== latest) return;
+        status.textContent = `The walk could not be worked out: ${error instanceof Error ? error.message : String(error)}`;
+        modes.setState(null, status.textContent);
+      };
       planTo = (position) => {
         const request = ++latest;
+        wanted = 'target';
         lastTarget = position;
-        shownStops = [];
         // A storm alert belongs to the walk it was raised for.
         stormAlert = null;
         status.textContent = 'Working out the walk…';
-        void client.route(position).then((answer) => {
-          if (!stopped && request === latest) showAnswer(answer);
-        });
+        client.route(position).then((answer) => {
+          if (stopped || request !== latest) return;
+          // The old walk's stops go only when the new walk is here, so the screen never mixes the two (S6).
+          shownStops = [];
+          showAnswer(answer);
+        }).catch(failed(request));
       };
       planVia = () => {
         if (stops.length === 0) return;
         const request = ++latest;
-        const wanted = stops.map((s) => ({ ...s }));
-        lastTarget = null;
+        wanted = 'stops';
+        const asked = stops.map((s) => ({ ...s }));
+        // The last single target is kept, to go back to when the stops are cleared (S3).
         stormAlert = null;
-        status.textContent = `Working out the walk through ${wanted.length} stop${wanted.length === 1 ? '' : 's'}…`;
-        void client.route(wanted[wanted.length - 1]!.position, wanted.slice(0, -1).map((s) => s.position)).then((answer) => {
+        status.textContent = `Working out the walk through ${asked.length} stop${asked.length === 1 ? '' : 's'}…`;
+        client.route(asked[asked.length - 1]!.position, asked.slice(0, -1).map((s) => s.position)).then((answer) => {
           if (stopped || request !== latest) return;
           // One stop comes back without a stop list: it is the far end of an ordinary walk.
           const found = answer.ok ? answer.stops ?? [{ position: answer.target, lineIndex: answer.out.line.length - 1 }] : [];
-          shownStops = found.map((s, i) => ({ lineIndex: s.lineIndex, stayS: wanted[i]!.stayMin * 60, name: wanted[i]!.name }));
-          showAnswer(answer, answer.ok || answer.stop === undefined ? undefined : wanted[answer.stop]?.name);
-        });
+          shownStops = found.map((s, i) => ({ lineIndex: s.lineIndex, stayS: asked[i]!.stayMin * 60, name: asked[i]!.name, position: asked[i]!.position }));
+          showAnswer(answer, answer.ok || answer.stop === undefined ? undefined : asked[answer.stop]?.name);
+        }).catch(failed(request));
       };
       if (first) {
         onClick = (event) => {
@@ -912,6 +1005,8 @@ export function startRoutePlanner(
             restart();
             return;
           }
+          // In first person the clicks belong to the view; they must not replan the walk under the astronaut (S14).
+          if (walk.isFirstPerson()) return;
           if (addingStops) { addStop([event.lngLat.lng, event.lngLat.lat], `Point ${++pointCount}`); return; }
           planTo([event.lngLat.lng, event.lngLat.lat]);
         };
@@ -922,7 +1017,17 @@ export function startRoutePlanner(
       // walk to the first science target, so the route and the tether are on screen at once (F7). After a change of
       // suit settings the same walk is planned again.
       if (first) fill(parts.targets, stopsBox);
-      if (!first && shownStops.length > 0 && stops.length > 0) planVia();
+      // A shared link with stops opens the same walk through them, each with its minutes (S7). A stop at a science
+      // target takes the target's name.
+      if (restore?.stops && restore.stops.length > 0) {
+        stops = restore.stops.map((s) => ({
+          position: s.position, stayMin: s.stayMin,
+          name: targets.find((t) => Math.abs(t.lonEastDeg - s.position[0]) < 1e-4 && Math.abs(t.latDeg - s.position[1]) < 1e-4)?.name ?? `Point ${++pointCount}`,
+        }));
+        wanted = 'stops';
+        renderStops();
+      }
+      if (wanted === 'stops' && stops.length > 0) planVia();
       else if (!first && lastTarget) planTo(lastTarget);
       else if (restore?.target) planTo(restore.target);
       else if (targets[0]) planTo([targets[0].lonEastDeg, targets[0].latDeg]);

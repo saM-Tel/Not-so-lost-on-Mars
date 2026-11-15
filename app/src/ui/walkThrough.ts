@@ -1,14 +1,17 @@
 // WHAT:    The walk-through in the route card (F19): put a to-scale astronaut at home, steer it with the arrow keys or
-//          W, A, S, D, or let it walk the planned route at a chosen speed-up, with the camera following and a readout of
-//          time gone, walk home from here, tether margin, relay in view and the Sun. The tether shrinks as time goes.
+//          W, A, S, D, or let it walk the planned route at a chosen speed-up, standing at each stop for its time, with the
+//          camera following and a readout of time gone, walk home from here, tether margin, relay in view and the Sun.
+//          The tether shrinks as time goes, from the time since leaving home set in the card, which is put back on Stop.
 //          First person: a deliberately low-resolution view from the astronaut's eyes, 1.7 m above the 3D ground, under
 //          a helmet visor (src/ui/visor.ts) labelled as simulated, with the speed-up shown.
-// IN:      The map; the site's ground, tether field, home, planned route and relay predictions, through `WalkWorld`.
+// IN:      The map; the site's ground, tether field, home, planned route with its stops, relay predictions and the start
+//          time chosen in "Link and view from orbit", through `WalkWorld`.
 // OUT:     A page element; the astronaut on the map (src/map/astronaut.ts); the tether's time since leaving home.
 // USED BY: src/ui/routePanel.ts.
 // RULES:   A demonstration of the tether, not a game: no score, no levels. Cautious values only, as in the field views.
 //          Time counts while the astronaut walks. Arrow keys belong to the walk-through only while steering. Every
-//          map setting changed for first person (pitch and zoom limits, drawing density, sky) is put back on leaving.
+//          map setting changed for first person (pitch and zoom limits, drawing density, sky, mouse and touch) is put
+//          back on leaving. The frame loop runs only while something moves.
 // TRAPS:   PITFALLS 3, 7, 10.
 // OWNER:   Role B.
 
@@ -18,7 +21,9 @@ import { MAPLIBRE_METRES_PER_MARS_METRE } from '../mars/constants';
 import { bearingDeg, destination, distanceM, type LonLat } from '../mars/geometry';
 import { sunAt } from '../mars/sun';
 import { localTrueSolarTimeHours } from '../mars/time';
-import { alongTimeline, cellIndex, routeTimeline, walkFreely, type RouteTimeline, type WalkerGround } from '../safety/walker';
+import {
+  alongTimeline, cellIndex, routeTimeline, walkFreely, withStopPauses, type RouteTimeline, type StopPause, type WalkerGround,
+} from '../safety/walker';
 import { formatDuration } from './format';
 import { createVisor, type Visor, type VisorSnapshot } from './visor';
 
@@ -26,14 +31,29 @@ export interface WalkWorld {
   ground(): WalkerGround | null;
   /** Cautious time to walk home from each grid cell, seconds; null until the tether is worked out. */
   timeHomeS(): Float32Array | null;
+  /** Home, or null when it is not known yet or cannot be walked from (keep-out ground, outside the box). */
   home(): LonLat | null;
-  route(): { out: LonLat[]; back: LonLat[] } | null;
+  /** The planned walk, with its stops (empty for a walk to one target), or null when none is planned. */
+  route(): { out: LonLat[]; back: LonLat[]; stops: { lineIndex: number; stayS: number; name: string }[] } | null;
   /** The longest walk home allowed at a time since leaving home. */
   allowedS(elapsedS: number): number;
+  /** The tether's "time since leaving home" now, seconds. */
+  getElapsed(): number;
   /** Move the tether's "time since leaving home" to this, so the boundary on the map shrinks with the walk. */
   setElapsed(elapsedS: number): void;
   relaysAt(utc: Date): string[] | null;
+  /** When the walk sets out, as a UTC time in milliseconds: the start chosen for the link timeline (F18). */
+  startUtc(): number;
   site: LonLat;
+}
+
+export interface WalkThrough {
+  element: HTMLElement;
+  /** The planned walk changed or was cleared: a playback of the old one stops (review item S14). */
+  routeChanged(): void;
+  /** Whether the first-person view is on; the map ignores clicks for routes meanwhile. */
+  isFirstPerson(): boolean;
+  remove(): void;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -72,7 +92,10 @@ const STOPS = {
   'no-data': 'No terrain data ahead.',
 } as const;
 
-export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element: HTMLElement; remove(): void } {
+/** A map handler that can be switched off for first person and back on again. */
+interface Handler { isEnabled(): boolean; enable(): void; disable(): void }
+
+export function createWalkThrough(map: MapLibreMap, world: WalkWorld): WalkThrough {
   const box = el('section', 'walk');
   box.append(el('p', 'route-card__note',
     'A to-scale astronaut, 1.8 m tall, on the 3D ground. It walks at the cautious speed for the slope underfoot and cannot enter keep-out ground. As time goes, the tether on the map shrinks.'));
@@ -89,10 +112,12 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
     speed.append(option);
   }
   speed.value = '60';
+  // The select would keep the keyboard after a change, so the arrow keys would change the speed, not walk (S10).
+  speed.addEventListener('change', () => speed.blur());
   const buttons = el('div', 'walk__buttons');
   buttons.append(place, play, eyes, stop, speed);
   const hint = el('p', 'route-card__note',
-    'Map view: the arrow keys or W, A, S, D walk in that direction on the screen. First person: up and down walk forward and back, left and right turn. Esc stops. Time counts while the astronaut walks; choose Real time to see it is to scale.');
+    'Map view: the arrow keys or W, A, S, D walk in that direction on the screen. First person: up and down walk forward and back, left and right turn. Esc stops. Time counts while the astronaut walks, from the time since leaving home set under Tether; Stop puts that back. Walking the planned route stands at each stop for its time. Choose Real time to see it is to scale.');
   const readout = el('dl', 'walk__readout');
   const status = el('p', 'walk__status');
   status.setAttribute('role', 'status');
@@ -101,19 +126,27 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
   let astronaut: Astronaut | null = null;
   let position: LonLat | null = null;
   let heading = 0;
+  /** Time on this walk-through, seconds; the tether is set to `baseS` plus this. */
   let elapsedS = 0;
+  /** The tether's time since leaving home when the walk-through started, seconds. */
+  let baseS = 0;
+  /** The person's own time since leaving home, kept to put back on Stop (review item S11); null when not walking. */
+  let savedElapsedS: number | null = null;
   let walkedM = 0;
   let lastSpeed = 0;
   let lastSlope = 0;
   let lastSetS = -Infinity;
   let mode: 'idle' | 'steer' | 'route' = 'idle';
-  let timeline: RouteTimeline | null = null;
+  let timeline: (RouteTimeline & { pauses: StopPause[] }) | null = null;
+  let routeMessage = '';
   let startedUtc = Date.now();
   let frame = 0;
+  let running = false;
   let last = 0;
   let firstPerson = false;
+  let removed = false;
   let visor: Visor | null = null;
-  let saved: { maxPitch: number; maxZoom: number; sky: SkySpecification | undefined } | null = null;
+  let saved: { maxPitch: number; maxZoom: number; pixelRatio: number; sky: SkySpecification | undefined; handlers: Handler[] } | null = null;
   const held = new Set<string>();
 
   /** Everything the readout and the visor show, worked out once a frame. */
@@ -127,10 +160,11 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
     const utc = new Date(startedUtc + elapsedS * 1000);
     return {
       headingDeg: heading,
+      homeKnown: home !== null,
       homeBearingDeg: home ? bearingDeg(position, home) : null,
       homeDistanceM: home ? distanceM(position, home) : 0,
       timeHomeS,
-      allowedS: world.allowedS(elapsedS),
+      allowedS: world.allowedS(baseS + elapsedS),
       elapsedS,
       utc,
       localSolarHours: localTrueSolarTimeHours(utc, world.site[0]),
@@ -152,27 +186,35 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
   const showReadout = (s: VisorSnapshot | null): void => {
     readout.replaceChildren();
     if (!s) return;
-    line('Time gone', formatDuration(s.elapsedS));
+    line('Time on this walk', baseS > 0 ? `${formatDuration(s.elapsedS)} (${formatDuration(baseS + s.elapsedS)} since leaving home)` : formatDuration(s.elapsedS));
     if (s.timeHomeS === null) {
       line('Walk home from here', 'no data yet');
     } else if (!Number.isFinite(s.timeHomeS)) {
       line('Walk home from here', 'no walkable way home from this spot', 'danger');
     } else {
       const margin = s.allowedS - s.timeHomeS;
-      line('Walk home from here', `${formatDuration(s.timeHomeS)} (cautious)`);
+      line('Walk home from here', `${formatDuration(s.timeHomeS)} (cautious, modelled)`);
       line('Tether margin', margin >= 0 ? formatDuration(margin) : `outside the tether by ${formatDuration(-margin)}: head home`, margin < 0 ? 'danger' : 'ok');
     }
-    line('Relay in view', s.relays === null ? 'no prediction for this time' : s.relays.length > 0 ? s.relays.join(', ') : 'none: no link',
+    line('Relay in view', s.relays === null ? 'no prediction for this time' : s.relays.length > 0 ? `${s.relays.join(', ')} (predicted)` : 'none: no link (predicted)',
       s.relays !== null && s.relays.length === 0 ? 'caution' : 'ok');
-    line('Sun', s.sunElevationDeg > 0 ? `${s.sunElevationDeg.toFixed(0)}° up` : 'down: it is night', s.sunElevationDeg <= 0 ? 'caution' : 'ok');
+    line('Sun', s.sunElevationDeg > 0 ? `${s.sunElevationDeg.toFixed(0)}° up (computed)` : 'down: it is night (computed)', s.sunElevationDeg <= 0 ? 'caution' : 'ok');
   };
 
   /** Keep the tether's time since leaving home in step, a minute at a time (its slider moves in 5-minute steps). */
   const syncTether = (force = false): void => {
     if (force || Math.abs(elapsedS - lastSetS) >= 60) {
-      world.setElapsed(elapsedS);
+      world.setElapsed(baseS + elapsedS);
       lastSetS = elapsedS;
     }
+  };
+
+  /** Put the person's own time since leaving home back on the tether, once the walk-through stops (S11). */
+  const restoreTether = (): void => {
+    if (savedElapsedS === null) return;
+    world.setElapsed(savedElapsedS);
+    savedElapsedS = null;
+    lastSetS = -Infinity;
   };
 
   /** First person: the camera at eye height over the 3D ground, looking at the ground ahead along the heading. */
@@ -202,11 +244,17 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
     return true;
   };
 
+  const stopLoop = (): void => {
+    cancelAnimationFrame(frame);
+    running = false;
+  };
+
   const tick = (now: number): void => {
-    const realDt = Math.min(0.1, (now - last) / 1000);
+    // A frame's time can be earlier than the moment the loop was started, so the step is never negative (S9).
+    const realDt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     const dt = realDt * Number(speed.value);
     last = now;
-    if (!position) return;
+    if (!position) { running = false; return; }
     if (mode === 'route' && timeline) {
       const before = position;
       const at = alongTimeline(timeline, elapsedS + dt);
@@ -215,9 +263,11 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
       heading = at.headingDeg;
       walkedM += distanceM(before, position);
       lastSpeed = dt > 0 ? distanceM(before, position) / dt : 0;
+      const pause = timeline.pauses.find((p) => elapsedS >= p.fromS && elapsedS < p.toS);
+      status.textContent = pause ? `At stop ${pause.number}, ${pause.name}: ${formatDuration(pause.toS - elapsedS)} more here.` : routeMessage;
       if (at.done) {
         elapsedS = timeline.timesS[timeline.timesS.length - 1]!;
-        status.textContent = `Back home after ${formatDuration(elapsedS)} of walking (cautious).`;
+        status.textContent = `Back home after ${formatDuration(elapsedS)} outside (cautious, modelled).`;
         mode = 'steer';
       }
     } else if (mode === 'steer' && held.size > 0) {
@@ -244,45 +294,73 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
     const s = snapshot();
     showReadout(s);
     if (s) visor?.update(s);
-    if (mode !== 'idle' || firstPerson) frame = requestAnimationFrame(tick);
+    // Run only while something moves (S16). In first person, also until the 3D ground under the eyes has loaded, so
+    // the camera does not stay at height 0.
+    const settling = firstPerson && map.queryTerrainElevation(position) === null;
+    if (!removed && (mode === 'route' || held.size > 0 || settling)) frame = requestAnimationFrame(tick);
+    else running = false;
   };
 
   const run = (): void => {
     cancelAnimationFrame(frame);
+    running = true;
     last = performance.now();
     frame = requestAnimationFrame(tick);
   };
 
   const putAt = (where: LonLat, zoom: number, pitch: number): void => {
+    // The person's own time since leaving home: the walk-through starts from it and puts it back on Stop (S11).
+    savedElapsedS ??= world.getElapsed();
+    baseS = savedElapsedS;
     position = where;
     elapsedS = 0;
     walkedM = 0;
-    startedUtc = Date.now();
+    // The clock starts at the start time chosen for the link timeline, so relays and the Sun agree with it (S17).
+    startedUtc = world.startUtc();
     syncTether(true);
     if (astronaut) astronaut.move(where, heading); else astronaut = addAstronaut(map, where, heading);
     astronaut.setVisible(!firstPerson);
     if (!firstPerson) map.easeTo({ center: where, zoom: Math.max(map.getZoom(), zoom), pitch, duration: 1200 });
   };
 
+  /** Why the astronaut cannot be put at home now, or null when it can. */
+  const cannotStart = (): string | null => {
+    if (!world.ground()) return 'The ground is still being read; try again in a moment.';
+    if (!world.home()) return 'Home is not known yet, or is on keep-out ground or outside the box, so the astronaut cannot start there.';
+    return null;
+  };
+
+  const clearHeld = (): void => { held.clear(); };
+
   const onKey = (event: KeyboardEvent): void => {
+    // A key let go anywhere, even over a form field, is no longer held (S10).
+    if (event.type === 'keyup') { held.delete(event.code); return; }
     const target = event.target as HTMLElement | null;
     if (target && ['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) return;
-    if (event.code === 'Escape' && event.type === 'keydown') { if (firstPerson) leaveFirstPerson(); else halt(); return; }
+    if (event.code === 'Escape') { if (firstPerson) leaveFirstPerson(); else halt(); return; }
     if (!(event.code in SCREEN_KEYS)) return;
-    if (mode === 'route') mode = 'steer';
+    if (mode === 'route') { mode = 'steer'; timeline = null; }
     if (mode !== 'steer') return;
     event.preventDefault();
-    if (event.type === 'keydown') { held.add(event.code); if (!firstPerson && held.size === 1) run(); } else held.delete(event.code);
+    // The keyboard repeats a held key: it is already held, so the repeat changes nothing (S9).
+    if (held.has(event.code)) return;
+    held.add(event.code);
+    if (!running) run();
   };
 
   const listen = (on: boolean): void => {
     if (on) {
       window.addEventListener('keydown', onKey);
       window.addEventListener('keyup', onKey);
+      // A key let go while the window is not in front never sends its key-up (S10).
+      window.addEventListener('blur', clearHeld);
+      document.addEventListener('visibilitychange', clearHeld);
       map.keyboard.disable();
     } else {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('keyup', onKey);
+      window.removeEventListener('blur', clearHeld);
+      document.removeEventListener('visibilitychange', clearHeld);
       map.keyboard.enable();
       held.clear();
     }
@@ -291,21 +369,28 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
   const halt = (): void => {
     if (firstPerson) leaveFirstPerson();
     mode = 'idle';
-    cancelAnimationFrame(frame);
+    timeline = null;
+    stopLoop();
     listen(false);
-    syncTether(true);
+    restoreTether();
     showReadout(snapshot());
   };
 
   const enterFirstPerson = (): void => {
     if (firstPerson) return;
     if (!position) {
-      const home = world.home();
-      if (!home || !world.ground()) { status.textContent = 'The ground is still being read; try again in a moment.'; return; }
-      putAt(home, 19.5, 60);
+      const why = cannotStart();
+      if (why) { status.textContent = why; return; }
+      putAt(world.home()!, 19.5, 60);
     }
     firstPerson = true;
-    saved = { maxPitch: map.getMaxPitch(), maxZoom: map.getMaxZoom(), sky: map.getSky() };
+    // Mouse and touch would fight the camera, which is placed every frame (S18).
+    const handlers: Handler[] = [map.dragPan, map.dragRotate, map.scrollZoom, map.boxZoom, map.doubleClickZoom, map.touchZoomRotate, map.touchPitch];
+    saved = {
+      maxPitch: map.getMaxPitch(), maxZoom: map.getMaxZoom(), pixelRatio: map.getPixelRatio(), sky: map.getSky(),
+      handlers: handlers.filter((h) => h.isEnabled()),
+    };
+    for (const h of saved.handlers) h.disable();
     map.setMaxPitch(89);
     map.setMaxZoom(24);
     map.setPixelRatio(FIRST_PERSON_PIXEL_RATIO);
@@ -331,21 +416,26 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
       map.setMaxPitch(saved.maxPitch);
       map.setMaxZoom(saved.maxZoom);
       map.setSky(saved.sky ?? { 'atmosphere-blend': 0 });
+      map.setPixelRatio(saved.pixelRatio);
+      for (const h of saved.handlers) h.enable();
+      saved = null;
     }
-    map.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     astronaut?.setVisible(true);
     eyes.textContent = 'First person';
     requestAnimationFrame(() => {
+      if (removed) return;
       map.resize();
+      // Not while the walk-through is being taken away: this flight would cancel the flight back to the globe (S12).
       if (position) map.easeTo({ center: position, zoom: 19.5, pitch: 60, duration: 800 });
     });
   }
 
   place.addEventListener('click', () => {
-    const home = world.home();
-    if (!home || !world.ground()) { status.textContent = 'The ground is still being read; try again in a moment.'; return; }
+    const why = cannotStart();
+    if (why) { status.textContent = why; return; }
     heading = 0;
-    putAt(home, 19.5, 60);
+    timeline = null;
+    putAt(world.home()!, 19.5, 60);
     mode = 'steer';
     listen(true);
     status.textContent = 'At home. Steer with the arrow keys or W, A, S, D.';
@@ -356,12 +446,19 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
     const route = world.route();
     const ground = world.ground();
     if (!route || !ground) { status.textContent = 'Plan a walk first: pick a target on the map or in Science targets.'; return; }
-    timeline = routeTimeline(ground, [route.out, route.back]);
+    const plain = routeTimeline(ground, [route.out, route.back]);
+    if (plain.points.length < 2) { status.textContent = 'The planned walk is too short to play.'; return; }
+    // Stands at each stop for its time, so the clock, margin and relays agree with the card (team decision, S13).
+    timeline = withStopPauses(plain, route.stops);
     heading = alongTimeline(timeline, 0).headingDeg;
     putAt(timeline.points[0]!, 18.5, 55);
     mode = 'route';
     listen(true);
-    status.textContent = `Walking the planned route: ${formatDuration(timeline.timesS[timeline.timesS.length - 1]!)} in the cautious case.`;
+    const totalS = timeline.timesS[timeline.timesS.length - 1]!;
+    const stayS = timeline.pauses.reduce((sum, p) => sum + (p.toS - p.fromS), 0);
+    routeMessage = `Walking the planned route: ${formatDuration(totalS)} outside in the cautious case` +
+      `${stayS > 0 ? `, including ${formatDuration(stayS)} at the stops` : ''} (modelled).`;
+    status.textContent = routeMessage;
     run();
   });
 
@@ -370,7 +467,15 @@ export function createWalkThrough(map: MapLibreMap, world: WalkWorld): { element
 
   return {
     element: box,
+    routeChanged() {
+      if (mode !== 'route') return;
+      mode = 'steer';
+      timeline = null;
+      status.textContent = 'The planned walk changed, so the playback stopped. Steer with the arrow keys, or walk the new route.';
+    },
+    isFirstPerson: () => firstPerson,
     remove() {
+      removed = true;
       halt();
       astronaut?.remove();
       astronaut = null;

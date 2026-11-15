@@ -54,4 +54,22 @@ describe('a walk in the address', () => {
     expect(parseHash('#site=bright-angel&back=-5&t=1e9')).toEqual({ siteId: 'bright-angel' });
     expect(parseHash('#to=77.3,18.5')).toEqual({ siteId: null });
   });
+
+  it('round-trips a walk through several stops, in place of the target (S7)', () => {
+    const state = {
+      siteId: 'bright-angel',
+      stops: [{ position: [77.31589, 18.49948] as [number, number], stayMin: 10 }, { position: [77.312, 18.5] as [number, number], stayMin: 0 }],
+    };
+    const hash = formatHash({ ...state, target: [77.312, 18.5] });
+    expect(hash).toBe('#site=bright-angel&stops=77.31589,18.49948,10;77.31200,18.50000,0');
+    expect(parseHash(hash)).toEqual(state);
+  });
+
+  it('ignores stops it could not have written, as a whole', () => {
+    expect(parseHash('#site=bright-angel&stops=77.3,18.5')).toEqual({ siteId: 'bright-angel' });
+    expect(parseHash('#site=bright-angel&stops=77.3,18.5,10;abc,1,5')).toEqual({ siteId: 'bright-angel' });
+    expect(parseHash('#site=bright-angel&stops=77.3,18.5,999')).toEqual({ siteId: 'bright-angel' });
+    expect(parseHash('#site=bright-angel&stops=77.3,18.5,10,4')).toEqual({ siteId: 'bright-angel' });
+    expect(parseHash(`#site=bright-angel&stops=${Array(13).fill('77.3,18.5,5').join(';')}`)).toEqual({ siteId: 'bright-angel' });
+  });
 });

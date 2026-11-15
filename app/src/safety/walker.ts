@@ -1,8 +1,10 @@
 // WHAT:    The walk-through's rules (F19): how far the astronaut walks in a given time on the slope underfoot, where it may
-//          not go, and where it is at a given time when it walks the planned route.
-// IN:      The routing grid (heights, keep-out cells); a position, a bearing and a time step; route lines.
-// OUT:     New positions, what stopped a step, and a timeline of the route with cautious times.
-// USED BY: src/ui/walkThrough.ts.
+//          not go, and where it is at a given time when it walks the planned route, standing at each stop for its time.
+// IN:      The routing grid (heights, keep-out cells); a position, a bearing and a time step; route lines; stops with
+//          their times.
+// OUT:     New positions, what stopped a step, and a timeline of the route with cautious times: with time at stops added
+//          from each stop on (for the tether), or with a pause at each stop (for playback).
+// USED BY: src/ui/walkThrough.ts, src/ui/routePanel.ts.
 // RULES:   The cautious walking case from src/route/cost.ts, the same model as the route card, so times agree. Keep-out
 //          ground, ground with no data and the edge of the grid stop a step. Distances through src/mars/geometry.ts.
 // TRAPS:   PITFALLS 3, 6, 7.
@@ -93,10 +95,15 @@ export function routeTimeline(ground: WalkerGround, lines: readonly LonLat[][]):
     }
   }
   const timesS = [0];
+  // A point with no height (outside the grid, or no data) carries the last known height, so it adds no climb. Taking
+  // it as 0 m would add a climb of about 2.4 km against heights near -2,400 m (review item S15).
+  let carried = points.length > 0 ? heightAt(ground, points[0]!) : null;
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1]!;
     const b = points[i]!;
-    const rise = (heightAt(ground, b) ?? 0) - (heightAt(ground, a) ?? 0);
+    const there = heightAt(ground, b) ?? carried;
+    const rise = there !== null && carried !== null ? there - carried : 0;
+    carried = there;
     timesS.push(timesS[i - 1]! + stepCost(distanceM(a, b), rise, CAUTIOUS).timeS);
   }
   return { points, timesS };
@@ -118,7 +125,17 @@ export function alongTimeline(timeline: RouteTimeline, seconds: number): { posit
   const b = points[high]!;
   const span = timesS[high]! - timesS[low]!;
   const f = span > 0 ? (Math.max(0, seconds) - timesS[low]!) / span : 0;
-  return { position: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], headingDeg: bearingDeg(a, b), done: false };
+  return { position: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], headingDeg: headingInto(points, high), done: false };
+}
+
+/** The direction of travel into point `index`; while standing still at a stop, the direction the walker arrived in. */
+function headingInto(points: readonly LonLat[], index: number): number {
+  for (let i = index; i > 0; i--) {
+    const a = points[i - 1]!;
+    const b = points[i]!;
+    if (a[0] !== b[0] || a[1] !== b[1]) return bearingDeg(a, b);
+  }
+  return 0;
 }
 
 /**
@@ -128,4 +145,42 @@ export function alongTimeline(timeline: RouteTimeline, seconds: number): { posit
 export function withStopTimes(timeline: RouteTimeline, stops: readonly { lineIndex: number; stayS: number }[]): RouteTimeline {
   const timesS = timeline.timesS.map((t, i) => t + stops.reduce((sum, s) => sum + (i >= s.lineIndex ? s.stayS : 0), 0));
   return { points: timeline.points, timesS };
+}
+
+/** A stretch of a playback timeline spent standing at a stop. */
+export interface StopPause {
+  fromS: number;
+  toS: number;
+  /** Which stop, counted from 1 in walking order. */
+  number: number;
+  name: string;
+}
+
+/**
+ * The timeline for playing the walk back (F19), standing still at each stop for its time (team decision of 15 Nov,
+ * review item S13): the stop's point appears twice, at the moment of arriving and the moment of leaving, so the walker
+ * waits there instead of walking slowly into it. The total time is the same as `withStopTimes` gives.
+ */
+export function withStopPauses(
+  timeline: RouteTimeline, stops: readonly { lineIndex: number; stayS: number; name: string }[],
+): RouteTimeline & { pauses: StopPause[] } {
+  const points: LonLat[] = [];
+  const timesS: number[] = [];
+  const pauses: StopPause[] = [];
+  let added = 0;
+  timeline.points.forEach((point, i) => {
+    const arrive = timeline.timesS[i]! + added;
+    points.push(point);
+    timesS.push(arrive);
+    stops.forEach((stop, k) => {
+      if (stop.lineIndex !== i || !(stop.stayS > 0)) return;
+      added += stop.stayS;
+      pauses.push({ fromS: arrive, toS: arrive + stop.stayS, number: k + 1, name: stop.name });
+    });
+    if (timeline.timesS[i]! + added > arrive) {
+      points.push(point);
+      timesS.push(timeline.timesS[i]! + added);
+    }
+  });
+  return { points, timesS, pauses };
 }

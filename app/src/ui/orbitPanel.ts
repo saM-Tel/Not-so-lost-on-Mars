@@ -2,7 +2,8 @@
 //          is in view for a link, and when an orbiter's camera could see the walker, as two summary lines and a timeline,
 //          with the stretches of the route walked with no link glowing on the map while this part is open.
 // IN:      The site's passes and the orbiters' roles (src/data/orbiters.ts); the walk's cautious duration and legs.
-// OUT:     A page element; calls `onGaps` with the stretches to glow, or null.
+// OUT:     A page element; calls `onGaps` with the stretches to glow, or null; the relays in view and the chosen start,
+//          for the walk-through.
 // USED BY: src/ui/routePanel.ts.
 // RULES:   Predicted, with the fetch time; thresholds assumed (grade D) and said so; only confirmed roles counted. Times in
 //          Earth UTC and Mars local true solar time. Once the saved predictions end, a labelled replay of them (with
@@ -33,6 +34,8 @@ export interface OrbitPanel {
   setOpen(open: boolean): void;
   /** Short names of the confirmed relays high enough for a link at a moment; null when there is no prediction then. */
   relaysAt(utc: Date): string[] | null;
+  /** The start time chosen here, worked out now: in a replay, the predicted time being replayed (review item S17). */
+  startUtc(): Date;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -121,12 +124,18 @@ export function createOrbitPanel(options: {
     return line;
   };
 
-  const render = (): void => {
+  /** The start chosen on the slider, from now or, after the saved predictions end, from the replay clock. */
+  const chosenStart = () => {
     const offsetMin = Number(slider.value);
     const nowMs = Math.floor(Date.now() / MINUTE_MS) * MINUTE_MS;
     const saved = globe && site ? predictionWindow(globe.orbiters, site.orbiters) : null;
     const clock = saved ? predictionClock(nowMs, saved.startMs, saved.endMs, REPLAY_MARGIN_MS) : { tMs: nowMs, replay: false };
     const start = new Date(Math.floor(clock.tMs / MINUTE_MS) * MINUTE_MS + offsetMin * MINUTE_MS);
+    return { offsetMin, saved, clock, start };
+  };
+
+  const render = (): void => {
+    const { offsetMin, saved, clock, start } = chosenStart();
     replayNote.hidden = !(clock.replay && saved && globe);
     if (clock.replay && saved && globe) {
       replayNote.textContent = `Replay: these are the saved predictions for ${utcWithYear(saved.startMs)} to ` +
@@ -255,6 +264,9 @@ export function createOrbitPanel(options: {
         if (elevation >= LINK_MIN_ELEVATION_DEG) names.push(track.short);
       }
       return known ? names : null;
+    },
+    startUtc() {
+      return chosenStart().start;
     },
   };
 }

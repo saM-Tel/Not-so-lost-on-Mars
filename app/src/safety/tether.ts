@@ -1,6 +1,7 @@
 // WHAT:    The tether: the boundary where the walk home takes as long as is allowed (F4).
 // IN:      Time-to-home for every grid cell, for the cautious and expected cases; the longest walk home allowed.
-// OUT:     A picture of the boundary, one pixel per grid cell; how far from home, in time, a route gets.
+// OUT:     A picture of the boundary, one pixel per grid cell; how far from home, in time, a route gets; the margin at
+//          every point of a walk at the moment the walker is there.
 // USED BY: src/map/routeLayer.ts, src/ui/routePanel.ts.
 // RULES:   Protection uses the cautious case. The boundary shrinks as elapsed time rises. The expected-case line is
 //          drawn lighter, outside the cautious one.
@@ -106,18 +107,24 @@ export function walkFarthestFromHomeS(
 /**
  * The tether checked at every point of a walk against the moment the walker is there (F3, F4): at each point, the
  * longest walk home allowed by then minus the cautious walk home from there. Infinity in the field (no way home) gives
- * a margin of minus Infinity. Returns every margin and the index of the tightest point.
+ * a margin of minus Infinity. Returns every margin, the walk home used at each point, and the index of the tightest.
+ *
+ * From `backFromIndex` on (the far end and the way back), the walk home is the planned way back from that point when
+ * it is slower than the quickest way: that is the way the walker will follow (review item R3). This one rule drives
+ * both the card's verdict and the margin chart, so they cannot disagree (review item S5).
  */
 export function marginsAlongWalk(
   timeHomeS: Float32Array, definition: GridDefinition, points: readonly LonLat[], timesS: readonly number[],
-  allowedAt: (elapsedS: number) => number, startElapsedS: number,
-): { marginsS: number[]; tightestIndex: number } {
-  const marginsS = points.map((point, i) => {
+  allowedAt: (elapsedS: number) => number, startElapsedS: number, backFromIndex = points.length,
+): { marginsS: number[]; homeS: number[]; tightestIndex: number } {
+  const endS = timesS[timesS.length - 1] ?? 0;
+  const homeS = points.map((point, i) => {
     const cell = cellOf(definition, point);
-    const home = cell < 0 ? Infinity : timeHomeS[cell]!;
-    return allowedAt(startElapsedS + timesS[i]!) - home;
+    const quickest = cell < 0 ? Infinity : timeHomeS[cell]!;
+    return i >= backFromIndex ? Math.max(quickest, endS - timesS[i]!) : quickest;
   });
+  const marginsS = homeS.map((home, i) => allowedAt(startElapsedS + timesS[i]!) - home);
   let tightestIndex = 0;
   marginsS.forEach((m, i) => { if (m < marginsS[tightestIndex]!) tightestIndex = i; });
-  return { marginsS, tightestIndex };
+  return { marginsS, homeS, tightestIndex };
 }

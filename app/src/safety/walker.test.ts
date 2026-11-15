@@ -1,5 +1,6 @@
 // WHAT:    Tests for src/safety/walker.ts: walking speed on the flat, keep-out and the grid edge stopping a step, and the
-//          route timeline agreeing with the walking model.
+//          route timeline agreeing with the walking model, a missing height adding no climb, and playback standing still
+//          at stops.
 // IN:      Nothing. The grid below is a made-up test fixture.
 // OUT:     Pass or fail.
 // USED BY: npm test.
@@ -11,7 +12,7 @@ import { describe, expect, it } from 'vitest';
 import type { GridDefinition } from '../data/contract';
 import { distanceM, type LonLat } from '../mars/geometry';
 import { speedMps, stepCost, WALK_CASES } from '../route/cost';
-import { alongTimeline, cellIndex, routeTimeline, walkFreely, withStopTimes, type WalkerGround } from './walker';
+import { alongTimeline, cellIndex, routeTimeline, walkFreely, withStopPauses, withStopTimes, type WalkerGround } from './walker';
 
 const CELL_DEG = 4 / 59_274.9; // about 4 m on Mars, north to south
 const FIXTURE_DEFINITION = {
@@ -66,6 +67,14 @@ describe('routeTimeline and alongTimeline', () => {
     expect(cellIndex(FIXTURE_DEFINITION, quarter.position)).toBe(10 * 20 + 2);
     expect(alongTimeline(timeline, 1e9).done).toBe(true);
   });
+  it('carries the last known height over a cell with no data, so it adds no climb (S15)', () => {
+    const ground = fixtureGround();
+    ground.heightM[10 * 20 + 3] = Number.NaN;
+    const line = [centre(10, 2), centre(10, 3), centre(10, 4)];
+    const flat = routeTimeline(fixtureGround(), [line]);
+    const gap = routeTimeline(ground, [line]);
+    expect(gap.timesS[2]).toBeCloseTo(flat.timesS[2]!, 6);
+  });
 });
 
 describe('withStopTimes', () => {
@@ -74,5 +83,26 @@ describe('withStopTimes', () => {
     const stopped = withStopTimes(timeline, [{ lineIndex: 1, stayS: 100 }, { lineIndex: 2, stayS: 5 }]);
     expect(stopped.timesS).toEqual([0, 110, 125, 135]);
     expect(stopped.points).toBe(timeline.points);
+  });
+});
+
+describe('withStopPauses', () => {
+  it('stands still at each stop for its time, with the same total as withStopTimes (S13)', () => {
+    const timeline = { points: [[0, 0], [1, 0], [2, 0], [3, 0]] as [number, number][], timesS: [0, 10, 20, 30] };
+    const stops = [{ lineIndex: 1, stayS: 100, name: 'A' }, { lineIndex: 2, stayS: 5, name: 'B' }];
+    const played = withStopPauses(timeline, stops);
+    expect(played.timesS).toEqual([0, 10, 110, 120, 125, 135]);
+    expect(played.points).toEqual([[0, 0], [1, 0], [1, 0], [2, 0], [2, 0], [3, 0]]);
+    expect(played.timesS[played.timesS.length - 1]).toBe(withStopTimes(timeline, stops).timesS[3]);
+    expect(played.pauses).toEqual([{ fromS: 10, toS: 110, number: 1, name: 'A' }, { fromS: 120, toS: 125, number: 2, name: 'B' }]);
+    // Halfway through the first stop the walker is at it, still facing the way it came.
+    const waiting = alongTimeline(played, 60);
+    expect(waiting.position).toEqual([1, 0]);
+    expect(waiting.done).toBe(false);
+    expect(waiting.headingDeg).toBeCloseTo(alongTimeline(played, 5).headingDeg, 9);
+  });
+  it('leaves a timeline without stops as it was', () => {
+    const timeline = { points: [[0, 0], [1, 0]] as [number, number][], timesS: [0, 10] };
+    expect(withStopPauses(timeline, [])).toEqual({ ...timeline, pauses: [] });
   });
 });
