@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "builtUtc": "2026-11-15T10:19:41Z",
+  "builtUtc": "2026-11-15T11:08:44Z",
   "layers": [
     {
       "id": "image-ctx-arctic-plain-wide",
@@ -413,11 +413,11 @@
       "realDetail": "About 163 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data. Moved 10 m west and 150 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.49 at zoom 13 (about 10 m a pixel) and 0.32 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 10 m west and 150 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -431,7 +431,7 @@
         "maxZoom": 9,
         "tileSizePx": 256,
         "count": 117,
-        "bytes": 220986,
+        "bytes": 217388,
         "bounds": {
           "westLonDeg": -50.86253189319404,
           "eastLonDeg": -45.02873924680592,
@@ -457,11 +457,11 @@
       "realDetail": "About 20 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data. Moved 10 m west and 150 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.49 at zoom 13 (about 10 m a pixel) and 0.32 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 10 m west and 150 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -475,7 +475,7 @@
         "maxZoom": 12,
         "tileSizePx": 256,
         "count": 130,
-        "bytes": 198866,
+        "bytes": 176780,
         "bounds": {
           "westLonDeg": -48.31024761039924,
           "eastLonDeg": -47.58102352960072,
@@ -501,11 +501,11 @@
       "realDetail": "About 5 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data. Moved 10 m west and 150 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.49 at zoom 13 (about 10 m a pixel) and 0.32 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 10 m west and 150 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -518,8 +518,8 @@
         "minZoom": 13,
         "maxZoom": 14,
         "tileSizePx": 256,
-        "count": 155,
-        "bytes": 480510,
+        "count": 156,
+        "bytes": 453200,
         "bounds": {
           "westLonDeg": -48.05501918211976,
           "eastLonDeg": -47.8362519578802,
@@ -545,11 +545,11 @@
       "realDetail": "About 163 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data. Moved 210 m west and 175 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.46 at zoom 13 (about 10 m a pixel) and 0.47 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 210 m west and 175 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -563,7 +563,7 @@
         "maxZoom": 9,
         "tileSizePx": 256,
         "count": 110,
-        "bytes": 476250,
+        "bytes": 445392,
         "bounds": {
           "westLonDeg": 172.70916381176852,
           "eastLonDeg": 178.28752023823148,
@@ -589,11 +589,11 @@
       "realDetail": "About 20 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data. Moved 210 m west and 175 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.46 at zoom 13 (about 10 m a pixel) and 0.47 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 210 m west and 175 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -607,7 +607,7 @@
         "maxZoom": 12,
         "tileSizePx": 256,
         "count": 115,
-        "bytes": 211480,
+        "bytes": 193612,
         "bounds": {
           "westLonDeg": 175.14969474834606,
           "eastLonDeg": 175.84698930165393,
@@ -633,11 +633,11 @@
       "realDetail": "About 5 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data. Moved 210 m west and 175 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.46 at zoom 13 (about 10 m a pixel) and 0.47 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 210 m west and 175 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -651,7 +651,7 @@
         "maxZoom": 14,
         "tileSizePx": 256,
         "count": 125,
-        "bytes": 232682,
+        "bytes": 219854,
         "bounds": {
           "westLonDeg": 175.39374784200382,
           "eastLonDeg": 175.60293620799618,
@@ -677,11 +677,11 @@
       "realDetail": "About 163 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data. Moved 25 m west and 130 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.29 at zoom 13 (about 10 m a pixel) and 0.24 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 25 m west and 130 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -694,8 +694,8 @@
         "minZoom": 6,
         "maxZoom": 9,
         "tileSizePx": 256,
-        "count": 108,
-        "bytes": 199196,
+        "count": 110,
+        "bytes": 194194,
         "bounds": {
           "westLonDeg": 132.91934508745615,
           "eastLonDeg": 138.33412324254382,
@@ -721,11 +721,11 @@
       "realDetail": "About 20 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data. Moved 25 m west and 130 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.29 at zoom 13 (about 10 m a pixel) and 0.24 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 25 m west and 130 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -739,7 +739,7 @@
         "maxZoom": 12,
         "tileSizePx": 256,
         "count": 106,
-        "bytes": 154892,
+        "bytes": 137534,
         "bounds": {
           "westLonDeg": 135.288310530307,
           "eastLonDeg": 135.96515779969297,
@@ -765,11 +765,11 @@
       "realDetail": "About 5 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data. Moved 25 m west and 130 m north to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.29 at zoom 13 (about 10 m a pixel) and 0.24 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 25 m west and 130 m north by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -783,7 +783,7 @@
         "maxZoom": 14,
         "tileSizePx": 256,
         "count": 146,
-        "bytes": 602440,
+        "bytes": 556108,
         "bounds": {
           "westLonDeg": 135.5252070745921,
           "eastLonDeg": 135.7282612554079,
@@ -941,11 +941,11 @@
       "realDetail": "About 163 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 7 (about 163 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 6 to 9 over a 320 km square centred on the site marker. Pure black pixels are treated as no data. Moved 80 m east and 80 m south to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.47 at zoom 13 (about 10 m a pixel) and 0.17 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 80 m east and 80 m south by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -959,7 +959,7 @@
         "maxZoom": 9,
         "tileSizePx": 256,
         "count": 110,
-        "bytes": 211102,
+        "bytes": 201852,
         "bounds": {
           "westLonDeg": -8.180188620184781,
           "eastLonDeg": -2.778148669815194,
@@ -985,11 +985,11 @@
       "realDetail": "About 20 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 10 (about 20 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 10 to 12 over a 40 km square centred on the site marker. Pure black pixels are treated as no data. Moved 80 m east and 80 m south to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.47 at zoom 13 (about 10 m a pixel) and 0.17 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 80 m east and 80 m south by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -1003,7 +1003,7 @@
         "maxZoom": 12,
         "tileSizePx": 256,
         "count": 115,
-        "bytes": 72776,
+        "bytes": 71670,
         "bounds": {
           "westLonDeg": -5.816796141898086,
           "eastLonDeg": -5.141541148101888,
@@ -1029,11 +1029,11 @@
       "realDetail": "About 5 m",
       "positionAccuracy": "Not stated. The service calls the mosaic uncontrolled: its images are not tied to a reference map",
       "heightAccuracy": "not applicable",
-      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data.",
+      "processing": "Read as 512-pixel tiles from Esri's OnMars CTX service at level 12 (about 5 m a pixel), which are evenly spaced in degrees on the Mars 2000 sphere, then redrawn as Web Mercator tiles for zoom 13 to 14 over a 12 km square centred on the site marker. Pure black pixels are treated as no data. Moved 80 m east and 80 m south to line up with this site's HiRISE map, which is tied to MOLA; the offset was measured by us: image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.47 at zoom 13 (about 10 m a pixel) and 0.17 at zoom 14 (about 5 m), to the nearest 5 m",
       "grade": "C",
       "caveats": [
         "For finding your way and seeing the land around the site. Not for planning a walk.",
-        "Uncontrolled: not aligned to the site's own map, so ground features may not line up exactly at the edge of the site box.",
+        "Moved 80 m east and 80 m south by us to line up with the site's HiRISE map (measured by image correlation). Further out, features may still be off by a similar amount.",
         "Black and white: brightness only, not colour.",
         "The service stores it with lossy JPEG compression at 8 bits.",
         "The service does not give the date of each image."
@@ -1046,8 +1046,8 @@
         "minZoom": 13,
         "maxZoom": 14,
         "tileSizePx": 256,
-        "count": 123,
-        "bytes": 119450,
+        "count": 124,
+        "bytes": 108660,
         "bounds": {
           "westLonDeg": -5.580456894069417,
           "eastLonDeg": -5.377880395930558,

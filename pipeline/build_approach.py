@@ -17,6 +17,7 @@ import concurrent.futures
 import dataclasses
 import io
 import json
+import math
 import pathlib
 import shutil
 import sys
@@ -256,6 +257,8 @@ def build_site_rings(site: dict, folder: pathlib.Path) -> list[dict]:
     position = site["positionChecked"]
     lon, lat = position["lonEastDeg"], position["latDeg"]
     near_source = (site.get("approach") or {}).get("near")
+    # The CTX global mosaic is uncontrolled; a site config can give the offset that lines it up with the site's map.
+    shift = (site.get("approach") or {}).get("ctxShiftM")
     if near_source:
         check_approach_source(site_id, near_source)
     print(f"  {site_id}: {lon:.4f} E, {lat:.4f} N")
@@ -270,7 +273,15 @@ def build_site_rings(site: dict, folder: pathlib.Path) -> list[dict]:
             print(f"    near ring from {near_source['file']} ({grid.origin})")
         else:
             level = esri_level_for(ring.pixel_m)
-            grid = read_esri_box(level, box)
+            if shift:
+                # Read the square the shift will bring over the box, then move the grid's corner by the shift, so the
+                # uncontrolled CTX lines up with the site's own map (approach.ctxShiftM in the site config).
+                east_deg = shift["east"] / (mars.METRES_PER_DEGREE * math.cos(math.radians(lat)))
+                north_deg = shift["north"] / mars.METRES_PER_DEGREE
+                grid = read_esri_box(level, sources.Box.around(lon - east_deg, lat - north_deg, ring.box_km, ring.box_km))
+                grid = dataclasses.replace(grid, west_lon_deg=grid.west_lon_deg + east_deg, north_lat_deg=grid.north_lat_deg + north_deg)
+            else:
+                grid = read_esri_box(level, box)
             source_m = ESRI_LEVEL0_DEG_PER_PX / 2**level * mars.METRES_PER_DEGREE
         zoom_max = finest_zoom(source_m, lat)
         zoom_min = zoom_max - ring.zooms_below
@@ -279,6 +290,13 @@ def build_site_rings(site: dict, folder: pathlib.Path) -> list[dict]:
             record = configured_record(layer_id, ring, near_source, zoom_min, zoom_max, lat)
         else:
             record = global_ctx_record(layer_id, ring, level, zoom_min, zoom_max, lat)
+            if shift:
+                moved = f"{abs(shift['east']):.0f} m {'east' if shift['east'] >= 0 else 'west'} and {abs(shift['north']):.0f} m {'north' if shift['north'] >= 0 else 'south'}"
+                record["processing"] += (f" Moved {moved} to line up with this site's HiRISE map, which is tied to MOLA; "
+                                         f"the offset was measured by us: {shift['measured']}")
+                record["caveats"] = [f"Moved {moved} by us to line up with the site's HiRISE map (measured by image correlation). "
+                                     "Further out, features may still be off by a similar amount."
+                                     if c.startswith("Uncontrolled") else c for c in record["caveats"]]
         record["siteId"] = site_id
         record["ring"] = ring.name
         record["tiles"] = {

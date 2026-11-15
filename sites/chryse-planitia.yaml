@@ -102,3 +102,13 @@ sources:
         - "Dark patches can be shadows, not dark ground."
         - "Made on its own map projection and warped onto the app's grid by our pipeline."
       credit: "NASA/JPL-Caltech/University of Arizona"
+
+# ---- Approach imagery (pipeline/build_approach.py) ------------------------------------------
+
+approach:
+  # The CTX global mosaic round the site is uncontrolled; this site's HiRISE map is tied to MOLA. Matching the two
+  # images showed the CTX features sit away from the HiRISE ones by this much, so the CTX rings are moved to line up.
+  ctxShiftM:
+    east: -10
+    north: 150
+    measured: "image correlation of the HiRISE site map against the CTX near ring, 15 Nov 2026: correlation 0.49 at zoom 13 (about 10 m a pixel) and 0.32 at zoom 14 (about 5 m), to the nearest 5 m"
