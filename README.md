@@ -168,7 +168,7 @@ On macOS or Linux use `python3.12` and `.venv/bin/python`. The build reads only 
 
 We used an AI coding assistant, Claude Code, throughout. It wrote most of the code, the tests and the documentation in this repository, working task by task under the team's direction, and it did the searches for sources. People on the team decided what to build and chose between options. Not every line has been reviewed by a person; the log says what was checked and what was not.
 
-Every session is logged in [docs/AI_USE.md](docs/AI_USE.md). The app says so too: a line under its intro, the map's credit line, and the `generator` and `ai-assistance` tags in `app/index.html`. There are no AI-generated images, video or audio anywhere in the project. Every picture is a real NASA image with its credit.
+Every session is logged in [docs/AI_USE.md](docs/AI_USE.md). The app says so too: a line under its intro, the map's credit line, and the `generator` and `ai-assistance` tags in `app/index.html`. Apart from the app icon (five plain shapes that Claude Code wrote as SVG code), there are no AI-made images and no AI audio in the project. The demo video in [docs/demo/](docs/demo/) is a screen recording of the live app, made by scripts Claude Code wrote; it shows no generated imagery. Every image of Mars is a real NASA image with its credit.
 
 ## Licence
 
