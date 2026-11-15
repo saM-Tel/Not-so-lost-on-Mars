@@ -1,6 +1,16 @@
 # Role C handoff
 
-## Sat 14 Nov 21:55, team owner with Claude Code, end of the evening session. START HERE
+## Sun 15 Nov 02:30, team owner with Claude Code. START HERE
+
+Done: read every doc and planned bug fixes with the owner; read-only agents listed suspected bugs in Saturday night's code; fixes outside Joseph's files are in role B's handoff (orbiter replay after 30 Nov, service worker, route errors). The rest is S0 to S24 in REVIEW_QUEUE.
+Not done: backup video; project page; nothing from tonight seen in a browser.
+Broken or risky: see STATUS "Broken right now". Team decisions waiting (SPEC): should walk-through playback pause at stops (S13), and should stops go in the shareable link (S7)?
+Next: owner commits and pushes these changes; Joseph takes S0 onwards; try the orbit panel in a browser.
+Files: docs/REVIEW_QUEUE.md, STATUS.md, AI_USE.md, handoffs/role-b.md
+Other roles need to know: for the story, F18 now stays meaningful for judges after 30 Nov as a clearly labelled replay of real saved predictions.
+Checks: `npm run check` passes (102 tests).
+
+## Sat 14 Nov 21:55, team owner with Claude Code, end of the evening session
 
 Done since 21:35 (all pushed): F19 first person under a helmet visor (`ui/visor.ts`, `ui/walkThrough.ts`); F3 walks through several stops with time at each stop, the verdict counting it, and the tightest point and a margin chart in "This walk" (`route/worker.ts`, `ui/routePanel.ts`, `safety/tether.ts`, `safety/walker.ts`).
 Not done: styles for the new Several stops list (`.stops`, `.stops__item`, `.stops__button`, `.stops__stay`, `.route-pin--stop`) and the margin chart (`.margin-chart__trace`, `__zero`, `__stop`, `__dot`, `__line--outside`): the chart's SVG may draw as a filled black shape until styled. Item 12 (way home from here) not started. Nothing from tonight has been seen in a browser except the zoom fix, the Sun shading and the level 2 edges.

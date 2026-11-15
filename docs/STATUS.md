@@ -2,7 +2,7 @@
 
 Read this first in every session. Change only your own rows, in a small commit of its own, and push it straight away.
 
-Last updated: Sun 15 Nov 00:28, by Joseph with Claude Code. Feature freeze is today at 12:00 and the submission at 21:00. Every feature from F1 to F19 has a first version and is pushed. The route planner, which failed to start at every site from Saturday 21:52, is fixed (7a3a388). An interface pass put the walk card in its own column (32cc581). Batch 3 data is on the server and not yet used. Not started: the backup video and the project page.
+Last updated: Sun 15 Nov 02:30, by the team owner with Claude Code (orbiter replay, service worker and route-error fixes; a new list of suspected bugs, S0 to S24 in REVIEW_QUEUE, for role B). Before that: Sun 15 Nov 00:28, by Joseph with Claude Code. Feature freeze is today at 12:00 and the submission at 21:00. Every feature from F1 to F19 has a first version and is pushed. The route planner, which failed to start at every site from Saturday 21:52, is fixed (7a3a388). An interface pass put the walk card in its own column (32cc581). Batch 3 data is on the server and not yet used. Not started: the backup video and the project page.
 
 ## Now
 
@@ -11,6 +11,7 @@ Last updated: Sun 15 Nov 00:28, by Joseph with Claude Code. Feature freeze is to
 | A: data and science | Joseph, from the owner's handover at 16:55 | Next: the batch 3 data arriving on the server (MEDA weather, RAD storm data, Gale dates), geology once fiona is installed | Sat 16:55 |
 | B: app | Joseph, from the owner's handover at 16:55 | Next: try every panel in the browser, then fix review items R1 to R20 in order | Sat 16:55 |
 | C: story and submission | Team owner and Joseph | Backup video by 23:00; README and project page | Sat 16:55 |
+| B, files outside Joseph's | Team owner with Claude Code | Done 02:30, not pushed: `data/orbiters.ts`, `ui/orbitPanel.ts`, `map/orbiters.ts`, `pwa/sw.js`, `ui/install.ts`, `route/client.ts`, `route/worker.ts`, `route/messages.ts`. Not touched: `routePanel.ts`, `walkThrough.ts`, `visor.ts`, `walker.ts`, `main.ts`, `style.css` | Sun 01:45 |
 
 ## Evening work plan: team owner with Claude Code, from Sat 14 Nov 20:20
 
@@ -58,7 +59,7 @@ Status is one of: not started, in progress, works, works with issues, cut. "Work
 | F12 Thermal and mineral layers | A | in progress | Night infrared (THEMIS, USGS 2018) as a layer at Bright Angel: coded, to be built. Minerals not started: CRISM files unprocessed (REVIEW_QUEUE 10) |
 | F13 Tablet and helmet display | B, C | in progress | Tried briefly by the owner: janky and often empty. Fixed since: the helmet option shows only when its rover photo loads; the map resizes on a view change. Still open: R6 and R13 to R15 in REVIEW_QUEUE |
 | F17 Interface upgrade | B, C | works with issues | Added by the team owner, 14 Nov 19:04. Two passes on 14 Nov evening (see the plan above); not yet seen in a browser at phone and laptop widths; tablet and helmet views not yet reworked |
-| F18 Orbiters overhead | A, B | works with issues | Added by the team owner, 14 Nov 19:10. Coded 14 Nov evening from JPL Horizons predictions saved to 30 Nov; not yet seen in a browser. Relay and camera roles counted only where a source confirmed them (MRO, Odyssey; Mars Express camera); thresholds assumed. Rebuild the predictions before submitting |
+| F18 Orbiters overhead | A, B | works with issues | Added by the team owner, 14 Nov 19:10. Coded 14 Nov evening from JPL Horizons predictions saved to 30 Nov; not yet seen in a browser. From Sun 15 Nov 02:30 (not pushed): one orbiter running out no longer blanks a walk, and after 30 Nov the panel and globe replay the saved window, labelled with its real dates, since MRO's own Horizons data ends then and judging runs into January (unit-tested only). Relay and camera roles counted only where a source confirmed them (MRO, Odyssey; Mars Express camera); thresholds assumed. Rebuild the predictions before submitting |
 | F19 Walk-through | B | works with issues | Proposed by the team owner on 14 Nov evening. Coded the same evening: a 1.8 m astronaut steered with the keyboard or walking the planned route, camera following, readout of tether margin, walk home, relay and Sun, the tether shrinking as time goes. Not yet seen in a browser |
 | F15 More sites | A | in progress | Seven landing sites built as level 2 from their HiRISE terrain strips, warped from their own projections (2.6 to 6.3 MB each). Gale not built: image dates of its mosaics not found (REVIEW_QUEUE 8) |
 | F16 Extras | any | in progress | Coded, not tried: live link to Earth from NASA DSN Now; route export as GeoJSON with its Mars frame; rover drop-off (move home). Not started: two walkers, rover models in 3D, orbiter passes overhead (now F18) |
@@ -80,7 +81,9 @@ All nine have a config in `sites/` with a cited position, and appear on the glob
 - Fixed Sun 15 Nov 00:28 (7a3a388): the note 'Source "overlay-thermal-themis" already exists' on opening a site. The cause was not a double open. The route planner threw "Cannot access 'stops' before initialization" on every site since d3b62d1, so it never started, and the layers it left behind gave the note on the next open. Seen fixed in a scripted browser.
 - Fixed Sun 15 Nov 00:28 (32cc581): styles for the Several stops list and the margin chart. Written from the class names; the list and chart themselves have not been looked at with stops in them.
 
-Nothing known broken, but most of the afternoon's work has not been opened in a browser. Large items for review are in [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
+- Suspected, not confirmed in a browser (Sun 15 Nov 02:30): S0 to S24 in [REVIEW_QUEUE.md](REVIEW_QUEUE.md), all in role B's working files. Worst: S0, a route request the worker fails on still leaves the card on "Working out the walk…" until `routePanel.ts` adds a `.catch`; S1, changing stops while the worker restarts hangs for good; S9 to S11, walk-through keys and the tether's time since leaving home.
+
+Nothing else known broken, but most of the afternoon's work has not been opened in a browser. Large items for review are in [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
 
 ## Team data server
 

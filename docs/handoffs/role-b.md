@@ -1,6 +1,16 @@
 # Role B handoff
 
-## Sun 15 Nov 00:28, role B work by Joseph, with Claude Code. START HERE
+## Sun 15 Nov 02:30, role B work by the team owner, with Claude Code. START HERE, Joseph
+
+Done (not committed yet; the owner decides): (1) F18 orbiters: an orbiter running out of predictions no longer blanks the walk; a link minute counts as known only while a relay orbiter has data, an imaging minute only while a camera orbiter has; after the saved window ends (MRO, 30 Nov 12:46 UTC, a limit of Horizons itself) the orbit panel and globe replay that window, labelled with its real dates (`predictionWindow`, `predictionClock` in `data/orbiters.ts`); Mars Express no longer listed as both counted and not counted. (2) `pwa/sw.js`: a new deploy's worker takes over at once; site data other than tiles is network-first, so a new site.json never meets an old grid; failed cache saves no longer lose the response. `ui/install.ts` reloads a page once when that happens. (3) `route/client.ts`: a worker error rejects the request it names; an error naming none rejects everything and refuses later requests.
+Not done: everything in your working files was left alone and written up as S0 to S24 in REVIEW_QUEUE (newest section). Start with S0: `planTo` and `planVia` in `routePanel.ts` need a `.catch`, or a failed route still hangs the card.
+Broken or risky: nothing seen in a browser. The globe replays with no margin and the panel with 48 h, so in a replay they show different (each labelled) moments. `walkThrough.ts` still uses `Date.now()` for relays, so after 30 Nov its visor says "link: no prediction" (S17); use `predictionClock`. The replay note has class `orbit__replay` with no style yet.
+Next: S0, then S1 and S9 to S11; then open "Link and view from orbit" and the globe dots in a browser.
+Files: app/src/data/orbiters.ts (+test), ui/orbitPanel.ts, map/orbiters.ts, pwa/sw.js, ui/install.ts, route/client.ts (+ new client.test.ts), route/worker.ts, route/messages.ts, AGENTS.md indexes.
+Other roles need to know: A, `build_orbiters.py` skips its longitude check silently if Horizons' wording changes (S23); no pipeline `.venv` on the owner's laptop, so not changed.
+Checks: `npm run check` passes: types, 102 tests (12 new), build. pytest not run (no .venv here).
+
+## Sun 15 Nov 00:28, role B work by Joseph, with Claude Code
 
 Done: (1) the route planner failed to start at every site since Saturday 21:52: `ui/routePanel.ts` drew the stops list before `stops`, `addingStops`, `shownStops` and `planVia` were declared. Declarations moved up; `main.ts` now removes a site's layers even when the planner fails to start. (2) Interface pass: on screens 1,100 px and wider the walk card is a column on the right (`body.has-walk`), the map sits between it and the side panel, and the toolbar moves with the map; on a phone the card starts folded; the credit line is one line; scroll bars and links match the theme; the stops list and margin chart have styles. (3) Saturday evening: review items R1 to R8, R13 to R19 (see REVIEW_QUEUE, Done).
 Not done: the evening's features have still not been tried one by one (several stops, margin chart, orbit panel, walk-through, first person, orbiters on the globe); tablet and helmet views not reworked; the level 2 sites not opened since the layout change.
