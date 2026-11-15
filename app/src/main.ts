@@ -203,10 +203,12 @@ async function start(): Promise<void> {
   });
 
   // Zooming in on a site by hand selects it, as clicking its marker does, but leaves the camera to the person.
+  // Zooming far enough out lets it go again and shows all sites, also without moving the camera.
   watchZoomSelect(map, sites, {
     isFlying: () => flights > 0,
     selectedId: () => selectedId,
     onSelect: (siteId) => void select(siteId, 'stay'),
+    onDeselect: () => void select(null, 'stay'),
   });
 
   if (chosenAtStart) void select(chosenAtStart.id);

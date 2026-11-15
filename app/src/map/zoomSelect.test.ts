@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { SiteEntry } from '../data/contract';
-import { siteInFocus } from './zoomSelect';
+import { DESELECT_BELOW_ZOOM, SELECT_FROM_ZOOM, shouldDeselect, siteInFocus } from './zoomSelect';
 
 /** Test fixture: a site with only the fields the function reads. */
 function fixtureSite(id: string, lonEastDeg: number, latDeg: number): SiteEntry {
@@ -34,5 +34,15 @@ describe('siteInFocus', () => {
 
   it('picks the nearest when two are in the middle', () => {
     expect(siteInFocus([8.6, 0], 4, 1000, 800, sites)?.id).toBe('far');
+  });
+});
+
+describe('shouldDeselect', () => {
+  it('lets a chosen site go only when zoomed out past the threshold, below the zoom that chooses one', () => {
+    expect(DESELECT_BELOW_ZOOM).toBeLessThan(SELECT_FROM_ZOOM);
+    expect(shouldDeselect(3.4, 'bright-angel')).toBe(true);
+    expect(shouldDeselect(3.6, 'bright-angel')).toBe(false);
+    expect(shouldDeselect(12, 'bright-angel')).toBe(false);
+    expect(shouldDeselect(2, null)).toBe(false);
   });
 });

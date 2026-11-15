@@ -35,7 +35,7 @@ Add a row when you add a file. Remove it when you delete one.
 | `slots.ts` | Fixed places in the layer order: hidden marker layers that every other layer is added beneath, so the order is always rings, site image, sun shading, analysis layers, keep-out, tether, route lines, rover stops | F1 to F4, F11, F14 |
 | `siteMarkers.ts` | Draws a tall column, a name and a pulse at each landing site on the globe, and reports clicks | F14 |
 | `flight.ts` | Camera moves: globe to a site, a site back to the globe, and the slow idle turn of the globe | F14, F7 |
-| `zoomSelect.ts` | Selects a site when the person zooms in on it by hand: from zoom 4 inwards, the nearest site within the middle of the view | F14 |
+| `zoomSelect.ts` | Selects a site when the person zooms in on it by hand: from zoom 4 inwards, the nearest site within the middle of the view; zooming out past zoom 3.5 (half a step below the zoom that selects) lets a chosen site go and shows all sites, without moving the camera | F14 |
 | `zoomSelect.test.ts` | Tests for choosing the site in focus, on made-up positions | |
 | `siteLayers.ts` | Adds a built site's image and 3D terrain (terrain may reach past the box, `tiles.bounds`; on only from zoom 12.2 inwards) and takes them away again; computed sun shading for a Sun position (hillshade lit from the Sun's direction and height, on true Mars slopes) | F1, F11 |
 | `orbiters.ts` | The orbiters on the globe (F18): a labelled dot at the point below each one now and its track 45 minutes either side, moved every second, up to zoom 8; credited as predicted from JPL Horizons; after the saved window, a replay of it, said so in the credit line | F18 |
