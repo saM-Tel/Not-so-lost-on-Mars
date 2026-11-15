@@ -72,3 +72,9 @@ def test_tile_bounds():
 def test_tile_pixel_size_is_for_mars():
     # Zoom 0 at the equator: 2 * pi * 3,396,190 / 256 = 83,355.0 m per pixel. Earth would give 156,543 m.
     assert mars.tile_pixel_size_m(0, 0.0) == pytest.approx(83_355.0, abs=0.1)
+
+
+def test_season_matches_the_mars24_worked_example():
+    # Mars24 worked example, 2000-01-06 00:00:00 UTC: solar longitude 277.18758 degrees (as in app/src/mars/time.test.ts).
+    import datetime
+    assert mars.solar_longitude_deg(datetime.datetime(2000, 1, 6, tzinfo=datetime.timezone.utc)) == pytest.approx(277.188, abs=0.05)

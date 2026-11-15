@@ -1,10 +1,11 @@
 # WHAT:    Stage 7: typical weather by Mars month (30 degrees of solar longitude) at a site with a weather station, from
-#          the station's daily record (F11). Built for Curiosity's REMS daily feed at Gale crater.
+#          the station's daily record (F11). Built for Curiosity's REMS daily feed at Gale crater. For Bright Angel in
+#          Jezero it hands over to meda.py: typical weather by local hour for today's season from Perseverance's MEDA.
 # IN:      msl_curiosity_rems_weather.json (team data server raw/feeds, or NASA's feed address).
 # OUT:     ../app/public/data/weather/<site id>.json: for each Mars month, the number of sols and the 10th, 50th and 90th
 #          percentiles of the daily low and high air temperature, ground temperature and pressure, and how often each
 #          ultraviolet level and sky state was reported; with a full source record.
-# USED BY: People and AI sessions from the command line: python weather.py gale-crater
+# USED BY: People and AI sessions from the command line: python weather.py gale-crater, python weather.py bright-angel
 # RULES:   Same season only. Never another site's weather: the file is written for the site the station stands at.
 #          Values are "typical", with the number of sols behind each. Missing values ("--") are left out, not filled.
 # TRAPS:   PITFALLS 3, 9.
@@ -17,6 +18,8 @@ import sys
 
 import numpy as np
 
+import config
+import meda
 import records
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
@@ -86,6 +89,10 @@ def summarise(soles: list[dict]) -> list[dict]:
 
 
 def build(site_id: str) -> None:
+    if site_id in meda.STATIONS:
+        site = config.load_site_config(REPO / "sites" / f"{site_id}.yaml")
+        meda.build(site_id, site["position"]["lonEastDeg"], site["position"]["latDeg"])
+        return
     station = STATIONS.get(site_id)
     if not station:
         sys.exit(f"No weather station stands at '{site_id}'. Weather is never borrowed from another site.")
@@ -122,5 +129,5 @@ def build(site_id: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Typical weather by Mars month at a site with a weather station.")
-    parser.add_argument("site", help="site id; only gale-crater has a station in our files")
+    parser.add_argument("site", help="site id: gale-crater (Curiosity REMS) or bright-angel (Perseverance MEDA)")
     build(parser.parse_args().site)

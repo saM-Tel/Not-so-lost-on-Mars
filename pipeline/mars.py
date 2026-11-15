@@ -1,4 +1,5 @@
-# WHAT:    Mars constants and geometry for the pipeline: radius, gravity, sol length, cell spacing, longitude conversion, tile maths.
+# WHAT:    Mars constants and geometry for the pipeline: radius, gravity, sol length, cell spacing, longitude conversion, tile maths,
+#          and the season (solar longitude) at a UTC time by NASA's Mars24 method, the same as app/src/mars/time.ts.
 # IN:      East-positive longitude and planetocentric latitude, degrees.
 # OUT:     Metres, degrees and tile indices.
 # USED BY: Every other file in this folder.
@@ -6,6 +7,7 @@
 # TRAPS:   PITFALLS 3, 4.
 # OWNER:   Role A.
 
+import datetime
 import math
 
 # The sphere the USGS map products use. Source: root AGENTS.md, "Conventions".
@@ -87,3 +89,28 @@ def tile_pixel_size_m(z: int, lat_deg: float) -> float:
     """Ground size on Mars of one tile pixel at this zoom and latitude, in metres."""
     world_px = TILE_SIZE_PX * 2**z
     return 2 * math.pi * MARS_RADIUS_M * math.cos(math.radians(lat_deg)) / world_px
+
+
+# Mars24 (Allison and McEwen 2000), as in app/src/mars/time.ts. TAI minus UTC since 1 January 2017, then TT minus TAI.
+TAI_MINUS_UTC_S = 37
+TT_MINUS_TAI_S = 32.184
+# Perturbations by the other planets (Mars24 step B-4): amplitude in degrees, period in Julian years, phase in degrees.
+_PERTURBATIONS = [
+    (0.0071, 2.2353, 49.409), (0.0057, 2.7543, 168.173), (0.0039, 1.1177, 191.837), (0.0037, 15.7866, 21.736),
+    (0.0021, 2.1354, 15.704), (0.0020, 2.4694, 95.528), (0.0018, 32.8493, 49.095),
+]
+
+
+def solar_longitude_deg(utc: datetime.datetime) -> float:
+    """The season: Mars's angle along its orbit from northern spring, degrees from 0 to 360 (Mars24 steps A to B)."""
+    if utc.tzinfo is None:
+        utc = utc.replace(tzinfo=datetime.timezone.utc)
+    jd_utc = utc.timestamp() / 86_400 + 2_440_587.5
+    dt = jd_utc + (TAI_MINUS_UTC_S + TT_MINUS_TAI_S) / 86_400 - 2_451_545.0
+    m = 19.3871 + 0.52402073 * dt
+    alpha_fms = 270.3871 + 0.524038496 * dt
+    pbs = sum(a * math.cos(math.radians(0.985626 * dt / tau + phi)) for a, tau, phi in _PERTURBATIONS)
+    rad = math.radians
+    centre = ((10.691 + 3.0e-7 * dt) * math.sin(rad(m)) + 0.623 * math.sin(rad(2 * m)) + 0.05 * math.sin(rad(3 * m))
+              + 0.005 * math.sin(rad(4 * m)) + 0.0005 * math.sin(rad(5 * m)) + pbs)
+    return (alpha_fms + centre) % 360
