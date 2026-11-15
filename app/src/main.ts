@@ -152,6 +152,12 @@ async function start(): Promise<void> {
       const drawn = await addOverlays(map, builtSite);
       if (thisChoice !== choice) { drawn.remove(); return; }
       const layerPanel = createLayerPanel(picker.slot, drawn.overlays, builtSite.layers.rejected, builtSite.validation);
+      // Set before the route planner starts: if that fails, the layers just drawn must still be taken away when the
+      // person leaves or reopens the site, or the next open finds their sources already on the map.
+      stopRoutePlanner = () => {
+        layerPanel.remove();
+        drawn.remove();
+      };
       const stopRoute = builtSite.site.grid
         ? startRoutePlanner(map, builtSite, {
           onOverlay: (overlay) => layerPanel.add(overlay),

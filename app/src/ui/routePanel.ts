@@ -264,6 +264,16 @@ export function startRoutePlanner(
     marginBox.append(text, svg, axis);
   }
 
+  // Declared before the stops list below, which reads them as soon as it is first drawn.
+  /** Stops for a walk through several stops (F3), in walking order; the last is the far end. Time at each is the
+   * person's choice and counts against the tether. */
+  let stops: { position: [number, number]; name: string; stayMin: number }[] = [];
+  let addingStops = false;
+  /** The stops of the walk now on screen, with where each falls on the way out; empty for a walk to one target. */
+  let shownStops: { lineIndex: number; stayS: number; name: string }[] = [];
+  /** Plan the walk through `stops`. Set once the worker is ready. */
+  let planVia: () => void = () => {};
+
   // Several stops (F3): home, each stop in order, then home. Built once; filled into "Targets and stops".
   const stopsBox = el('div', 'stops');
   const stopsToggle = el('input');
@@ -353,14 +363,6 @@ export function startRoutePlanner(
   let slopeLimitDeg = SLOPE_LIMIT_DEG;
   /** Plan the walk from home to a position and back. Set once the worker is ready. */
   let planTo: (position: [number, number]) => void = () => {};
-  /** Stops for a walk through several stops (F3), in walking order; the last is the far end. Time at each is the
-   * person's choice and counts against the tether. */
-  let stops: { position: [number, number]; name: string; stayMin: number }[] = [];
-  let addingStops = false;
-  /** The stops of the walk now on screen, with where each falls on the way out; empty for a walk to one target. */
-  let shownStops: { lineIndex: number; stayS: number; name: string }[] = [];
-  /** Plan the walk through `stops`. Set once the worker is ready. */
-  let planVia: () => void = () => {};
   const stayAtStopsS = (): number => shownStops.reduce((sum, s) => sum + s.stayS, 0);
 
   /** Say whether the walk on screen stays inside the tether, judged at its far end in the cautious case. */
